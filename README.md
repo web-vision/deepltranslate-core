@@ -56,17 +56,15 @@ and desired target languages. Read the documentation to find out how to do this.
 
 Read online: https://docs.typo3.org/p/web-vision/deepltranslate-core/main/en-us/
 
+## Add-Ons
+
+* [**DeepL Translate Glossary**](https://github.com/web-vision/deepltranslate-glossary):
+  TYPO3-managed glossary for custom translation support
+
 ## Sponsors
 
 We appreciate very much the sponsorships of the developments and features in
 the DeepL Translate Extension for TYPO3.
-
-### DeepL Glossary feature sponsored by
-
-* [Universität Osnabrück](https://www.uni-osnabrueck.de)
-* [Hochschule für Musik Würzburg](https://www.hfm-wuerzburg.de)
-* [Carl von Ossietzky Universität Oldenburg](https://uol.de/)
-* [Friedrich-Ebert-Stiftung](https://www.fes.de)
 
 ### DeepL "Add automatic translation flag and hint" sponsored by
 
