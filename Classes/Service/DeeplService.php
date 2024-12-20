@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use WebVision\WvDeepltranslate\Client;
+use WebVision\WvDeepltranslate\Domain\Dto\TranslateOptions;
 use WebVision\WvDeepltranslate\Domain\Repository\GlossaryRepository;
 use WebVision\WvDeepltranslate\Domain\Repository\SettingsRepository;
 use WebVision\WvDeepltranslate\Utility\DeeplBackendUtility;
@@ -65,26 +66,27 @@ class DeeplService
      * Deepl Api Call for retrieving translation.
      * @return array<int|string, mixed>
      */
-    public function translateRequest(string $content, string $targetLanguage, string $sourceLanguage): array
+    public function translateRequest(string $content, TranslateOptions $translateOptions): array
     {
         // If the source language is set to Autodetect, no glossary can be detected.
-        if ($sourceLanguage === 'auto') {
-            $sourceLanguage = '';
+        if ($translateOptions->getSourceLanguage() === 'auto') {
+            $translateOptions->setSourceLanguage('');
             $glossary['glossary_id'] = '';
         } else {
             // TODO make glossary findable by current site
             $glossary = $this->glossaryRepository->getGlossaryBySourceAndTarget(
-                $sourceLanguage,
-                $targetLanguage,
+                $translateOptions->getSourceLanguage(),
+                $translateOptions->getSourceLanguage(),
                 DeeplBackendUtility::detectCurrentPage()
             );
         }
 
         try {
-            if(!isset($glossary['glossary_id'])) {
+            if (!isset($glossary['glossary_id'])) {
                 $glossary['glossary_id'] = '';
             }
-            $response = $this->client->translate($content, $sourceLanguage, $targetLanguage, $glossary['glossary_id']);
+
+            $response = $this->client->translate($content, $translateOptions, $glossary['glossary_id']);
         } catch (ClientException $e) {
             $flashMessage = GeneralUtility::makeInstance(
                 FlashMessage::class,

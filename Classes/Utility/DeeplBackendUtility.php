@@ -121,8 +121,8 @@ class DeeplBackendUtility
         self::$apiKey = $extensionConfiguration['apiKey'];
         self::$deeplFormality = $extensionConfiguration['deeplFormality'];
         self::$apiUrl = $extensionConfiguration['apiUrl'];
-        self::$googleApiUrl = $extensionConfiguration['googleapiUrl'];
-        self::$googleApiKey = $extensionConfiguration['googleapiKey'];
+        self::$googleApiUrl = $extensionConfiguration['googleapiUrl'] ?? '';
+        self::$googleApiKey = $extensionConfiguration['googleapiKey'] ?? '';
 
         self::$configurationLoaded = true;
     }

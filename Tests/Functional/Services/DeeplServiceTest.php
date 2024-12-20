@@ -6,6 +6,7 @@ namespace WebVision\WvDeepltranslate\Tests\Functional\Services;
 
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use WebVision\WvDeepltranslate\Domain\Dto\TranslateOptions;
 use WebVision\WvDeepltranslate\Service\DeeplService;
 
 /**
@@ -43,11 +44,13 @@ class DeeplServiceTest extends FunctionalTestCase
         }
         $deeplService = GeneralUtility::makeInstance(DeeplService::class);
 
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage('DE');
+        $translateOptions->setTargetLanguage('EN');
+
         $responseObject = $deeplService->translateRequest(
-            'Ich möchte gern übersetzt werden!',
-            'EN',
-            'DE',
-            ''
+            'Ich möchte gerne übersetzt werden!',
+            $translateOptions
         );
 
         static::assertSame('I would like to be translated!', $responseObject['translations'][0]['text']);
@@ -56,21 +59,50 @@ class DeeplServiceTest extends FunctionalTestCase
     /**
      * @test
      */
+    public function translateContentAndRespectHtmlTags(): void
+    {
+        if (defined('DEEPL_MOCKSERVER_USED') && DEEPL_MOCKSERVER_USED === true) {
+            static::markTestSkipped(__METHOD__ . ' skipped, because DEEPL MOCKSERVER do not support the test with HTML Tags');
+        }
+
+        $deeplService = GeneralUtility::makeInstance(DeeplService::class);
+
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage('EN');
+        $translateOptions->setTargetLanguage('DE');
+        $translateOptions->setSplittingTags(['em', 'p', 'span']);
+
+        $responseObject = $deeplService->translateRequest(
+            '<p>Important species in blueberry (<span>include</span>) the Western flower thrips (<em>Frankliniella occidentalis</em>) and Chilli thrips (<em>Scirtothrips dorsalis</em>).</p>',
+            $translateOptions
+        );
+
+        static::assertSame(
+            '<p>Wichtige Arten in der Heidelbeere (<span>gehören</span>) der Westliche Blütenthrips (<em>Frankliniella occidentalis</em>) und Chili-Thripse (<em>Scirtothrips dorsalis</em>).</p>',
+            $responseObject['translations'][0]['text']
+        );
+    }
+
+    /**
+     * @test
+     */
     public function translateContentFromEnToDe(): void
     {
         $translateContent = 'I would like to be translated!';
-        $expectedTranslation = 'Ich möchte gern übersetzt werden!';
+        $expectedTranslation = 'Ich möchte gerne übersetzt werden!';
         if (defined('DEEPL_MOCKSERVER_USED') && DEEPL_MOCKSERVER_USED === true) {
             $translateContent = 'proton beam';
             $expectedTranslation = 'Protonenstrahl';
         }
         $deeplService = GeneralUtility::makeInstance(DeeplService::class);
 
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage('EN');
+        $translateOptions->setTargetLanguage('DE');
+
         $responseObject = $deeplService->translateRequest(
             $translateContent,
-            'DE',
-            'EN',
-            ''
+            $translateOptions
         );
 
         static::assertSame($expectedTranslation, $responseObject['translations'][0]['text']);
@@ -82,18 +114,20 @@ class DeeplServiceTest extends FunctionalTestCase
     public function translateContentWithAutoDetectSourceParam(): void
     {
         $translateContent = 'I would like to be translated!';
-        $expectedTranslation = 'Ich möchte gern übersetzt werden!';
+        $expectedTranslation = 'Ich möchte gerne übersetzt werden!';
         if (defined('DEEPL_MOCKSERVER_USED') && DEEPL_MOCKSERVER_USED === true) {
             $translateContent = 'proton beam';
             $expectedTranslation = 'Protonenstrahl';
         }
         $deeplService = GeneralUtility::makeInstance(DeeplService::class);
 
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage('auto');
+        $translateOptions->setTargetLanguage('DE');
+
         $responseObject = $deeplService->translateRequest(
             $translateContent,
-            'DE',
-            'auto',
-            ''
+            $translateOptions
         );
 
         static::assertSame($expectedTranslation, $responseObject['translations'][0]['text']);

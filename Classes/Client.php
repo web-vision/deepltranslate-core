@@ -7,6 +7,7 @@ namespace WebVision\WvDeepltranslate;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use WebVision\WvDeepltranslate\Domain\Dto\TranslateOptions;
 use WebVision\WvDeepltranslate\Exception\ClientNotValidUrlException;
 
 final class Client
@@ -31,15 +32,15 @@ final class Client
         $this->requestFactory = GeneralUtility::makeInstance(RequestFactory::class);
     }
 
-    public function translate(string $content, string $sourceLang, string $targetLang, string $glossary = ''): ResponseInterface
-    {
+    public function translate(
+        string $content,
+        TranslateOptions $options,
+        string $glossary = ''
+    ): ResponseInterface {
         $baseUrl = $this->buildBaseUrl('translate');
 
         $postFields = [
             'text' => $content,
-            'source_lang' => $sourceLang,
-            'target_lang' => $targetLang,
-            'tag_handling' => 'xml',
         ];
 
         if (!empty($glossary)) {
@@ -47,6 +48,8 @@ final class Client
         }
 
         $postFields['formality'] = $this->configuration->getFormality();
+
+        $postFields = array_merge($postFields, $options->toArray());
 
         return $this->requestFactory->request($baseUrl, 'POST', $this->mergeRequiredRequestOptions([
             'form_params' => $postFields,

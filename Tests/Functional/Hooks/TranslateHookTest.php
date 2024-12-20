@@ -8,6 +8,7 @@ use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use WebVision\WvDeepltranslate\Domain\Dto\TranslateOptions;
 use WebVision\WvDeepltranslate\Hooks\TranslateHook;
 use WebVision\WvDeepltranslate\Service\LanguageService;
 
@@ -61,14 +62,15 @@ class TranslateHookTest extends FunctionalTestCase
         $languageService = GeneralUtility::makeInstance(LanguageService::class);
         $siteConfig = $languageService->getCurrentSite('pages', 1);
         $sourceLanguageRecord = $languageService->getSourceLanguage($siteConfig['site']);
+
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage($sourceLanguageRecord['language_isocode']);
+        $translateOptions->setTargetLanguage('DE');
+
         $content = $translateHook->translateContent(
             $translateContent,
-            [
-                'uid' => 2,
-                'language_isocode' => 'DE',
-            ],
+            $translateOptions,
             'deepl',
-            $sourceLanguageRecord
         );
 
         static::assertSame($expectedTranslation, $content);
@@ -86,15 +88,15 @@ class TranslateHookTest extends FunctionalTestCase
         $languageService = GeneralUtility::makeInstance(LanguageService::class);
         $siteConfig = $languageService->getCurrentSite('pages', 1);
         $sourceLanguageRecord = $languageService->getSourceLanguage($siteConfig['site']);
+
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage($sourceLanguageRecord['language_isocode']);
+        $translateOptions->setTargetLanguage('BS');
+
         $content = $translateHook->translateContent(
             'Hello I would like to be translated',
-            [
-                'uid' => 3, // This ist the LanguageID its was Configure in SiteConfig
-                'title' => 'not supported language',
-                'language_isocode' => 'BS',
-            ],
+            $translateOptions,
             'deepl',
-            $sourceLanguageRecord
         );
 
         static::assertSame('Hello I would like to be translated', $content);

@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\WvDeepltranslate\Client;
 use WebVision\WvDeepltranslate\Configuration;
+use WebVision\WvDeepltranslate\Domain\Dto\TranslateOptions;
 
 /**
  * @covers \WebVision\WvDeepltranslate\Client
@@ -49,12 +50,15 @@ class ClientTest extends FunctionalTestCase
         if (defined('DEEPL_MOCKSERVER_USED') && DEEPL_MOCKSERVER_USED === true) {
             $translateContent = 'proton beam';
         }
+
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage('EN');
+        $translateOptions->setTargetLanguage('DE');
+
         $client = new Client();
         $response = $client->translate(
             $translateContent,
-            'EN',
-            'DE',
-            ''
+            $translateOptions,
         );
 
         static::assertSame(200, $response->getStatusCode());
@@ -68,17 +72,20 @@ class ClientTest extends FunctionalTestCase
     public function checkJsonTranslateContentIsValid(): void
     {
         $translateContent = 'I would like to be translated!';
-        $expectedTranslation = 'Ich möchte gern übersetzt werden!';
+        $expectedTranslation = 'Ich möchte gerne übersetzt werden!';
         if (defined('DEEPL_MOCKSERVER_USED') && DEEPL_MOCKSERVER_USED === true) {
             $translateContent = 'proton beam';
             $expectedTranslation = 'Protonenstrahl';
         }
+
+        $translateOptions = new TranslateOptions();
+        $translateOptions->setSourceLanguage('EN');
+        $translateOptions->setTargetLanguage('DE');
+
         $client = new Client();
         $response = $client->translate(
             $translateContent,
-            'EN',
-            'DE',
-            ''
+            $translateOptions,
         );
 
         $content = $response->getBody()->getContents();

@@ -30,6 +30,10 @@ services:
     arguments:
       $cache: '@cache.wvdeepltranslate'
 
+  WebVision\WvDeepltranslate\Resolver\RichtextAllowTagsResolver:
+    arguments:
+      $richtext: '@TYPO3\CMS\Core\Configuration\Richtext'
+
   cache.wvdeepltranslate:
     class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
     factory: [ '@TYPO3\CMS\Core\Cache\CacheManager', 'getCache' ]

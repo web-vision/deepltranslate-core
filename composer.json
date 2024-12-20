@@ -91,6 +91,7 @@
 		"typo3/cms-frontend": "^9.5 || ^10.4 || ^11.5",
 		"typo3/cms-info": "^9.5 || ^10.4 || ^11.5",
 		"typo3/cms-lowlevel": "^9.5 || ^10.4 || ^11.5",
+		"typo3/cms-rte-ckeditor": "^9.5 || ^10.4 || ^11.5",
 		"typo3/cms-tstemplate": "^9.5 || ^10.4 || ^11.5",
 		"typo3/cms-workspaces": "^9.5 || ^10.4 || ^11.5",
 		"typo3/coding-standards": "^0.5"

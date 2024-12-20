@@ -8,11 +8,11 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use WebVision\WvDeepltranslate\Domain\Dto\TranslateOptions;
 use WebVision\WvDeepltranslate\Domain\Repository\PageRepository;
-use WebVision\WvDeepltranslate\Domain\Repository\SettingsRepository;
 use WebVision\WvDeepltranslate\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\WvDeepltranslate\Exception\LanguageRecordNotFoundException;
+use WebVision\WvDeepltranslate\Resolver\RichtextAllowTagsResolver;
 use WebVision\WvDeepltranslate\Service\DeeplService;
 use WebVision\WvDeepltranslate\Service\GoogleTranslateService;
 use WebVision\WvDeepltranslate\Service\LanguageService;
@@ -24,31 +24,31 @@ class TranslateHook
 
     protected GoogleTranslateService $googleService;
 
-    protected SettingsRepository $deeplSettingsRepository;
-
     protected PageRepository $pageRepository;
 
     private LanguageService $languageService;
 
     public function __construct(
-        ?SettingsRepository $settingsRepository = null,
         ?PageRepository $pageRepository = null,
         ?DeeplService $deeplService = null,
-        ?GoogleTranslateService $googleService = null
+        ?GoogleTranslateService $googleService = null,
+        ?LanguageService $languageService = null
     ) {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->deeplSettingsRepository = $settingsRepository ?? $objectManager->get(SettingsRepository::class);
-        $this->deeplService = $deeplService ?? $objectManager->get(DeeplService::class);
-        $this->googleService = $googleService ?? $objectManager->get(GoogleTranslateService::class);
+        $this->deeplService = $deeplService ?? GeneralUtility::makeInstance(DeeplService::class);
         $this->pageRepository = $pageRepository ?? GeneralUtility::makeInstance(PageRepository::class);
-        $this->languageService = GeneralUtility::makeInstance(LanguageService::class);
+        $this->languageService = $languageService ?? GeneralUtility::makeInstance(LanguageService::class);
+        $this->googleService = $googleService ?? GeneralUtility::makeInstance(GoogleTranslateService::class);
     }
 
     /**
      * @param array{uid: int} $languageRecord
      */
-    public function processTranslateTo_copyAction(string &$content, array $languageRecord, DataHandler $dataHandler): string
-    {
+    public function processTranslateTo_copyAction(
+        string &$content,
+        array $languageRecord,
+        DataHandler $dataHandler,
+        string $columnName
+    ): string {
         $tableName = '';
         $currentRecordId = '';
 
@@ -62,12 +62,7 @@ class TranslateHook
             break;
         }
 
-        if (!isset($cmdmap['localization']['custom']['srcLanguageId'])) {
-            $cmdmap['localization']['custom']['srcLanguageId'] = '';
-        }
-
         $customMode = $cmdmap['localization']['custom']['mode'] ?? null;
-        [$sourceLanguage,] = explode('-', (string)$cmdmap['localization']['custom']['srcLanguageId']);
 
         //translation mode set to deepl or google translate
         if ($customMode === null) {
@@ -79,21 +74,28 @@ class TranslateHook
         $translatedContent = '';
         $targetLanguageRecord = [];
 
+        $translateOptions = GeneralUtility::makeInstance(TranslateOptions::class);
+        $richtextAllowTagsResolver = GeneralUtility::makeInstance(RichtextAllowTagsResolver::class);
+        $translateOptions->setSplittingTags(
+            $richtextAllowTagsResolver->resolve($tableName, $currentRecordId, $columnName)
+        );
+
         try {
             $sourceLanguageRecord = $this->languageService->getSourceLanguage(
                 $siteInformation['site']
             );
+            $translateOptions->setSourceLanguage($sourceLanguageRecord['language_isocode']);
 
             $targetLanguageRecord = $this->languageService->getTargetLanguage(
                 $siteInformation['site'],
                 (int)$languageRecord['uid']
             );
+            $translateOptions->setTargetLanguage($targetLanguageRecord['language_isocode']);
 
             $translatedContent = $this->translateContent(
                 $content,
-                $targetLanguageRecord,
+                $translateOptions,
                 $customMode,
-                $sourceLanguageRecord
             );
         } catch (LanguageIsoCodeNotFoundException|LanguageRecordNotFoundException $e) {
             $flashMessage = GeneralUtility::makeInstance(
@@ -123,22 +125,17 @@ class TranslateHook
 
     /**
      * These logics were outsourced to test them and later to resolve them in a service
-     *
-     * @param array{uid: int, language_isocode: string} $targetLanguageRecord
-     * @param array{uid: int, language_isocode: string} $sourceLanguageRecord
      */
     public function translateContent(
         string $content,
-        array $targetLanguageRecord,
-        string $customMode,
-        array $sourceLanguageRecord
+        TranslateOptions $translateOptions,
+        string $customMode
     ): string {
         // mode deepl
         if ($customMode == 'deepl') {
             $response = $this->deeplService->translateRequest(
                 $content,
-                $targetLanguageRecord['language_isocode'],
-                $sourceLanguageRecord['language_isocode']
+                $translateOptions
             );
 
             if (!empty($response) && isset($response['translations'])) {
@@ -152,8 +149,8 @@ class TranslateHook
         } //mode google
         elseif ($customMode == 'google') {
             $response = $this->googleService->translate(
-                $sourceLanguageRecord['language_isocode'],
-                $targetLanguageRecord['language_isocode'],
+                $translateOptions->getSourceLanguage(),
+                $translateOptions->getTargetLanguage(),
                 $content
             );
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+    <pages>
+        <uid>1</uid>
+        <pid>0</pid>
+        <title>DeepL-Functional-Tests</title>
+        <doktype>1</doktype>
+        <is_siteroot>1</is_siteroot>
+    </pages>
+    <pages>
+        <uid>3</uid>
+        <pid>0</pid>
+        <title>DeepL-Functional-Tests BS</title>
+        <doktype>1</doktype>
+        <is_siteroot>1</is_siteroot>
+    </pages>
+    <tt_content>
+        <uid>1</uid>
+        <pid>1</pid>
+        <header>DeepL-Functional-Test Element</header>
+        <CType>text</CType>
+        <bodytext></bodytext>
+    </tt_content>
+</dataset>
