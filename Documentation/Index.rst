@@ -43,6 +43,5 @@
     Administration/Index
     Editor/Index
     Faq/Index
-    Housekeeping/Index
     Reference/Index
     KnownIssues/Index

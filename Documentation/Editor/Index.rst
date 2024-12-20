@@ -2,8 +2,8 @@
 
 ..  _editor:
 
-Editors manuel
-=======
+Editors manual
+==============
 
 How editors work with *deepltranslate_core* is described in the following chapters.
 
@@ -12,5 +12,4 @@ How editors work with *deepltranslate_core* is described in the following chapte
     :titlesonly:
 
     Usage/Index
-    Glossary/Index
     AutoTranslatePrefix/Index
