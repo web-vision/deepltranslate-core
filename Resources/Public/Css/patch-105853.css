@@ -1,0 +1,6 @@
+/**
+ * Workaround / Patch for core change:
+ * 87576: [BUGFIX] Fix overflow of labels in localization mode buttons | https://review.typo3.org/c/Packages/TYPO3.CMS/+/87576
+ * Remove in TYPO3 v13.4.3
+ */
+.deepl-translate-modal-icon-text-alignment{white-space:normal;text-align:center}

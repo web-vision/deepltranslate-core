@@ -136,7 +136,7 @@ class Localization {
               </div>
               `,
             );
-            availableLocalizationModes.push('copyFromLanguage');
+            availableLocalizationModes.push('localizedeepl');
 
             actions.push(`
             <div class="row" id="deeplTranslateAuto">
@@ -159,7 +159,7 @@ class Localization {
               </div>
               `,
             );
-            availableLocalizationModes.push('copyFromLanguage');
+            availableLocalizationModes.push('localizedeeplauto');
 
             if ($triggerButton.data('allowTranslate') === 0 && $triggerButton.data('allowCopy') === 0) {
               actions.push(
