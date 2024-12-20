@@ -162,7 +162,7 @@ class Localization {
                                   </label>
                                 </div>
                                 <div class="col-sm-9" id="deeplText">
-                                  <div class='alert alert-danger' id='alertClose' hidden>  <a href='#'' class='close'  data-bs-dismiss='alert' aria-label='close'>&times;</a>
+                                  <div class='alert alert-danger' hidden>
                                     ${TYPO3.lang['localize.educate.deeplSettingsFailure']}
                                   </div>
                                   <p class="t3js-helptext t3js-helptext-copy text-body-secondary">
@@ -171,7 +171,7 @@ class Localization {
                                 </div>
                               </div>
                               `);
-                          availableLocalizationModes.push('copyFromLanguage');
+                          availableLocalizationModes.push('localizedeepl');
                           actions.push(`
                           <div class="row" id="deeplTranslateAuto">
                               <div class="col-sm-3">
@@ -183,7 +183,7 @@ class Localization {
                                 </label>
                               </div>
                               <div class="col-sm-9" id="deeplTextAuto" >
-                                <div class='alert alert-danger' id='alertClose' hidden>  <a href='#'' class='close'  data-bs-dismiss='alert' aria-label='close'>&times;</a>
+                                <div class='alert alert-danger' hidden>
                                   ${TYPO3.lang['localize.educate.deeplSettingsFailure']}
                                 </div>
                                 <p class="t3js-helptext t3js-helptext-copy text-body-secondary">
@@ -192,7 +192,7 @@ class Localization {
                               </div>
                             </div>
                             `);
-                          availableLocalizationModes.push('copyFromLanguage');
+                          availableLocalizationModes.push('localizedeeplauto');
 
                         }
                         if ($triggerButton.data('allowTranslate') === 0 && $triggerButton.data('allowCopy') === 0) {
@@ -375,12 +375,24 @@ class Localization {
                                                 const result = await response.resolve();
                                                 if (result.status === false) {
                                                     Wizard$1.lockNextStep();
+                                                    window.parent.document.querySelector('#deeplText .alert').hidden = true;
+                                                    window.parent.document.querySelector('#deeplTextAuto .alert').hidden = true;
                                                     let divDeepl = $radio.val() == 'localizedeepl'
                                                         ? window.parent.document.querySelector('#deeplText .alert')
                                                         : window.parent.document.querySelector('#deeplTextAuto .alert');
                                                     divDeepl.hidden = false;
+                                                } else {
+                                                  window.parent.document.querySelector('#deeplText .alert').hidden = true;
+                                                  window.parent.document.querySelector('#deeplTextAuto .alert').hidden = true;
+                                                  this.localizationMode = $radio.val().toString();
+                                                  Wizard$1.unlockNextStep();
                                                 }
                                             });
+                                        } else {
+                                          window.parent.document.querySelector('#deeplText .alert').hidden = true;
+                                          window.parent.document.querySelector('#deeplTextAuto .alert').hidden = true;
+                                          this.localizationMode = $radio.val().toString();
+                                          Wizard$1.unlockNextStep();
                                         }
                                     }
                                 });

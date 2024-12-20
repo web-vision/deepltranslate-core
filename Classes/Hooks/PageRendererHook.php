@@ -16,7 +16,7 @@ final class PageRendererHook
     public function renderPreProcess(array $params, PageRenderer $pageRenderer): void
     {
         if ($pageRenderer->getApplicationType() === 'BE') {
-            // For some reason, the labels are not availible in JavaScript object `TYPO3.lang`. So we add them manually.
+            // For some reason, the labels are not available in JavaScript object `TYPO3.lang`. So we add them manually.
             $pageRenderer->addInlineLanguageLabelFile('EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf');
         }
     }

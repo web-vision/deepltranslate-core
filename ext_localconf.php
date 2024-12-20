@@ -42,6 +42,21 @@ defined('TYPO3') or die();
         }
     }
 
+    // TYPO3 v13 changed the markup and UX of the PageLayout translation modal which breaks with longer icon labels.
+    // This has been reported to the core and a bugfix is in the making, but we ship a workaround for now but load
+    // the custom backend css only.
+    //
+    // Using custom backend css loading introduced with: https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.3/Feature-100232-LoadAdditionalStylesheetsInTYPO3Backend.html
+    //
+    // @todo Remove this with TYPO3 v13.4.3 release => https://review.typo3.org/c/Packages/TYPO3.CMS/+/87576
+    //
+    if ($typo3version->getMajorVersion() === 13
+        && version_compare($typo3version->getVersion(), '13.4.3', '<')
+    ) {
+        $GLOBALS['TYPO3_CONF_VARS']['BE']['stylesheets']['web-vision/deepltranslate-core']
+            = 'EXT:deepltranslate_core/Resources/Public/Css/patch-105853.css';
+    }
+
     // We need to provide the global backend javascript module instead of calling page-renderer here directly - which
     // cannot be done and checking the context (FE/BE) directly. Instantiating PageRenderer here directly would be
     // emitted an exception as the cache configuration manager cannot be retrieved in this early stage.
