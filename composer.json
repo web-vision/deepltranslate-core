@@ -81,7 +81,6 @@
 		"typo3/cms-core": "^12.4.2 || ^13.4",
 		"typo3/cms-extbase": "^12.4.2 || ^13.4",
 		"typo3/cms-fluid": "^12.4.2 || ^13.4",
-		"typo3/cms-install": "^12.4.2 || ^13.4",
 		"typo3/cms-setup": "^12.4.2 || ^13.4"
 	},
 	"require-dev": {
@@ -104,6 +103,7 @@
 		"typo3/cms-fluid-styled-content": "^12.4.2 || ^13.4",
 		"typo3/cms-frontend": "^12.4.2 || ^13.4",
 		"typo3/cms-info": "^12.4.2 || ^13.4",
+		"typo3/cms-install": "^12.4.2 || ^13.4",
 		"typo3/cms-lowlevel": "^12.4.2 || ^13.4",
 		"typo3/cms-rte-ckeditor": "^12.4.2 || ^13.4",
 		"typo3/cms-styleguide": "^12.0.5 || ^13.4",
@@ -116,7 +116,9 @@
         "b13/container": "Just to be loaded after EXT:container",
 		"web-vision/enable-translated-content": "Adds enable translated content button to language columns in page view",
 		"web-vision/deepltranslate-assets": "Enables the translation of files in FileList Modal via deepl",
-		"typo3/cms-dashboard": "Install the package to enable the widgets from deepltranslate packages"
+		"typo3/cms-dashboard": "Install the package to enable the widgets from deepltranslate packages",
+		"typo3/cms-install": "Install the package to run DeepL translate related upgrade wizards",
+		"web-vision/deepltranslate-glossary": "TYPO3 powered glossary for DeepL Translate. Manage your glossary for optimized translations"
 	},
 	"autoload": {
 		"psr-4": {

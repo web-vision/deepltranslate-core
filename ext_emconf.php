@@ -16,7 +16,6 @@ $EM_CONF[$_EXTKEY] = [
             'backend' => '12.4.0-13.4.99',
             'extbase' => '12.4.0-13.4.99',
             'fluid' => '12.4.0-13.4.99',
-            'install' => '12.4.0-13.4.99',
             'setup' => '12.4.0-13.4.99',
         ],
         'conflicts' => [
@@ -26,8 +25,10 @@ $EM_CONF[$_EXTKEY] = [
         'suggests' => [
             'container' => '*',
             'dashboard' => '*',
+            'install' => '*',
             'enable_translated_content' => '*',
             'deepltranslate_assets' => '*',
+            'deepltranslate_glossary' => '*',
         ],
     ],
     'autoload' => [
