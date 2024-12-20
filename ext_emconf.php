@@ -34,6 +34,8 @@ $EM_CONF[$_EXTKEY] = [
     'autoload' => [
         'psr-4' => [
             'WebVision\\Deepltranslate\\Core\\' => 'Classes',
+            'DeepL\\' => 'vendor/deeplcom/deepl-php/src',
+            'Http\\Discovery\\' => 'vendor/php-http/discovery/src',
         ],
     ],
 ];
