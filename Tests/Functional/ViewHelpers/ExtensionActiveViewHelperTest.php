@@ -22,7 +22,6 @@ final class ExtensionActiveViewHelperTest extends FunctionalTestCase
 
     protected array $coreExtensionsToLoad = [
         'typo3/cms-setup',
-        'typo3/cms-scheduler',
     ];
 
     protected array $testExtensionsToLoad = [
