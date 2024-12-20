@@ -82,7 +82,6 @@
 		"typo3/cms-extbase": "^12.4.2 || ^13.4",
 		"typo3/cms-fluid": "^12.4.2 || ^13.4",
 		"typo3/cms-install": "^12.4.2 || ^13.4",
-		"typo3/cms-scheduler": "^12.4.2 || ^13.4",
 		"typo3/cms-setup": "^12.4.2 || ^13.4"
 	},
 	"require-dev": {
