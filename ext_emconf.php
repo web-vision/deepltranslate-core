@@ -18,7 +18,6 @@ $EM_CONF[$_EXTKEY] = [
             'fluid' => '12.4.0-13.4.99',
             'install' => '12.4.0-13.4.99',
             'setup' => '12.4.0-13.4.99',
-            'scheduler' => '12.4.0-13.4.99',
         ],
         'conflicts' => [
             'recordlist_thumbnail' => '*',
