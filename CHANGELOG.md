@@ -1,5 +1,40 @@
 # Changelog
 
+### 5.0.0
+* [!!!][TASK] Prepare development for next major version by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/377
+* [BUGFIX] Refactor to ProcessingInstruction lost DeepL mode information by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/381
+* [TASK] Cleanup removed TYPO3 v11 support by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/383
+* [TASK] Ensure failing `php-cs-fixer` within Github Action pipeline by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/384
+* [TASK] Ensure `TestCase::setUp()` parent call chain in tests by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/386
+* [TASK] Ensure to define all depending extension in functional tests by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/387
+* [TASK] Upgrade to typo3/testing-framework 8.x by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/389
+* [TASK] Improve local ddev setup handling - first round by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/391
+* [TASK] Mitigate renamed doctrine exception class by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/392
+* [TASK] Avoid obsolete `version` in `.ddev/docker-compose.deeplmockserver.yml` by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/393
+* [TASK] Migrate upgrade wizards registration by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/394
+* [TASK] Avoid using deprecated `SiteLanguage->getTwoLetterCode()` by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/396
+* [BUGFIX] Ender preview translated flag information in TYPO3 v12 (5.x) by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/398
+* [!!!][TASK] Remove obsolete `DeeplPreviewFlagGeneratePageHook` by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/399
+* [TASK] Add regression test for issue #395 by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/400
+* [TASK] Add `sbuerk/typo3-cms-styleguide-version-sync` development dependency by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/401
+* [!!!][TASK] Extract glossary related functionality into new addon `webvision/deepltranslate-glossary` by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/405
+* [TASK] Allow installation in TYPO3 v13 instances by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/407
+* [TASK] Adjust tooling for v13 compatibility by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/408
+* [TASK] Add table exclude event for DeepL translate buttons by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/409
+* [TASK] Use simplified backend module template for `UsageWidget` by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/410
+* [!!!][TASK] Mitigate depecated flash message severity by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/411
+* [TASK] Make functional tests executable for both core versions by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/412
+* [!!!][TASK] Move glossary access registration into `EXT:deepltranslate_glossary` by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/413
+* [TASK] Use custom DataHandler command instead of invalid cmdMap by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/414
+* [TASK] Enable temporarly disabled GitHub Action checks by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/415
+* [TASK] Update `deeplcom/deepl-php:^1.10.1` by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/416
+* [!!!][TASK] Remove TYPO3 v11 backend JavaScript by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/418
+* [TASK] Add glossary add-on section to README by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/417
+* [TASK] Redefine composer dependencies by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/419
+* [TASK] Ensure working PageLayout localization modal for v13 by @sbuerk in https://github.com/web-vision/deepltranslate-core/pull/420
+* [TASK] Define classic mode autoloader in `ext_emconf.php` for depending and shipped packages by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/421
+* [TASK] Move glossary related documentation to `deepltranslate-glossary` by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/422
+
 ### 4.4.0
 
 * [BUGFIX] Detected current page right for pages by @Mabahe in https://github.com/web-vision/wv_deepltranslate/pull/329
