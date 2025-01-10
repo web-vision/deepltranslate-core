@@ -30,7 +30,7 @@ final class RenderLocalizationSelect
         /** @var Site $site */
         $site = $request->getAttribute('site');
         $siteLanguages = $site->getLanguages();
-        $options = $this->generator->buildTranslateDropdownOptions($siteLanguages, (int)$request->getQueryParams()['id'], $request->getUri());
+        $options = $this->generator->buildTranslateDropdownOptions($siteLanguages, (int)($request->getQueryParams()['id'] ?? 0), $request->getUri());
         if ($options !== '') {
             $additionalHeader = '<div class="form-row">'
                 . '<div class="form-group">'
