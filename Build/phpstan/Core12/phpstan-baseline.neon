@@ -26,7 +26,7 @@ parameters:
 			path: ../../../Classes/Domain/Repository/GlossaryRepository.php
 
 		-
-			message: "#^Method WebVision\\\\WvDeepltranslate\\\\Domain\\\\Repository\\\\GlossaryRepository\\:\\:getLocalizedEntries\\(\\) should return array\\<int, array\\{uid\\: int, term\\: string, l10n_parent\\: int\\}\\> but returns array\\<int\\|string, array\\<string, mixed\\>\\>\\.$#"
+			message: "#^Method WebVision\\\\WvDeepltranslate\\\\Domain\\\\Repository\\\\GlossaryRepository\\:\\:getLocalizedEntries\\(\\) should return array\\<int, array\\{uid\\: int, term\\: string, l10n_parent\\: int\\}\\> but returns array\\<array\\<string, mixed\\>\\>\\.$#"
 			count: 1
 			path: ../../../Classes/Domain/Repository/GlossaryRepository.php
 

@@ -18,7 +18,7 @@ $EM_CONF[$_EXTKEY] = [
     'author_company' => 'web-vision GmbH',
     'author_email' => 'hello@web-vision.de',
     'state' => 'stable',
-    'version' => '4.4.2',
+    'version' => '4.4.3',
     'constraints' => [
         'depends' => [
             'php' => '7.4.0-8.3.99',
@@ -33,6 +33,8 @@ $EM_CONF[$_EXTKEY] = [
     'autoload' => [
         'psr-4' => [
             'WebVision\\WvDeepltranslate\\' => 'Classes',
+            'DeepL\\' => 'vendor/deeplcom/deepl-php/src',
+            'Http\\Discovery\\' => 'vendor/php-http/discovery/src',
         ],
     ],
 ];
