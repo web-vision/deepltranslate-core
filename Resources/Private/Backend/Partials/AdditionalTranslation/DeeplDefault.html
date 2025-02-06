@@ -23,7 +23,7 @@
                             <select class="form-select" name="createNewLanguage" data-global-event="change" data-action-navigate="$value">
                                 <option><f:translate key="backend.label" extensionName="deepltranslate_core" /></option>
                                 <f:for each="{deeplLanguages}" as="languageName" key="url">
-                                    <option value="{url}">{languageName}</option>
+                                    <option value="{url -> f:replace(search: '%5Blocalize%5D=', replace: '%5Bdeepltranslate%5D=')}">{languageName}</option>
                                 </f:for>
                             </select>
                         </div>
