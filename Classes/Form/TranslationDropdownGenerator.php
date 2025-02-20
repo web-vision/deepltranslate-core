@@ -91,8 +91,6 @@ final class TranslationDropdownGenerator
                 $redirectUrl = DeeplBackendUtility::buildBackendRoute('record_edit', $parameters);
                 $params = [];
                 $params['redirect'] = $redirectUrl;
-                //$params['cmd']['pages'][$id]['localize'] = $languageUid;
-                //$params['cmd']['localization']['custom']['mode'] = 'deepl';
                 $params['cmd']['pages'][$id]['deepltranslate'] = $languageUid;
                 $targetUrl = DeeplBackendUtility::buildBackendRoute('tce_db', $params);
                 $output .= '<option value="' . htmlspecialchars($targetUrl) . '">' . htmlspecialchars($languageTitle) . '</option>';
