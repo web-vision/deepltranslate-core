@@ -69,7 +69,7 @@ final class DeeplTranslateViewHelper extends AbstractViewHelper
             $redirectUrl = DeeplBackendUtility::buildBackendRoute('record_edit', $parameters);
             $params = [];
             $params['redirect'] = $redirectUrl;
-            $params['cmd']['pages'][$context->getPageId()]['localize'] = $languageMatch[$possibleLanguage];
+            $params['cmd']['pages'][$context->getPageId()]['deepltranslate'] = $languageMatch[$possibleLanguage];
 
             $targetUrl = DeeplBackendUtility::buildBackendRoute('tce_db', $params);
 
