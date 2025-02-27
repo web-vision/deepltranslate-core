@@ -1,0 +1,6 @@
+tt_content
+,uid,pid,header,CType,colPos,tx_container_parent,sys_language_uid,l18n_parent
+,2,1,"proton beam","container-50-50",0,0,0,0
+,3,1,"proton beam","text",100,2,0,0
+,4,1,"Protonenstrahl","container-50-50",0,0,2,2
+,5,1,"Protonenstrahl","text",100,2,2,3

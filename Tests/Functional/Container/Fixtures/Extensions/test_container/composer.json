@@ -1,0 +1,18 @@
+{
+	"name": "web-vision/test-container",
+	"type": "typo3-cms-extension",
+	"description": "Testing extension for Content elements within containers",
+	"license": [
+		"GPL-2.0-or-later"
+	],
+	"require": {
+		"b13/container": "*",
+		"typo3/cms-core": "*",
+		"web-vision/deepltranslate-core": "*"
+	},
+	"extra":{
+		"typo3/cms": {
+			"extension-key": "test_container"
+		}
+	}
+}
