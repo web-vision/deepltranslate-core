@@ -6,6 +6,26 @@ parameters:
 			path: ../../../Classes/Form/Item/SiteConfigSupportedLanguageItemsProcFunc.php
 
 		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\CommandMapPostProcessingHook\\:\\:processCmdmap_postProcess\\(\\) has parameter \\$id with no type specified\\.$#"
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\CommandMapPostProcessingHook\\:\\:processCmdmap_postProcess\\(\\) has parameter \\$pasteDatamap with no type specified\\.$#"
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\CommandMapPostProcessingHook\\:\\:processCmdmap_postProcess\\(\\) has parameter \\$pasteUpdate with no type specified\\.$#"
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\CommandMapPostProcessingHook\\:\\:processCmdmap_postProcess\\(\\) has parameter \\$value with no type specified\\.$#"
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
 			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\Core12\\\\DatabaseRecordList\\:\\:makeLocalizationPanel\\(\\) has parameter \\$translations with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: ../../../Classes/Override/Core12/DatabaseRecordList.php
@@ -84,6 +104,76 @@ parameters:
 			message: "#^Parameter \\#2 \\$length of function fread expects int\\<1, max\\>, int\\<0, max\\> given\\.$#"
 			count: 1
 			path: ../../../Tests/Functional/AbstractDeepLTestCase.php
+
+		-
+			message: "#^Class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor invoked with 7 parameters, 2\\-3 required\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Class TYPO3\\\\CMS\\\\Core\\\\Site\\\\Set\\\\SetRegistry not found\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:buildDefaultLanguageConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:buildErrorHandlingConfiguration\\(\\) has parameter \\$codes with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:buildErrorHandlingConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:buildLanguageConfiguration\\(\\) has parameter \\$fallbackIdentifiers with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:buildLanguageConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:failIfArrayIsNotEmpty\\(\\) has parameter \\$items with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:mergeSiteConfiguration\\(\\) has parameter \\$overrides with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:writeSiteConfiguration\\(\\) has parameter \\$errorHandling with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:writeSiteConfiguration\\(\\) has parameter \\$languages with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Container\\\\ContentElementsInContainerTest\\:\\:writeSiteConfiguration\\(\\) has parameter \\$site with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$eventDispatcher of class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor expects Psr\\\\EventDispatcher\\\\EventDispatcherInterface, TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteSettingsFactory given\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
+
+		-
+			message: "#^Parameter \\#3 \\$coreCache of class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor expects TYPO3\\\\CMS\\\\Core\\\\Cache\\\\Frontend\\\\PhpFrontend\\|null, TYPO3\\\\CMS\\\\Core\\\\Site\\\\Set\\\\SetRegistry given\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Container/ContentElementsInContainerTest.php
 
 		-
 			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Fixtures\\\\Frontend\\\\PhpError\\:\\:__construct\\(\\) has parameter \\$configuration with no value type specified in iterable type array\\.$#"
@@ -169,6 +259,76 @@ parameters:
 			message: "#^Parameter \\#3 \\$coreCache of class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor expects TYPO3\\\\CMS\\\\Core\\\\Cache\\\\Frontend\\\\PhpFrontend\\|null, TYPO3\\\\CMS\\\\Core\\\\Site\\\\Set\\\\SetRegistry given\\.$#"
 			count: 1
 			path: ../../../Tests/Functional/Hooks/TranslateHookTest.php
+
+		-
+			message: "#^Class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor invoked with 7 parameters, 2\\-3 required\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Class TYPO3\\\\CMS\\\\Core\\\\Site\\\\Set\\\\SetRegistry not found\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:buildDefaultLanguageConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:buildErrorHandlingConfiguration\\(\\) has parameter \\$codes with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:buildErrorHandlingConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:buildLanguageConfiguration\\(\\) has parameter \\$fallbackIdentifiers with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:buildLanguageConfiguration\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:failIfArrayIsNotEmpty\\(\\) has parameter \\$items with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:mergeSiteConfiguration\\(\\) has parameter \\$overrides with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:writeSiteConfiguration\\(\\) has parameter \\$errorHandling with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:writeSiteConfiguration\\(\\) has parameter \\$languages with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Tests\\\\Functional\\\\Hooks\\\\TranslationWithModifiedTcaConfigurationTest\\:\\:writeSiteConfiguration\\(\\) has parameter \\$site with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Parameter \\#2 \\$eventDispatcher of class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor expects Psr\\\\EventDispatcher\\\\EventDispatcherInterface, TYPO3\\\\CMS\\\\Core\\\\Site\\\\SiteSettingsFactory given\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
+
+		-
+			message: "#^Parameter \\#3 \\$coreCache of class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor expects TYPO3\\\\CMS\\\\Core\\\\Cache\\\\Frontend\\\\PhpFrontend\\|null, TYPO3\\\\CMS\\\\Core\\\\Site\\\\Set\\\\SetRegistry given\\.$#"
+			count: 1
+			path: ../../../Tests/Functional/Hooks/TranslationWithModifiedTcaConfigurationTest.php
 
 		-
 			message: "#^Class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteConfiguration constructor invoked with 7 parameters, 2\\-3 required\\.$#"
