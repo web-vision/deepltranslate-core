@@ -5,6 +5,8 @@
 .ddev/docker-compose.tempfs.yaml
 composer.lock
 composer.json.testing
+composer.json.orig
+composer.json.pretty
 *.cache
 var
 .php-cs-fixer.cache
@@ -17,3 +19,5 @@ Build/testing-docker/.env
 /config/
 Build/node_modules/
 vendor
+tailor-version-artefact/
+tailor-version-upload/
