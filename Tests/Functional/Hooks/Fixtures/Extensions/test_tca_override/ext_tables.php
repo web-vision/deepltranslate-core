@@ -1,0 +1,3 @@
+<?php
+
+(static function (): void {})();

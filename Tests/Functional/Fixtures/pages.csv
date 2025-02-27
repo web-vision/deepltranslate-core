@@ -1,4 +1,4 @@
-pages,,,,,
-,"uid","pid","title","sys_language_uid","slug"
-,1,0,"Deepl-Functional-Test",0,"/"
-
+pages
+,"uid","pid","title","subtitle","sys_language_uid","slug","nav_title","description"
+,1,0,"Deepl-Functional-Test","",0,"/","",""
+,3,1,"proton beam","proton beam",0,"/proton-beam","proton beam","proton beam"
