@@ -29,9 +29,15 @@ defined('TYPO3') or die();
     ];
 
     //xclass databaserecordlist for rendering custom checkboxes to toggle deepl selection in recordlist
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class] = [
-        'className' => \WebVision\Deepltranslate\Core\Override\Core12\DatabaseRecordList::class,
-    ];
+    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('gridelements') && !empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['gridelements']['nestingInListModule'])) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class] = [
+            'className' => \WebVision\Deepltranslate\Core\Override\Core12\DatabaseRecordListWithGridelements::class,
+        ];
+    } else {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class] = [
+            'className' => \WebVision\Deepltranslate\Core\Override\Core12\DatabaseRecordListCore::class,
+        ];
+    }
 
     if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('container')) {
         //xclass CommandMapPostProcessingHook for translating contents within containers
