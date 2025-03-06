@@ -1,25 +1,26 @@
 includes:
-  - ../../../.Build/vendor/saschaegerer/phpstan-typo3/extension.neon
-  - phpstan-baseline.neon
+	- ../../../.Build/vendor/saschaegerer/phpstan-typo3/extension.neon
+	- phpstan-baseline.neon
 
 parameters:
-  # Use local .cache dir instead of /tmp
-  tmpDir: ../../../.cache/phpstan
+	# Use local .cache dir instead of /tmp
+	tmpDir: ../../../.cache/phpstan
+	level: 8
 
-  level: 8
+	paths:
+		- ../../../Classes/
+		- ../../../Tests/
 
-  paths:
-    - ../../../Classes/
-    - ../../../Tests/
+	excludePaths:
+		- ../../../.Build/*
+		- ../../../Tests/Functional/Updates/Fixtures/Extension/test_extension/ext_emconf.php
+		- ../../../Tests/Functional/Fixtures/Extensions/test_services_override/ext_emconf.php
+		- ../../../Tests/Functional/Fixtures/Extensions/testing_framework_backenduserhandler_replacement/ext_emconf.php
+	bootstrapFiles:
+		- classAliasses.php
 
-  excludePaths:
-    - ../../../.Build/*
-    - ../../../Tests/Functional/Updates/Fixtures/Extension/test_extension/ext_emconf.php
-    - ../../../Tests/Functional/Fixtures/Extensions/test_services_override/ext_emconf.php
-    - ../../../Tests/Functional/Fixtures/Extensions/testing_framework_backenduserhandler_replacement/ext_emconf.php
-
-  typo3:
-    contextApiGetAspectMapping:
-      'frontend.preview': TYPO3\CMS\Frontend\Aspect\PreviewAspect
-    requestGetAttributeMapping:
-      'typo3.testing.context': TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestContext
+	typo3:
+		contextApiGetAspectMapping:
+			'frontend.preview': TYPO3\CMS\Frontend\Aspect\PreviewAspect
+		requestGetAttributeMapping:
+			'typo3.testing.context': TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestContext

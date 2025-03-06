@@ -14,7 +14,7 @@ use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
  * @internal
  * @override
  */
-class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordList
+trait DatabaseRecordList
 {
     /**
      * Creates the localization panel

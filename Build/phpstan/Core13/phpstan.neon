@@ -17,7 +17,8 @@ parameters:
     - ../../../Tests/Functional/Updates/Fixtures/Extension/test_extension/ext_emconf.php
     - ../../../Tests/Functional/Fixtures/Extensions/test_services_override/ext_emconf.php
     - ../../../Tests/Functional/Fixtures/Extensions/testing_framework_backenduserhandler_replacement/ext_emconf.php
-
+  bootstrapFiles:
+    - classAliasses.php
   typo3:
     contextApiGetAspectMapping:
       'frontend.preview': TYPO3\CMS\Frontend\Aspect\PreviewAspect

@@ -26,9 +26,14 @@ parameters:
 			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
 
 		-
-			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\Core12\\\\DatabaseRecordList\\:\\:makeLocalizationPanel\\(\\) has parameter \\$translations with no value type specified in iterable type array\\.$#"
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\Core12\\\\DatabaseRecordListCore\\:\\:makeLocalizationPanel\\(\\) has parameter \\$translations with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordList.php
+			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
+
+		-
+			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\Core12\\\\DatabaseRecordListWithGridelements\\:\\:makeLocalizationPanel\\(\\) has parameter \\$translations with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
 
 		-
 			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\LocalizationController\\:\\:process\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
