@@ -118,7 +118,8 @@
 		"web-vision/deepltranslate-assets": "Enables the translation of files in FileList Modal via deepl",
 		"typo3/cms-dashboard": "Install the package to enable the widgets from deepltranslate packages",
 		"typo3/cms-install": "Install the package to run DeepL translate related upgrade wizards",
-		"web-vision/deepltranslate-glossary": "TYPO3 powered glossary for DeepL Translate. Manage your glossary for optimized translations"
+		"web-vision/deepltranslate-glossary": "TYPO3 powered glossary for DeepL Translate. Manage your glossary for optimized translations",
+		"gridelementsteam/gridelements": "This suggest is only for load order adjusting issues with gridelements"
 	},
 	"autoload": {
 		"psr-4": {

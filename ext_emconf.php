@@ -29,6 +29,7 @@ $EM_CONF[$_EXTKEY] = [
             'enable_translated_content' => '*',
             'deepltranslate_assets' => '*',
             'deepltranslate_glossary' => '*',
+            'gridelements' => '*',
         ],
     ],
     // @todo Autoload section in `ext_emconf.php` should not be needed anymore since TYPO3 v12, and in first test it
