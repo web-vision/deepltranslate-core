@@ -51,6 +51,8 @@ jobs:
             echo EOF
           } >> "$GITHUB_ENV"
 
+      # Using minimum supported PHP version is essential to ship bundled TER vendor package
+      # compatible to the minimum version - otherwise we will have an issue.
       - name: Setup PHP 7.4 ( wv_deepltranslate 4.x )
         uses: shivammathur/setup-php@v2
         with:
@@ -79,7 +81,7 @@ jobs:
                 vendor/symfony \
                 vendor/autoload.php \
                 vendor/bin \
-              && cat <<< $(jq --indent 4 '."autoload"."psr-4" += {"DeepL\\": "vendor/deeplcom/deepl-php/src", "Http\\Discovery\\": "vendor/php-http/discovery/src"}' composer.json.orig) > composer.json.pretty \
+              && cat <<< $(jq '."autoload"."psr-4" += {"DeepL\\": "vendor/deeplcom/deepl-php/src", "Http\\Discovery\\": "vendor/php-http/discovery/src"}' composer.json.orig) > composer.json.pretty \
               && rm -rf composer.json \
               && mv composer.json.pretty composer.json \
               && rm -rf composer.json.orig

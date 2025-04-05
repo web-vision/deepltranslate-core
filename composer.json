@@ -62,14 +62,14 @@
     "ext-curl": "*",
     "ext-json": "*",
     "ext-pdo": "*",
-    "deeplcom/deepl-php": ">=1.6.0 <=1.8.0",
+    "deeplcom/deepl-php": "^1.11.1",
     "typo3/cms-backend": "^11.5 || ^12.4",
     "typo3/cms-core": "^11.5 || ^12.4",
     "typo3/cms-extbase": "^11.5 || ^12.4",
     "typo3/cms-fluid": "^11.5 || ^12.4",
     "typo3/cms-install": "^11.5 || ^12.4",
-    "typo3/cms-setup": "^11.5 || ^12.4",
-    "typo3/cms-scheduler": "^11.5 || ^12.4"
+    "typo3/cms-scheduler": "^11.5 || ^12.4",
+    "typo3/cms-setup": "^11.5 || ^12.4"
   },
   "require-dev": {
     "b13/container": "^2.2",
