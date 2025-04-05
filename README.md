@@ -10,6 +10,12 @@
 This extension provides automated translation of pages, content and records in TYPO3
 for languages supported by [DeepL](https://www.deepl.com/de/docs-api/).
 
+> [!IMPORTANT]
+> Please be aware that this package and extension will no longer be provided
+> with package name `web-vision/wv_deepltranslate` and upgrading to the next
+> major version requires to remove it first and require it with the new name.
+> See upgrade section or instruction for the next major version.
+
 ## Features
 
 * Translate content elements via TYPO3 built-in translation wizard
@@ -45,12 +51,25 @@ Install with your favour:
 * [Git](https://github.com/web-vision/wv_deepltranslate)
 
 We prefer composer installation:
+
 ```bash
-composer req web-vision/wv_deepltranslate
+composer require 'web-vision/wv_deepltranslate':'^4.5'
 ```
 
 The DeepL translation buttons are only displayed once you have set up the API
 and desired target languages. Read the documentation to find out how to do this.
+
+## Upgrade to next version major version
+
+> [!IMPORTANT]
+> Please be aware that this package and extension will no longer be provided
+> with package name `web-vision/wv_deepltranslate` and upgrading to the next
+> major version requires to remove it first and require it with the new name.
+
+```shell
+composer remove 'web-vision/wv_deepltranslate' \
+&& composer require 'web-vision/deepltranslate-core':'^5'
+```
 
 ## Documentation
 
