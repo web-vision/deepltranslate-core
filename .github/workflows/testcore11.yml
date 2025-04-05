@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.4']
+        php-version: [ '7.4' ]
     permissions:
       # actions: read|write|none
       actions: none
@@ -51,9 +51,6 @@ jobs:
 # @see https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.0/Feature-96812-OverrideBackendTemplatesWithTSconfig.html
 #      - name: "Run TypoScript lint"
 #        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s lintTypoScript"
-
-      - name: "Run PHP lint"
-        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s lintPhp"
 
       - name: "Validate CGL"
         run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s cgl -n"
@@ -120,7 +117,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
+        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
     permissions:
       # actions: read|write|none
       actions: none
@@ -154,6 +151,9 @@ jobs:
 
       - name: "Prepare dependencies for TYPO3 v11"
         run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s composerUpdate"
+
+      - name: "Run PHP lint"
+        run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s lintPhp"
 
       - name: "Unit"
         run: "Build/Scripts/runTests.sh -t 11 -p ${{ matrix.php-version }} -s unit"
