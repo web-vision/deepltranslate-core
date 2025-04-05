@@ -21,8 +21,13 @@ $EM_CONF[$_EXTKEY] = [
     'version' => '4.4.3',
     'constraints' => [
         'depends' => [
-            'php' => '7.4.0-8.3.99',
             'typo3' => '11.5.0-12.4.99',
+            'backend' => '11.5.0-12.4.99',
+            'extbase' => '11.5.0-12.4.99',
+            'fluid' => '11.5.0-12.4.99',
+            'install' => '11.5.0-12.4.99',
+            'scheduler' => '11.5.0-12.4.99',
+            'setup' => '11.5.0-12.4.99',
         ],
         'conflicts' => [
             'recordlist_thumbnail' => '*',
