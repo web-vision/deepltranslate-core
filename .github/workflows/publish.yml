@@ -29,6 +29,11 @@ jobs:
         id: get-version
         run: echo "version=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
+      - name: Get extension key
+        id: get-extension-key
+        run: |
+          echo "DETECTED_EXTENSION_KEY=$(cat composer.json | jq -r '.extra."typo3/cms"."extension-key"' )" >> "$GITHUB_ENV"
+
       - name: Get comment
         id: get-comment
         run: |
@@ -45,21 +50,11 @@ jobs:
             echo "https://github.com/fgtclb/academic-persons/releases/tag/${{ env.version }}"
             echo EOF
           } >> "$GITHUB_ENV"
-          echo "DETECTED_EXTENSION_KEY=$(cat composer.json | jq -r '.extra."typo3/cms"."extension-key"' )" >> "$GITHUB_ENV"
 
       - name: Setup PHP 7.4 ( wv_deepltranslate 4.x )
-        if: github.event.base_ref == 'refs/heads/4'
         uses: shivammathur/setup-php@v2
         with:
           php-version: 7.4
-          extensions: intl, mbstring, json, zip, curl
-          tools: composer:v2
-
-      - name: Setup PHP 8.1 ( deepltranlsate-core 5.x )
-        if: github.event.base_ref == 'refs/heads/main'
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.1
           extensions: intl, mbstring, json, zip, curl
           tools: composer:v2
 
@@ -114,13 +109,7 @@ jobs:
             LICENSE
           fail_on_unmatched_files: true
 
-      # @todo Currently an issue exists with the TYPO3 Extension Repository (TER) tailor based uploads, which seems to
-      #       be WAF related and the T3O TER Team working on. Allow this step to fail (continue on error) for now until
-      #       issues has been sorted out.
-      #       https://github.com/TYPO3/tailor/issues/82
       - name: Publish to TER
-        # @todo Remove `continue-on-error` after upload with tailor has been fixed.
-        continue-on-error: true
         run: |
           php ~/.composer/vendor/bin/tailor ter:publish --comment "${{ env.terReleaseNotes }}" ${{ env.version }} \
             --artefact=tailor-version-artefact/${{ env.DETECTED_EXTENSION_KEY }}_${{ env.version }}.zip

@@ -1,149 +1,140 @@
 {
-	"name": "web-vision/wv_deepltranslate",
-	"type": "typo3-cms-extension",
-	"description": "This extension provides option to translate content element, and TCA record texts to DeepL supported languages using DeepL API services with TYPO3 CMS",
-	"license": ["GPL-2.0-or-later"],
-	"homepage": "https://www.web-vision.de/en/automated-translations-with-typo3-and-deepl.html",
-	"minimum-stability": "beta",
-	"prefer-stable": true,
-	"keywords": [
-		"TYPO3 CMS",
-		"extension",
-		"translate",
-		"deepl",
-		"googletranslate"
-	],
-	"authors": [
-		{
-			"name": "web-vision GmbH",
-			"email": "hello@web-vision.de",
-			"role": "Maintainer"
-		},
-		{
-			"name": "Mark Houben",
-			"email": "markhouben91@gmail.com",
-			"role": "Developer"
-		},
-		{
-			"name": "Markus Hofmann",
-			"email": "typo3@calien.de",
-			"role": "Developer"
-		},
-		{
-			"name": "Riad Zejnilagic Trumic",
-			"role": "Developer"
-		}
-	],
-	"support": {
-		"issues": "https://github.com/web-vision/wv_deepltranslate/issues",
-		"source": "https://github.com/web-vision/wv_deepltranslate"
-	},
-	"conflict": {
-		"studiomitte/recordlist-thumbnail": "*",
-		"webvision/deepltranslate-core": "*"
-	},
-	"config": {
-		"vendor-dir": ".Build/vendor",
-		"bin-dir": ".Build/bin",
-		"optimize-autoloader": true,
-		"sort-packages": true,
-		"allow-plugins": {
-			"typo3/class-alias-loader": true,
-			"typo3/cms-composer-installers": true,
-			"helhum/typo3-console-plugin": true,
-			"php-http/discovery": true
-		}
-	},
-	"extra": {
-		"typo3/cms": {
-			"cms-package-dir": "{$vendor-dir}/typo3/cms",
-			"extension-key": "wv_deepltranslate",
-			"ignore-as-root": false,
-			"web-dir": ".Build/Web",
-			"app-dir": ".Build"
-		},
-		"branch-alias": {
-			"dev-4": "4.x.x-dev"
-		}
-	},
-	"require": {
-		"php": "^7.4 || ^8.0 || ^8.1 || ^8.2 || ^8.3",
-		"ext-curl": "*",
-		"ext-json": "*",
-		"ext-pdo": "*",
-		"deeplcom/deepl-php": ">=1.6.0 <=1.8.0",
-		"typo3/cms-backend": "^11.5 || ^12.4",
-		"typo3/cms-core": "^11.5 || ^12.4",
-		"typo3/cms-extbase": "^11.5 || ^12.4",
-		"typo3/cms-fluid": "^11.5 || ^12.4",
-		"typo3/cms-install": "^11.5 || ^12.4",
-		"typo3/cms-setup": "^11.5 || ^12.4",
-		"typo3/cms-scheduler": "^11.5 || ^12.4"
-	},
-	"require-dev": {
-		"b13/container": "^2.2",
-		"friendsofphp/php-cs-fixer": "^3.41",
-		"helhum/typo3-console": "^7.1.6 || ^8.0.2",
-		"helmich/phpunit-json-assert": "^3.4.3 || ^3.5.1",
-		"helmich/typo3-typoscript-lint": "^3.1.0",
-		"nikic/php-parser": "^4.15.1",
-		"php-mock/php-mock-phpunit": "^2.6",
-		"phpstan/phpstan": "^1.10",
-		"phpunit/phpunit": "^9.6.8 || ^10.1",
-		"ramsey/uuid": "^4.2",
-		"saschaegerer/phpstan-typo3": "^1.9",
-		"sbuerk/typo3-styleguide-selector": "^11.5.5 || ^12.0.5",
-		"typo3/cms-belog": "^11.5 || ^12.4",
-		"typo3/cms-dashboard": "^11.5 || ^12.4",
-		"typo3/cms-extensionmanager": "^11.5 || ^12.4",
-		"typo3/cms-filelist": "^11.5 || ^12.4",
-		"typo3/cms-fluid-styled-content": "^11.5 || ^12.4",
-		"typo3/cms-frontend": "^11.5 || ^12.4",
-		"typo3/cms-info": "^11.5 || ^12.4",
-		"typo3/cms-lowlevel": "^11.5 || ^12.4",
-		"typo3/cms-rte-ckeditor": "^11.5 || ^12.4",
-		"typo3/cms-styleguide": "^11 || ^12",
-		"typo3/cms-tstemplate": "^11.5 || ^12.4",
-		"typo3/cms-workspaces": "^11.5 || ^12.4",
-		"typo3/testing-framework": "^7.0"
-	},
-	"suggest": {
-        "b13/container": "Just to be loaded after EXT:container",
-		"web-vision/enable-translated-content": "Adds enable translated content button to language columns in page view",
-		"web-vision/deepltranslate-assets": "Enables the translation of files in FileList Modal via deepl",
-		"typo3/cms-dashboard": "Install the package to enable the widgets from deepltranslate packages"
-	},
-	"autoload": {
-		"psr-4": {
-			"WebVision\\WvDeepltranslate\\": "Classes"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"WebVision\\WvDeepltranslate\\Tests\\": "Tests"
-		}
-	},
-	"scripts": {
-		"cs": ".Build/bin/php-cs-fixer",
-		"tl": ".Build/bin/typoscript-lint",
-		"phpstan": ".Build/bin/phpstan",
-		"phpunit": ".Build/bin/phpunit",
-		"cs:check": "@cs fix --config Build/php-cs-fixer/php-cs-rules.php --ansi --diff --verbose --dry-run",
-		"cs:fix": "@cs fix --config Build/php-cs-fixer/php-cs-rules.php --ansi",
-		"analyze:php": "@phpstan analyse --ansi --no-progress --memory-limit=768M",
-		"analyze:php:11": "@analyze:php --configuration=Build/phpstan/Core11/phpstan.neon",
-		"analyze:baseline:11": "@analyze:php --configuration=Build/phpstan/Core11/phpstan.neon --generate-baseline=Build/phpstan/Core11/phpstan-baseline.neon",
-		"analyze:php:12": "@analyze:php --configuration=Build/phpstan/Core12/phpstan.neon",
-		"analyze:baseline:12": "@analyze:php --configuration=Build/phpstan/Core11/phpstan.neon --generate-baseline=Build/phpstan/Core12/phpstan-baseline.neon",
-		"lint:typoscript": "@tl --ansi --config=./Build/typoscript-lint/typoscript-lint.yml",
-		"lint:php": "find .*.php *.php Classes Configuration Tests -name '*.php' -print0 | xargs -r -0 -n 1 -P 4 php -l",
-		"test:php": [
-			"@test:php:unit",
-			"@test:php:functional"
-		],
-		"test:php:unit": "@phpunit --colors=always --configuration Build/phpunit/UnitTests.xml",
-		"test:php:functional": "@test:php:unit --configuration Build/phpunit/FunctionalTests.xml",
-		"test:php:unit10": "@phpunit --colors=always --configuration Build/phpunit/UnitTests-10.xml",
-		"test:php:functional10": "@test:php:unit --configuration Build/phpunit/FunctionalTests-10.xml"
-	}
+  "name": "web-vision/wv_deepltranslate",
+  "type": "typo3-cms-extension",
+  "description": "This extension provides option to translate content element, and TCA record texts to DeepL supported languages using DeepL API services with TYPO3 CMS",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "homepage": "https://www.web-vision.de/en/automated-translations-with-typo3-and-deepl.html",
+  "minimum-stability": "beta",
+  "prefer-stable": true,
+  "keywords": [
+    "TYPO3 CMS",
+    "extension",
+    "translate",
+    "deepl",
+    "googletranslate"
+  ],
+  "authors": [
+    {
+      "name": "web-vision GmbH",
+      "email": "hello@web-vision.de",
+      "role": "Maintainer"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/web-vision/wv_deepltranslate/issues",
+    "source": "https://github.com/web-vision/wv_deepltranslate"
+  },
+  "conflict": {
+    "studiomitte/recordlist-thumbnail": "*",
+    "webvision/deepltranslate-core": "*",
+    "web-vision/deepltranslate-assets": "<1.0.0 >=2.0.0",
+    "web-vision/deepltranslate-auto-renew": "<1.0.0 >=2.0.0",
+    "web-vision/deepltranslate-mass": "<1.0.0 >=2.0.0"
+  },
+  "config": {
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin",
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true,
+      "helhum/typo3-console-plugin": true,
+      "php-http/discovery": true
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "cms-package-dir": "{$vendor-dir}/typo3/cms",
+      "extension-key": "wv_deepltranslate",
+      "ignore-as-root": false,
+      "web-dir": ".Build/Web",
+      "app-dir": ".Build"
+    },
+    "branch-alias": {
+      "dev-4": "4.x.x-dev"
+    }
+  },
+  "require": {
+    "php": "^7.4 || ^8.0 || ^8.1 || ^8.2 || ^8.3",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "deeplcom/deepl-php": ">=1.6.0 <=1.8.0",
+    "typo3/cms-backend": "^11.5 || ^12.4",
+    "typo3/cms-core": "^11.5 || ^12.4",
+    "typo3/cms-extbase": "^11.5 || ^12.4",
+    "typo3/cms-fluid": "^11.5 || ^12.4",
+    "typo3/cms-install": "^11.5 || ^12.4",
+    "typo3/cms-setup": "^11.5 || ^12.4",
+    "typo3/cms-scheduler": "^11.5 || ^12.4"
+  },
+  "require-dev": {
+    "b13/container": "^2.2",
+    "friendsofphp/php-cs-fixer": "^3.41",
+    "helhum/typo3-console": "^7.1.6 || ^8.0.2",
+    "helmich/phpunit-json-assert": "^3.4.3 || ^3.5.1",
+    "helmich/typo3-typoscript-lint": "^3.1.0",
+    "nikic/php-parser": "^4.15.1",
+    "php-mock/php-mock-phpunit": "^2.6",
+    "phpstan/phpstan": "^1.10",
+    "phpunit/phpunit": "^9.6.8 || ^10.1",
+    "ramsey/uuid": "^4.2",
+    "saschaegerer/phpstan-typo3": "^1.9",
+    "sbuerk/typo3-styleguide-selector": "^11.5.5 || ^12.0.5",
+    "typo3/cms-belog": "^11.5 || ^12.4",
+    "typo3/cms-dashboard": "^11.5 || ^12.4",
+    "typo3/cms-extensionmanager": "^11.5 || ^12.4",
+    "typo3/cms-filelist": "^11.5 || ^12.4",
+    "typo3/cms-fluid-styled-content": "^11.5 || ^12.4",
+    "typo3/cms-frontend": "^11.5 || ^12.4",
+    "typo3/cms-info": "^11.5 || ^12.4",
+    "typo3/cms-lowlevel": "^11.5 || ^12.4",
+    "typo3/cms-rte-ckeditor": "^11.5 || ^12.4",
+    "typo3/cms-styleguide": "^11 || ^12",
+    "typo3/cms-tstemplate": "^11.5 || ^12.4",
+    "typo3/cms-workspaces": "^11.5 || ^12.4",
+    "typo3/testing-framework": "^7.0"
+  },
+  "suggest": {
+    "b13/container": "Just to be loaded after EXT:container",
+    "web-vision/enable-translated-content": "Adds enable translated content button to language columns in page view",
+    "web-vision/deepltranslate-assets": "Enables the translation of files in FileList Modal via deepl",
+    "typo3/cms-dashboard": "Install the package to enable the widgets from deepltranslate packages"
+  },
+  "autoload": {
+    "psr-4": {
+      "WebVision\\WvDeepltranslate\\": "Classes"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WebVision\\WvDeepltranslate\\Tests\\": "Tests"
+    }
+  },
+  "scripts": {
+    "cs": ".Build/bin/php-cs-fixer",
+    "tl": ".Build/bin/typoscript-lint",
+    "phpstan": ".Build/bin/phpstan",
+    "phpunit": ".Build/bin/phpunit",
+    "cs:check": "@cs fix --config Build/php-cs-fixer/php-cs-rules.php --ansi --diff --verbose --dry-run",
+    "cs:fix": "@cs fix --config Build/php-cs-fixer/php-cs-rules.php --ansi",
+    "analyze:php": "@phpstan analyse --ansi --no-progress --memory-limit=768M",
+    "analyze:php:11": "@analyze:php --configuration=Build/phpstan/Core11/phpstan.neon",
+    "analyze:baseline:11": "@analyze:php --configuration=Build/phpstan/Core11/phpstan.neon --generate-baseline=Build/phpstan/Core11/phpstan-baseline.neon",
+    "analyze:php:12": "@analyze:php --configuration=Build/phpstan/Core12/phpstan.neon",
+    "analyze:baseline:12": "@analyze:php --configuration=Build/phpstan/Core11/phpstan.neon --generate-baseline=Build/phpstan/Core12/phpstan-baseline.neon",
+    "lint:typoscript": "@tl --ansi --config=./Build/typoscript-lint/typoscript-lint.yml",
+    "lint:php": "find .*.php *.php Classes Configuration Tests -name '*.php' -print0 | xargs -r -0 -n 1 -P 4 php -l",
+    "test:php": [
+      "@test:php:unit",
+      "@test:php:functional"
+    ],
+    "test:php:unit": "@phpunit --colors=always --configuration Build/phpunit/UnitTests.xml",
+    "test:php:functional": "@test:php:unit --configuration Build/phpunit/FunctionalTests.xml",
+    "test:php:unit10": "@phpunit --colors=always --configuration Build/phpunit/UnitTests-10.xml",
+    "test:php:functional10": "@test:php:unit --configuration Build/phpunit/FunctionalTests-10.xml"
+  }
 }
