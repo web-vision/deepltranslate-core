@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1']
+        php-version: [ '8.1' ]
     permissions:
       # actions: read|write|none
       actions: none
@@ -49,9 +49,6 @@ jobs:
       - name: "Run TypoScript lint"
         run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s lintTypoScript"
 
-      - name: "Run PHP lint"
-        run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s lintPhp"
-
       - name: "Validate CGL"
         run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s cgl -n"
 
@@ -77,7 +74,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1', '8.2', '8.3' ]
+        php-version: [ '8.1', '8.2', '8.3', '8.4' ]
     permissions:
       # actions: read|write|none
       actions: none
@@ -111,6 +108,9 @@ jobs:
 
       - name: "Prepare dependencies for TYPO3 v12"
         run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s composerUpdate"
+
+      - name: "Run PHP lint"
+        run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s lintPhp"
 
       - name: "Unit"
         run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s unit"
