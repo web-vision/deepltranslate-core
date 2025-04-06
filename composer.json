@@ -2,7 +2,9 @@
   "name": "web-vision/wv_deepltranslate",
   "type": "typo3-cms-extension",
   "description": "This extension provides option to translate content element, and TCA record texts to DeepL supported languages using DeepL API services with TYPO3 CMS",
-  "license": ["GPL-2.0-or-later"],
+  "license": [
+    "GPL-2.0-or-later"
+  ],
   "homepage": "https://www.web-vision.de/en/automated-translations-with-typo3-and-deepl.html",
   "minimum-stability": "beta",
   "prefer-stable": true,
@@ -27,9 +29,9 @@
   "conflict": {
     "studiomitte/recordlist-thumbnail": "*",
     "webvision/deepltranslate-core": "*",
-    "web-vision/deepltranslate-assets": "<1.0.0 >=2.0.0",
-    "web-vision/deepltranslate-auto-renew": "<1.0.0 >=2.0.0",
-    "web-vision/deepltranslate-mass": "<1.0.0 >=2.0.0"
+    "web-vision/deepltranslate-assets": "<1.0.0 || >=2.0.0",
+    "web-vision/deepltranslate-auto-renew": "<1.0.0 || >=2.0.0",
+    "web-vision/deepltranslate-mass": "<1.0.0 || >=2.0.0"
   },
   "config": {
     "vendor-dir": ".Build/vendor",
