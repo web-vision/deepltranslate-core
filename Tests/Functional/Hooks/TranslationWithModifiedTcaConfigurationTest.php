@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Tests\Functional\Hooks;
 
 use PHPUnit\Framework\Attributes\Test;
+use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
-use WebVision\Deepltranslate\Core\Tests\Functional\Fixtures\Traits\SiteBasedTestTrait;
 
 final class TranslationWithModifiedTcaConfigurationTest extends AbstractDeepLTestCase
 {
@@ -82,16 +82,20 @@ final class TranslationWithModifiedTcaConfigurationTest extends AbstractDeepLTes
 
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
         $this->writeSiteConfiguration(
-            'acme',
-            $this->buildSiteConfiguration(1, '/', 'Home'),
-            [
+            identifier: 'acme',
+            site: $this->buildSiteConfiguration(
+                rootPageId: 1,
+            ),
+            languages: [
                 $this->buildDefaultLanguageConfiguration('EN', '/'),
                 $this->buildLanguageConfiguration('EB', '/eb/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('DE', '/de/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('BS', '/bs/', ['EN'], 'strict'),
-            ]
+            ],
         );
-        $this->setUpFrontendRootPage(1, [], []);
+        $this->setUpFrontendRootPage(
+            pageId: 1,
+        );
     }
 
     #[Test]

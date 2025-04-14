@@ -6,6 +6,7 @@ namespace WebVision\Deepltranslate\Core\Tests\Functional\Hooks;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -18,7 +19,6 @@ use WebVision\Deepltranslate\Core\Hooks\TranslateHook;
 use WebVision\Deepltranslate\Core\Service\LanguageService;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
 use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
-use WebVision\Deepltranslate\Core\Tests\Functional\Fixtures\Traits\SiteBasedTestTrait;
 
 #[CoversClass(TranslateHook::class)]
 final class TranslateHookTest extends AbstractDeepLTestCase
@@ -83,16 +83,20 @@ final class TranslateHookTest extends AbstractDeepLTestCase
 
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
         $this->writeSiteConfiguration(
-            'acme',
-            $this->buildSiteConfiguration(1, '/', 'Home'),
-            [
+            identifier: 'acme',
+            site: $this->buildSiteConfiguration(
+                rootPageId: 1,
+            ),
+            languages: [
                 $this->buildDefaultLanguageConfiguration('EN', '/'),
                 $this->buildLanguageConfiguration('EB', '/eb/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('DE', '/de/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('BS', '/bs/', ['EN'], 'strict'),
-            ]
+            ],
         );
-        $this->setUpFrontendRootPage(1, [], []);
+        $this->setUpFrontendRootPage(
+            pageId: 1,
+        );
 
         /** @var ProcessingInstruction $processingInstruction */
         $processingInstruction = $this->get(ProcessingInstruction::class);

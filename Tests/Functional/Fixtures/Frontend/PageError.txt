@@ -1,2 +1,0 @@
-url: ###CURRENT_URL###
-reason: ###REASON###

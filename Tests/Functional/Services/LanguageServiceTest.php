@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Tests\Functional\Services;
 
 use PHPUnit\Framework\Attributes\Test;
+use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\LanguageService;
 use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
-use WebVision\Deepltranslate\Core\Tests\Functional\Fixtures\Traits\SiteBasedTestTrait;
 
 final class LanguageServiceTest extends AbstractDeepLTestCase
 {
@@ -85,26 +85,26 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
 
         $this->importCSVDataSet(__DIR__ . '/Fixtures/Pages.csv');
         $this->writeSiteConfiguration(
-            'site-a',
-            $this->buildSiteConfiguration(1, '/', 'Home'),
-            [
+            identifier: 'site-a',
+            site: $this->buildSiteConfiguration(rootPageId: 1),
+            languages: [
                 $this->buildDefaultLanguageConfiguration('EN', '/'),
                 $this->buildLanguageConfiguration('DE', '/de/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('EB', '/eb/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('BS', '/bs/', ['EN'], 'strict'),
-            ]
+            ],
         );
         $this->setUpFrontendRootPage(1, [], []);
         $this->writeSiteConfiguration(
-            'site-b',
-            $this->buildSiteConfiguration(3, '/', 'Home'),
-            [
+            identifier: 'site-b',
+            site: $this->buildSiteConfiguration(rootPageId: 3),
+            languages: [
                 $this->buildDefaultLanguageConfiguration('BS_default', '/bs/'),
                 $this->buildLanguageConfiguration('DE', '/de/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('EB', '/eb/', ['EN'], 'strict'),
-            ]
+            ],
         );
-        $this->setUpFrontendRootPage(3, [], []);
+        $this->setUpFrontendRootPage(pageId: 3);
     }
 
     #[Test]
