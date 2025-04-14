@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Tests\Functional\Regression;
 
+use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestContext;
 use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
-use WebVision\Deepltranslate\Core\Tests\Functional\Fixtures\Traits\SiteBasedTestTrait;
 
 final class PreviewTranslationInformationTest extends AbstractDeepLTestCase
 {
@@ -63,19 +63,23 @@ final class PreviewTranslationInformationTest extends AbstractDeepLTestCase
         parent::setUp();
         $this->importCSVDataSet(__DIR__ . '/Fixtures/PreviewTranslationInformation.csv');
         $this->writeSiteConfiguration(
-            'acme',
-            $this->buildSiteConfiguration(1, 'https://acme.com/', 'Home', [
-                'deeplAllowedAutoTranslate' => true,
-                'deeplAllowedReTranslate' => true,
-            ]),
-            [
+            identifier: 'acme',
+            site: $this->buildSiteConfiguration(
+                rootPageId: 1,
+                base: 'https://acme.com/',
+                additionalRootConfiguration: [
+                    'deeplAllowedAutoTranslate' => true,
+                    'deeplAllowedReTranslate' => true,
+                ],
+            ),
+            languages: [
                 $this->buildDefaultLanguageConfiguration('EN', 'https://acme.com/'),
                 $this->buildLanguageConfiguration('DE', 'https://acme.com/de/', ['EN'], 'strict'),
-            ]
+            ],
         );
         $this->setUpFrontendRootPage(
-            1,
-            [
+            pageId: 1,
+            typoScriptFiles: [
                 'constants' => [
                     'EXT:fluid_styled_content/Configuration/TypoScript/constants.typoscript',
                     'EXT:fluid_styled_content/Configuration/TypoScript/Styling/constants.typoscript',
@@ -86,9 +90,9 @@ final class PreviewTranslationInformationTest extends AbstractDeepLTestCase
                     'EXT:deepltranslate_core/Tests/Functional/Regression/Fixtures/PreviewTranslationInformation.typoscript',
                 ],
             ],
-            [
+            templateValues: [
                 'title' => 'ACME Root',
-            ]
+            ],
         );
         $this->setUpBackendUser(1);
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)

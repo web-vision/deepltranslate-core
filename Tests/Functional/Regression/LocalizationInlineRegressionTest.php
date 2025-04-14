@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Tests\Functional\Regression;
 
+use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
-use WebVision\Deepltranslate\Core\Tests\Functional\Fixtures\Traits\SiteBasedTestTrait;
 
 final class LocalizationInlineRegressionTest extends AbstractDeepLTestCase
 {
@@ -69,21 +69,20 @@ final class LocalizationInlineRegressionTest extends AbstractDeepLTestCase
 
         $this->importCSVDataSet(__DIR__ . '/Fixtures/localizationInline.csv');
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/be_users.csv');
-
-        $site = $this->buildSiteConfiguration(1, '/', 'Home', [
-            'deeplAllowedAutoTranslate' => true,
-            'deeplAllowedReTranslate' => true,
-        ]);
-
         $this->writeSiteConfiguration(
-            'acme',
-            $site,
-            [
+            identifier: 'acme',
+            site: $this->buildSiteConfiguration(
+                rootPageId: 1,
+                additionalRootConfiguration: [
+                    'deeplAllowedAutoTranslate' => true,
+                    'deeplAllowedReTranslate' => true,
+                ],
+            ),
+            languages: [
                 $this->buildDefaultLanguageConfiguration('EN', '/'),
                 $this->buildLanguageConfiguration('DE', '/de/', ['EN'], 'strict'),
-            ]
+            ],
         );
-
         $this->setUpBackendUser(1);
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)
             ->createFromUserPreferences($GLOBALS['BE_USER']);
