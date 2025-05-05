@@ -9,8 +9,13 @@ Updates
 Version 4.x > 5.x
 =================
 
-Starting with 5.x the composer package name and extension key has been renamed,
-which requires to uninstall previous extension first.
+Starting with 5.x the composer package name and extension key has been renamed!
+
+You need to migrate the extension settings from
+``['TYPO3_CONF_VARS']['EXTENSIONS']['wv_deepltranslate']`` to
+``['TYPO3_CONF_VARS']['EXTENSIONS']['deepltranslate_core']``.
+
+Then you will need to replace the previous package by uninstalling it first.
 
 composer-mode
 ~~~~~~~~~~~~~
