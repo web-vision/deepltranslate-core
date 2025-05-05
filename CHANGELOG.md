@@ -35,6 +35,10 @@
 * [TASK] Define classic mode autoloader in `ext_emconf.php` for depending and shipped packages by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/421
 * [TASK] Move glossary related documentation to `deepltranslate-glossary` by @calien666 in https://github.com/web-vision/deepltranslate-core/pull/422
 
+> [!IMPORTANT]
+> The package name and extension key has been renamed,
+> see [Documentation/Administration/Updates/Index.rst](https://docs.typo3.org/p/web-vision/deepltranslate-core/main/en-us/Administration/Updates/Index.html).
+
 ### 4.4.0
 
 * [BUGFIX] Detected current page right for pages by @Mabahe in https://github.com/web-vision/wv_deepltranslate/pull/329
