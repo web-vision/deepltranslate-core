@@ -1,9 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-     viewBox="0 0 170 140" style="fill: white;">
-    <title>wv-no-text-logo</title>
-    <style>.st0{fill:#FF8700;}</style>
-    <rect id="canvas_background" x="0" y="-15" class="st0" width="180" height="170"/>
-    <g style="stroke-width: 150">
-        <path d="M63.65.04H0l8.44 14.84 24.03 41.36 9.16-15.9L26.92 14.9h28.16L63.65.04zM95.31 0l8.34 14.9h28.75l-52.67 91.22-13.28-22.78-18.33.02 31.54 54.65 9.26-16.03 61.79-107.03L159.32.04 95.31 0z"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Favicon_32x32" data-name="Favicon 32x32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.09 47.04">
+    <defs>
+        <style>
+            .cls-1 {
+            fill: #ff8700;
+            }
+
+            .cls-2 {
+            fill: #fff;
+            }
+        </style>
+    </defs>
+    <rect class="cls-1" width="47.09" height="47.04"/>
+    <g>
+        <polygon class="cls-2" points="12.81 20.87 15.15 17.28 11.64 11.46 17.71 11.46 19.93 8 5.57 8 12.81 20.87"/>
+        <polygon class="cls-2" points="20.39 26.5 16.01 26.5 23.25 39.04 41.52 8 26.93 8 28.74 11.56 34.69 11.56 23.38 31.33 20.39 26.5"/>
     </g>
 </svg>
