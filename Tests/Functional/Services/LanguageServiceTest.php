@@ -7,7 +7,7 @@ namespace WebVision\Deepltranslate\Core\Tests\Functional\Services;
 use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
+use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\LanguageService;
 use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
@@ -58,7 +58,7 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
             'hrefLang' => 'bs',
             'direction' => '',
             'custom' => [
-                'deeplTargetLanguage' => '',
+                'deeplTargetLanguage' => 'BS',
             ],
         ],
         'BS' => [
@@ -70,6 +70,17 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
             'direction' => '',
             'custom' => [
                 'deeplTargetLanguage' => '',
+            ],
+        ],
+        'Not-supported' => [
+            'id' => 5,
+            'title' => 'Bosnian',
+            'locale' => 'bs_BA.utf8',
+            'iso' => 'bs',
+            'hrefLang' => 'bs',
+            'direction' => '',
+            'custom' => [
+                'deeplTargetLanguage' => 'BS',
             ],
         ],
     ];
@@ -92,6 +103,7 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
                 $this->buildLanguageConfiguration('DE', '/de/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('EB', '/eb/', ['EN'], 'strict'),
                 $this->buildLanguageConfiguration('BS', '/bs/', ['EN'], 'strict'),
+                $this->buildLanguageConfiguration('Not-supported', '/not-supported/', ['EN'], 'strict'),
             ],
         );
         $this->setUpFrontendRootPage(1, [], []);
@@ -149,14 +161,15 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
         $siteFinder = $this->get(SiteFinder::class);
         $siteInformation = $siteFinder->getSiteByPageId(1);
 
-        $sourceLanguageRecord = $languageService->getTargetLanguage($siteInformation, 2);
+        $targetLanguageRecord = $languageService->getTargetLanguage($siteInformation, 2);
+        static::assertIsArray($targetLanguageRecord);
 
-        static::assertArrayHasKey('uid', $sourceLanguageRecord);
-        static::assertArrayHasKey('title', $sourceLanguageRecord);
-        static::assertArrayHasKey('language_isocode', $sourceLanguageRecord);
+        static::assertArrayHasKey('uid', $targetLanguageRecord);
+        static::assertArrayHasKey('title', $targetLanguageRecord);
+        static::assertArrayHasKey('language_isocode', $targetLanguageRecord);
 
-        static::assertSame(2, $sourceLanguageRecord['uid']);
-        static::assertSame('DE', $sourceLanguageRecord['language_isocode']);
+        static::assertSame(2, $targetLanguageRecord['uid']);
+        static::assertSame('DE', $targetLanguageRecord['language_isocode']);
     }
 
     #[Test]
@@ -169,8 +182,24 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
         $siteInformation = $siteFinder->getSiteByPageId(1);
 
         static::expectException(LanguageRecordNotFoundException::class);
-        static::expectExceptionMessage('Language "1" not found in SiteConfig "Home"');
+        static::expectExceptionCode(1746959505);
+        static::expectExceptionMessage(sprintf('Language "%s" in site "%s" not found.', 1, 'site-a'));
         $languageService->getTargetLanguage($siteInformation, 1);
+    }
+
+    #[Test]
+    public function getTargetLanguageReturnsFalseOnNotConfiguredTargetLanguage(): void
+    {
+        /** @var LanguageService $languageService */
+        $languageService = $this->get(LanguageService::class);
+        /** @var SiteFinder $siteFinder */
+        $siteFinder = $this->get(SiteFinder::class);
+        $siteInformation = $siteFinder->getSiteByPageId(1);
+
+        static::expectException(InvalidArgumentException::class);
+        static::expectExceptionCode(1746973481);
+        static::expectExceptionMessage(sprintf('Missing deeplTargetLanguage or Language "%s" in site "%s"', 4, 'site-a'));
+        $languageService->getTargetLanguage($siteInformation, 4);
     }
 
     #[Test]
@@ -182,8 +211,9 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
         $siteFinder = $this->get(SiteFinder::class);
         $siteInformation = $siteFinder->getSiteByPageId(1);
 
-        static::expectException(LanguageIsoCodeNotFoundException::class);
-        static::expectExceptionMessage('No API supported target found for language "Bosnian" in site "Home"');
-        $languageService->getTargetLanguage($siteInformation, 4);
+        static::expectException(InvalidArgumentException::class);
+        static::expectExceptionCode(1746959745);
+        static::expectExceptionMessage(sprintf('The given language key "%s" is not supported by DeepL. Possibly wrong Site configuration.', 'BS'));
+        $languageService->getTargetLanguage($siteInformation, 5);
     }
 }

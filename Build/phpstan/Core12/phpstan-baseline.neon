@@ -51,11 +51,6 @@ parameters:
 			path: ../../../Classes/Override/LocalizationController.php
 
 		-
-			message: "#^Property WebVision\\\\Deepltranslate\\\\Core\\\\Service\\\\LanguageService\\:\\:\\$possibleLangMatches type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: ../../../Classes/Service/LanguageService.php
-
-		-
 			message: "#^Call to method write\\(\\) on an unknown class TYPO3\\\\CMS\\\\Core\\\\Configuration\\\\SiteWriter\\.$#"
 			count: 1
 			path: ../../../Classes/Upgrades/FormalityUpgradeWizard.php

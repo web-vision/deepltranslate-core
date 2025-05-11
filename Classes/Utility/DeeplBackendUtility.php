@@ -16,7 +16,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use WebVision\Deepltranslate\Core\Configuration;
 use WebVision\Deepltranslate\Core\Domain\Dto\CurrentPage;
-use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
+use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\IconOverlayGenerator;
 use WebVision\Deepltranslate\Core\Service\LanguageService;
@@ -131,13 +131,11 @@ final class DeeplBackendUtility
             /** @var LanguageService $languageService */
             $languageService = GeneralUtility::makeInstance(LanguageService::class);
             $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageId);
-
             $languageService->getSourceLanguage($site);
             $languageService->getTargetLanguage($site, $languageId);
-        } catch (LanguageIsoCodeNotFoundException|LanguageRecordNotFoundException|SiteNotFoundException $e) {
+        } catch (LanguageRecordNotFoundException|SiteNotFoundException|InvalidArgumentException) {
             return false;
         }
-
         return true;
     }
 

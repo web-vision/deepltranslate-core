@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Domain\Repository\PageRepository;
+use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
@@ -72,10 +73,20 @@ abstract class AbstractTranslateHook
 
         $context->setSourceLanguageCode($sourceLanguageRecord['languageCode']);
 
-        $targetLanguageRecord = $this->languageService->getTargetLanguage($site, $targetLanguageUid);
+        try {
+            $targetLanguageRecord = $this->languageService->getTargetLanguage($site, $targetLanguageUid);
+        } catch (\Throwable $e) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'The target language is not DeepL supported. Possibly wrong Site configuration. Message: %s',
+                    $e->getMessage(),
+                ),
+                1746962367,
+                $e,
+            );
+        }
 
         $context->setTargetLanguageCode($targetLanguageRecord['languageCode']);
-
         if (
             $targetLanguageRecord['formality'] !== ''
             && $this->deeplService->hasLanguageFormalitySupport($targetLanguageRecord['languageCode'])
