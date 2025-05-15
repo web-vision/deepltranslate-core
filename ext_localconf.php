@@ -19,10 +19,6 @@ defined('TYPO3') or die();
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][\WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook::class]
         = \WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook::class;
 
-    //hook to checkModifyAccessList for editors
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['checkModifyAccessList']['deepl']
-        = \WebVision\Deepltranslate\Core\Hooks\TCEmainHook::class;
-
     //xclass localizationcontroller for localizeRecords() and process() action
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class] = [
         'className' => \WebVision\Deepltranslate\Core\Override\LocalizationController::class,
