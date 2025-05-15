@@ -13,24 +13,19 @@
 
 import DocumentService from '@typo3/core/document-service';
 import $ from 'jquery';
-import { AjaxResponse } from '@typo3/core/ajax/ajax-response';
+import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import { SeverityEnum } from './enum/severity';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import Icons from './icons';
-import Modal, { ModalElement } from './modal';
-import MultiStepWizard, { MultiStepWizardSettings } from './multi-step-wizard';
+import Modal, { type ModalElement } from './modal';
+import MultiStepWizard, { type MultiStepWizardSettings } from './multi-step-wizard';
 import '@typo3/backend/element/icon-element';
-import { MarkupIdentifiers } from './enum/icon-types';
+import { MarkupIdentifiers } from '@typo3/backend/enum/icon-types';
 
 type LanguageRecord = {
   uid: number;
   title: string;
   flagIcon: string;
-};
-
-type DeeplSettings = {
-  status: boolean;
-  message: string;
 };
 
 type SummaryColumns = {
@@ -69,7 +64,6 @@ class Localization {
     //------------------------------------------------------------------------------------------------------------------
     const deeplIconMarkup = await Icons.getIcon('actions-localize-deepl', Icons.sizes.large, null, null, MarkupIdentifiers.inline);
     //------------------------------------------------------------------------------------------------------------------
-
     $(this.triggerButton).removeClass('disabled');
 
     $(document).on('click', this.triggerButton, async (e: JQueryEventObject): Promise<void> => {
@@ -101,14 +95,12 @@ class Localization {
         parseInt($triggerButton.data('languageId'), 10),
       )).resolve();
 
-      // const deeplSettings: DeeplSettings = await (await this.deeplSettings()).resolve();
-
       if ($triggerButton.data('allowTranslate')) {
         actions.push(
           '<div class="row">'
           + '<div class="col-sm-3">'
           + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_translate" value="localize">'
-          + '<label class="btn btn-default btn-block-vertical deepl-translate-modal-icon-text-alignment" for="mode_translate" data-action="localize">'
+          + '<label class="btn btn-default btn-block-vertical" for="mode_translate" data-action="localize">'
           + localizeIconMarkup
           + TYPO3.lang['localize.wizard.button.translate']
           + '</label>'
@@ -126,7 +118,7 @@ class Localization {
           '<div class="row">'
           + '<div class="col-sm-3">'
           + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_copy" value="copyFromLanguage">'
-          + '<label class="btn btn-default btn-block-vertical deepl-translate-modal-icon-text-alignment" for="mode_copy" data-action="copy">'
+          + '<label class="btn btn-default btn-block-vertical" for="mode_copy" data-action="copy">'
           + copyIconMarkup
           + TYPO3.lang['localize.wizard.button.copy']
           + '</label>'
@@ -140,44 +132,40 @@ class Localization {
       }
 
       // deepltranslate
-      actions.push(
-        '<div class="row" id="deeplTranslate">'
-        + '<div class="col-sm-3">'
-        + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_deepltranslateauto" value="localizedeepl">'
-        + '<label class="btn btn-default btn-block-vertical deepl-translate-modal-icon-text-alignment" for="mode_deepltranslateauto" data-action="deepltranslate">'
-        + deeplIconMarkup
-        + TYPO3.lang['localize.educate.deepltranslateHeader']
-        + '</label>'
-        + '</div>'
-        + '<div class="col-sm-9" id="deeplText">'
-        + '<div class=\'alert alert-danger\' hidden>'
-        + TYPO3.lang['localize.educate.deeplSettingsFailure']
-        + '</div>'
-        + '<p class="t3js-helptext t3js-helptext-copy text-body-secondary">' + TYPO3.lang['localize.educate.deepltranslate'] + '</p>'
-        + '</div>'
-        + '</div>',
-      );
-      availableLocalizationModes.push('localizedeepl');
+      if ($triggerButton.data('allowDeeplTranslate')) {
+        actions.push(
+          '<div class="row" id="deeplTranslate">'
+          + '<div class="col-sm-3">'
+          + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_deepltranslate" value="localizedeepl">'
+          + '<label class="btn btn-default btn-block-vertical" for="mode_deepltranslate" data-action="deepltranslate">'
+          + deeplIconMarkup
+          + TYPO3.lang['localize.educate.deepltranslateHeader']
+          + '</label>'
+          + '</div>'
+          + '<div class="col-sm-9" id="deeplText">'
+          + '<p class="t3js-helptext t3js-helptext-copy text-body-secondary">' + TYPO3.lang['localize.educate.deepltranslate'] + '</p>'
+          + '</div>'
+          + '</div>',
+        );
+        availableLocalizationModes.push('localizedeepl');
 
-      // deepltranslate-auto
-      actions.push(
-        '<div class="row" id="deeplTranslateAuto">'
-        + '<div class="col-sm-3">'
-        + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_deepltranslate" value="localizedeeplauto">'
-        + '<label class="btn btn-default btn-block-vertical deepl-translate-modal-icon-text-alignment" for="mode_deepltranslate" data-action="deepltranslate">'
-        + deeplIconMarkup
-        + TYPO3.lang['localize.educate.deepltranslateHeaderAutodetect']
-        + '</label>'
-        + '</div>'
-        + '<div class="col-sm-9" id="deeplTextAuto">'
-        + '<div class=\'alert alert-danger\' hidden>'
-        + TYPO3.lang['localize.educate.deeplSettingsFailure']
-        + '</div>'
-        + '<p class="t3js-helptext t3js-helptext-copy text-body-secondary">' + TYPO3.lang['localize.educate.deepltranslateAuto'] + '</p>'
-        + '</div>'
-        + '</div>',
-      );
-      availableLocalizationModes.push('localizedeeplauto');
+        // deepltranslate-auto
+        actions.push(
+          '<div class="row" id="deeplTranslateAuto">'
+          + '<div class="col-sm-3">'
+          + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_deepltranslateauto" value="localizedeeplauto">'
+          + '<label class="btn btn-default btn-block-vertical" for="mode_deepltranslateauto" data-action="deepltranslate">'
+          + deeplIconMarkup
+          + TYPO3.lang['localize.educate.deepltranslateHeaderAutodetect']
+          + '</label>'
+          + '</div>'
+          + '<div class="col-sm-9" id="deeplTextAuto">'
+          + '<p class="t3js-helptext t3js-helptext-copy text-body-secondary">' + TYPO3.lang['localize.educate.deepltranslateAuto'] + '</p>'
+          + '</div>'
+          + '</div>',
+        );
+        availableLocalizationModes.push('localizedeeplauto');
+      }
 
       if (availableLocalizationModes.length === 1) {
         MultiStepWizard.set('localizationMode', availableLocalizationModes[0]);
@@ -279,7 +267,7 @@ class Localization {
 
             const column = columns[colPos];
             const rowElement = document.createElement('div');
-            rowElement.classList.add('row', 'gy-2')
+            rowElement.classList.add('row', 'gy-2');
 
             result.records[colPos].forEach((record: SummaryColPosRecord): void => {
               const label = ' (' + record.uid + ') ' + record.title;
@@ -397,38 +385,8 @@ class Localization {
         MultiStepWizard.show();
 
         MultiStepWizard.getComponent().on('change', '.t3js-localization-option', (optionEvt: JQueryEventObject): void => {
-          const localizationMode = $(optionEvt.currentTarget).val();
-          const divDeepl: HTMLElement = window.parent.document.querySelector('#deeplText .alert');
-          const divDeeplAuto: HTMLElement = window.parent.document.querySelector('#deeplTextAuto .alert');
-          if (localizationMode === 'localizedeepl' || localizationMode === 'localizedeeplauto') {
-            const selector = localizationMode == 'localizedeepl' ? '#deeplText .alert' : '#deeplTextAuto .alert';
-            const divDeeplSelector: HTMLElement = window.parent.document.querySelector(selector);
-            //------------------------------------------------------------------------------------------------------------
-            // deepltranslate-added
-            //------------------------------------------------------------------------------------------------------------
-            this.deeplSettings().then(async (response) => {
-              const deeplSettings : DeeplSettings = await(response.resolve());
-              if (deeplSettings.status === false) {
-                MultiStepWizard.lockNextStep();
-                divDeepl.hidden = true;
-                divDeeplAuto.hidden = true;
-                divDeeplSelector.hidden = false;
-              } else {
-                divDeepl.hidden = true;
-                divDeeplAuto.hidden = true;
-                MultiStepWizard.set('localizationMode', $(optionEvt.currentTarget).val());
-                MultiStepWizard.unlockNextStep();
-              }
-            });
-            //------------------------------------------------------------------------------------------------------------
-          } else {
-            divDeepl.hidden = true;
-            divDeeplAuto.hidden = true;
-            // original from TYPO3 outset the deeplSettings() promise handling
-            MultiStepWizard.set('localizationMode', $(optionEvt.currentTarget).val());
-            MultiStepWizard.unlockNextStep();
-            // ^^ original TYPO3
-          }
+          MultiStepWizard.set('localizationMode', $(optionEvt.currentTarget).val());
+          MultiStepWizard.unlockNextStep();
         });
       });
     });
@@ -470,15 +428,6 @@ class Localization {
       action: localizationMode,
       uidList: uidList,
     }).get();
-  }
-
-  /**
-   * Returns status of deepl configuration, is not set Deepl Button are disabled
-   *
-   * @returns {Promise<AjaxResponse>}
-   */
-  private deeplSettings(): Promise<AjaxResponse> {
-    return new AjaxRequest(TYPO3.settings.ajaxUrls.deepl_check_configuration).get();
   }
 }
 

@@ -12,16 +12,16 @@
 				<target>Mit DeepL übersetzen</target>
 			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslateHeader">
-				<source>Translate with DeepL</source>
-				<target>Mit DeepL übersetzen</target>
+				<source>DeepL Translate</source>
+				<target>DeepL Übersetzung</target>
 			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslateHeaderAutodetect">
-				<source>Translate with DeepL (autodetect)</source>
-				<target>Mit DeepL übersetzen (autodetect)</target>
+				<source><![CDATA[DeepL Translate<br>(autodetect)]]></source>
+				<target><![CDATA[DeepL Übersetzung<br>(autodetect)]]></target>
 			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslate" xml:space="preserve">
-				<source><![CDATA[Translating content using DeepL Translate will create a translation from the source language to the language translation you selected. The translated content will be fetched from DeepL translation service (DeepL claims 99 percentage accuracy). The DeepL service supports translation to and from English, French, German, Spanish, Italian, Dutch, and Polish languages. Other languages will be ignored and will default to the normal translate operation of TYPO3.]]></source>
-				<target><![CDATA[Wenn Sie Inhalte mit DeepL Translate übersetzen, wird eine Übersetzung von der Ausgangssprache in die von Ihnen ausgewählte Sprache erstellt. Der übersetzte Inhalt wird vom DeepL Übersetzungsdienst abgerufen (DeepL behauptet eine 99-prozentige Genauigkeit). Der Dienst DeepL unterstützt die Übersetzung in und aus den Sprachen Englisch, Französisch, Deutsch, Spanisch, Italienisch, Niederländisch und Polnisch. Andere Sprachen werden ignoriert und die normale Übersetzungsfunktion von TYPO3 wird verwendet.]]></target>
+				<source><![CDATA[Translating content via DeepL translate will create a translation from source language to the language you translate to. The translated content will be from DeepL translation service which is 99% accurate. DeepL service supports translation to and from <a href="https://developers.deepl.com/docs/getting-started/supported-languages" target="_blank">different languages</a>. Other languages will be ignored and will default to the normal translate operation of TYPO3.]]></source>
+				<target><![CDATA[Die Übersetzung von Inhalten über DeepL translate erstellt eine Übersetzung von der Ausgangssprache in die Sprache, in die Sie übersetzen. Der übersetzte Inhalt wird vom DeepL Übersetzungsdienst stammen, der zu 99% genau ist. Der Dienst DeepL unterstützt die Übersetzung in und aus <a href="https://developers.deepl.com/docs/getting-started/supported-languages" target="_blank">verschiedenen Sprachen</a>. Andere Sprachen werden ignoriert und es wird die normale Übersetzungsfunktion von TYPO3 verwendet.]]></target>
 			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslateAuto" xml:space="preserve">
 				<source><![CDATA[Translating content using DeepL Translate (autodetect) will create a translation from the auto detected source language to the language translation you selected. The translated content will be fetched from DeepL translation service (DeepL claims 99 percentage accuracy). The DeepL service supports translation to and from English, French, German, Spanish, Italian, Dutch, and Polish languages. Other languages will be ignored and will default to the normal translate operation of TYPO3.]]></source>
