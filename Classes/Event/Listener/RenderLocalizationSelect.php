@@ -7,6 +7,7 @@ namespace WebVision\Deepltranslate\Core\Event\Listener;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Controller\Event\RenderAdditionalContentToRecordListEvent;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use WebVision\Deepltranslate\Core\ConfigurationInterface;
 use WebVision\Deepltranslate\Core\Event\RenderLocalizationSelectAllowed;
 use WebVision\Deepltranslate\Core\Form\TranslationDropdownGenerator;
 
@@ -14,13 +15,18 @@ final class RenderLocalizationSelect
 {
     public function __construct(
         private readonly TranslationDropdownGenerator $generator,
-        private readonly EventDispatcherInterface $eventDispatcher
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly ConfigurationInterface $configuration
     ) {
     }
 
     public function __invoke(RenderAdditionalContentToRecordListEvent $event): void
     {
         $request = $event->getRequest();
+        $currentPageId = (int)($request->getQueryParams()['id'] ?? 0);
+        if (!$this->configuration->isDeeplTranslationAllowedOnPage($currentPageId)) {
+            return;
+        }
         // Check, if some event listener doesn't allow rendering here.
         // For use cases see Event
         $renderingAllowedEvent = $this->eventDispatcher->dispatch(new RenderLocalizationSelectAllowed($request));
