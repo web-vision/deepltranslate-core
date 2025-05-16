@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core;
 
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-final class Configuration implements ConfigurationInterface, SingletonInterface
+#[AsAlias(id: ConfigurationInterface::class, public: true)]
+final class Configuration implements ConfigurationInterface
 {
     private string $apiKey = '';
 
