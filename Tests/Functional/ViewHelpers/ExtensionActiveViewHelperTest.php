@@ -25,6 +25,7 @@ final class ExtensionActiveViewHelperTest extends FunctionalTestCase
     ];
 
     protected array $testExtensionsToLoad = [
+        'web-vision/deepl-base',
         'web-vision/deepltranslate-core',
     ];
 

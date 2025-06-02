@@ -53,3 +53,17 @@ services:
       - name: 'event.listener'
         identifier: 'deepltranslate-core/usages'
         event: TYPO3\CMS\Backend\Backend\Event\SystemInformationToolbarCollectorEvent
+
+  WebVision\Deepltranslate\Core\Event\Listener\ApplyLocalizationModesEventListener:
+    tags:
+      - name: 'event.listener'
+        identifier: 'deepltranslate-core/deepltranslate-core-localization-modes-determine'
+        event: WebVision\Deepl\Base\Event\GetLocalizationModesEvent
+        after: 'deepl-base/determine-default-typo3-localization-modes'
+
+  WebVision\Deepltranslate\Core\Event\Listener\ProcessLocalizationModeEventListener:
+    tags:
+      - name: 'event.listener'
+        identifier: 'deepltranslate-core/deepltranslate-core-localization-modes-process'
+        event: WebVision\Deepl\Base\Event\LocalizationProcessPrepareDataHandlerCommandMapEvent
+        after: 'deepl-base/process-default-typo3-localization-modes'

@@ -4,7 +4,7 @@
 	"description": "This extension provides option to translate content element, and TCA record texts to DeepL supported languages using DeepL API services with TYPO3 CMS",
 	"license": ["GPL-2.0-or-later"],
 	"homepage": "https://www.web-vision.de/en/automated-translations-with-typo3-and-deepl.html",
-	"minimum-stability": "beta",
+	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"keywords": [
 		"TYPO3 CMS",
@@ -81,7 +81,8 @@
 		"typo3/cms-core": "^12.4.2 || ^13.4",
 		"typo3/cms-extbase": "^12.4.2 || ^13.4",
 		"typo3/cms-fluid": "^12.4.2 || ^13.4",
-		"typo3/cms-setup": "^12.4.2 || ^13.4"
+		"typo3/cms-setup": "^12.4.2 || ^13.4",
+		"web-vision/deepl-base": "1.*.*@dev"
 	},
 	"require-dev": {
 		"b13/container": "^2.3.6 || ^3.1.1",

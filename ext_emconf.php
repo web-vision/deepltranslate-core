@@ -17,6 +17,7 @@ $EM_CONF[$_EXTKEY] = [
             'extbase' => '12.4.0-13.4.99',
             'fluid' => '12.4.0-13.4.99',
             'setup' => '12.4.0-13.4.99',
+            'deepl_base' => '1.0.0-1.99.99',
         ],
         'conflicts' => [
             'recordlist_thumbnail' => '*',
