@@ -41,21 +41,6 @@ parameters:
 			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
 
 		-
-			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\LocalizationController\\:\\:process\\(\\) has parameter \\$params with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: ../../../Classes/Override/LocalizationController.php
-
-		-
-			message: "#^Unsafe access to private constant WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\LocalizationController\\:\\:ACTION_LOCALIZEDEEPL through static\\:\\:\\.$#"
-			count: 3
-			path: ../../../Classes/Override/LocalizationController.php
-
-		-
-			message: "#^Unsafe access to private constant WebVision\\\\Deepltranslate\\\\Core\\\\Override\\\\LocalizationController\\:\\:ACTION_LOCALIZEDEEPL_AUTO through static\\:\\:\\.$#"
-			count: 3
-			path: ../../../Classes/Override/LocalizationController.php
-
-		-
 			message: "#^Method WebVision\\\\Deepltranslate\\\\Core\\\\Utility\\\\DeeplBackendUtility\\:\\:buildBackendRoute\\(\\) has parameter \\$parameters with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: ../../../Classes/Utility/DeeplBackendUtility.php
