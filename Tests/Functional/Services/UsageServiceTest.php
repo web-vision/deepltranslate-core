@@ -6,7 +6,9 @@ namespace WebVision\Deepltranslate\Core\Tests\Functional\Services;
 
 use DeepL\Usage;
 use DeepL\UsageDetail;
+use PHPUnit\Framework\Attributes\RunClassInSeparateProcess;
 use PHPUnit\Framework\Attributes\Test;
+use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
 use WebVision\Deepltranslate\Core\Service\UsageService;
@@ -35,7 +37,7 @@ final class UsageServiceTest extends AbstractDeepLTestCase
     {
         $usageService = $this->get(UsageService::class);
 
-        static::assertInstanceOf(UsageService::class, $usageService);
+        self::assertInstanceOf(UsageService::class, $usageService);
     }
 
     #[Test]
@@ -46,7 +48,7 @@ final class UsageServiceTest extends AbstractDeepLTestCase
 
         $usage = $usageService->getCurrentUsage();
 
-        static::assertInstanceOf(Usage::class, $usage);
+        self::assertInstanceOf(Usage::class, $usage);
     }
 
     #[Test]
@@ -55,13 +57,13 @@ final class UsageServiceTest extends AbstractDeepLTestCase
         /** @var UsageService $usageService */
         $usageService = $this->get(UsageService::class);
 
-        static::assertFalse($usageService->checkTranslateLimitWillBeExceeded(''));
+        self::assertFalse($usageService->checkTranslateLimitWillBeExceeded(''));
     }
 
     #[Test]
     public function limitExceedReturnsTrueIfLimitIsReached(): void
     {
-        $translateContent = 'proton beam';
+        $translateContent = self::EXAMPLE_TEXT['en'];
 
         /** @var UsageService $usageService */
         $usageService = $this->get(UsageService::class);
@@ -70,20 +72,20 @@ final class UsageServiceTest extends AbstractDeepLTestCase
         $deeplService = $this->get(DeeplService::class);
 
         // Execute translation to check translation limit
-        $responseObject = $deeplService->translateRequest(
-            $translateContent,
-            'DE',
-            'EN'
-        );
+        $translateContext = new TranslateContext($translateContent);
+        $translateContext->setSourceLanguageCode('EN');
+        $translateContext->setTargetLanguageCode('DE');
+        $translatedContent = $deeplService->translateContent($translateContext);
 
+        self::assertEquals(self::EXAMPLE_TEXT['de'], $translatedContent);
         $isLimitExceeded = $usageService->checkTranslateLimitWillBeExceeded($translateContent);
-        static::assertTrue($isLimitExceeded);
+        self::assertTrue($isLimitExceeded);
     }
 
     #[Test]
     public function checkHTMLMarkupsIsNotPartOfLimit(): void
     {
-        $translateContent = 'proton beam';
+        $translateContent = self::EXAMPLE_TEXT['en'];
 
         /** @var UsageService $usageService */
         $usageService = $this->get(UsageService::class);
@@ -91,17 +93,21 @@ final class UsageServiceTest extends AbstractDeepLTestCase
         /** @var DeeplService $deeplService */
         $deeplService = $this->get(DeeplService::class);
 
+        $translateContext = new TranslateContext('<p>' . $translateContent . '</p>');
+        $translateContext->setSourceLanguageCode('EN');
+        $translateContext->setTargetLanguageCode('DE');
         // Execute translation to check translation limit
-        $responseObject = $deeplService->translateRequest(
-            '<p>' . $translateContent . '</p>',
-            'DE',
-            'EN'
-        );
+        // @todo at the moment the mock server returns an empty result, when the
+        //       translation string is given with HTML tags, but increases character
+        //       usage. I have no idea, why this is happening, but with this behaviour
+        //       there is no possibility checking the response onto valid value.
+        $response = $deeplService->translateContent($translateContext);
+
 
         $usage = $usageService->getCurrentUsage();
-        static::assertInstanceOf(Usage::class, $usage);
+        self::assertInstanceOf(Usage::class, $usage);
         $character = $usage->character;
-        static::assertInstanceOf(UsageDetail::class, $character);
-        static::assertEquals(strlen($translateContent), $character->count);
+        self::assertInstanceOf(UsageDetail::class, $character);
+        self::assertEquals(strlen($translateContent), $character->count);
     }
 }

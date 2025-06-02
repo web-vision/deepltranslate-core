@@ -12,11 +12,13 @@ use DeepL\Language;
 use DeepL\TextResult;
 use DeepL\TranslateTextOptions;
 use DeepL\Usage;
+use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 
 /**
  * @internal No public usage
  */
+#[AsAlias(id: ClientInterface::class, public: true)]
 final class Client extends AbstractClient
 {
     /**
