@@ -23,7 +23,6 @@ final class ContentElementsInContainerTest extends AbstractDeepLTestCase
         'b13/container',
         'web-vision/deepl-base',
         'web-vision/deepltranslate-core',
-        __DIR__ . '/../Fixtures/Extensions/test_services_override',
         __DIR__ . '/Fixtures/Extensions/test_container',
     ];
 

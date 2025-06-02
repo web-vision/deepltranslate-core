@@ -14,15 +14,6 @@ final class LocalizationInlineRegressionTest extends AbstractDeepLTestCase
 {
     use SiteBasedTestTrait;
 
-    /**
-     * @var non-empty-string[]
-     */
-    protected array $testExtensionsToLoad = [
-        'web-vision/deepl-base',
-        'web-vision/deepltranslate-core',
-        __DIR__ . '/../Fixtures/Extensions/test_services_override',
-    ];
-
     protected const LANGUAGE_PRESETS = [
         'EN' => [
             'id' => 0,

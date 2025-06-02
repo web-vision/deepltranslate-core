@@ -4,25 +4,17 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Tests\Functional;
 
-use Closure;
-use DeepL\Translator;
 use DeepL\TranslatorOptions;
 use Exception;
-use phpmock\phpunit\PHPMock;
-use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
 use SBUERK\TYPO3\Testing\TestCase\FunctionalTestCase;
-use Symfony\Component\DependencyInjection\Container;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
-use WebVision\Deepltranslate\Core\Client;
-use WebVision\Deepltranslate\Core\ClientInterface;
-use WebVision\Deepltranslate\Core\ConfigurationInterface;
 
 abstract class AbstractDeepLTestCase extends FunctionalTestCase
 {
-    use PHPMock;
 
     /**
      * @var string
@@ -112,7 +104,6 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
     protected array $testExtensionsToLoad = [
         'web-vision/deepl-base',
         'web-vision/deepltranslate-core',
-        __DIR__ . '/Fixtures/Extensions/test_services_override',
     ];
 
     protected const EXAMPLE_DOCUMENT_INPUT = AbstractDeepLTestCase::EXAMPLE_TEXT['en'];
@@ -152,13 +143,13 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
             }
             $this->authKey = getenv('DEEPL_AUTH_KEY');
         }
-        parent::setUp();
         $this->instantiateMockServerClient();
+        parent::setUp();
     }
 
     private function makeSessionName(): string
     {
-        return sprintf('%s/%s', self::getInstanceIdentifier(), StringUtility::getUniqueId());
+        return sprintf('%s/%s', self::getInstanceIdentifier(), StringUtility::getUniqueId('deepl-mock-'));
     }
 
     /**
@@ -210,29 +201,12 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         if ($this->serverUrl !== false) {
             $mergedOptions[TranslatorOptions::SERVER_URL] = $this->serverUrl;
         }
-        $mockConfiguration = $this
-            ->getMockBuilder(ConfigurationInterface::class)
-            ->getMock();
-        $mockConfiguration
-            ->method('getApiKey')
-            ->willReturn(self::getInstanceIdentifier());
-
-        $client = new Client($mockConfiguration);
-        $client->setLogger(new NullLogger());
-
-        // use closure to set private option for translation
-        $translator = new Translator(self::getInstanceIdentifier(), $mergedOptions);
-        Closure::bind(
-            function (Translator $translator) {
-                $this->translator = $translator;
-            },
-            $client,
-            Client::class
-        )->call($client, $translator);
-
-        /** @var Container $container */
-        $container = $this->getContainer();
-        $container->set(ClientInterface::class, $client);
+        ArrayUtility::mergeRecursiveWithOverrule(
+            $this->configurationToUseInTestInstance,
+            [
+                'HTTP' => $mergedOptions,
+            ],
+        );
     }
 
     public static function readFile(string $filepath): string
@@ -300,21 +274,5 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
             return $exception;
         }
         static::fail("Expected exception of class '$class' but nothing was thrown");
-    }
-
-    /**
-     * This is necessary due to https://github.com/php-mock/php-mock-phpunit#restrictions
-     * In short, as these methods can be called by other tests before UserAgentTest and other
-     * tests that use their mocks are executed, we need to call `defineFunctionMock` before
-     * calling the unmocked function, or the mock will not work.
-     * Otherwise the tests will fail with:
-     *     Expectation failed for method name is "delegate" when invoked 1 time(s).
-     *     Method was expected to be called 1 times, actually called 0 times.
-     */
-    public static function setUpBeforeClass(): void
-    {
-        self::defineFunctionMock(__NAMESPACE__, 'curl_exec');
-        self::defineFunctionMock(__NAMESPACE__, 'curl_getinfo');
-        self::defineFunctionMock(__NAMESPACE__, 'curl_setopt_array');
     }
 }
