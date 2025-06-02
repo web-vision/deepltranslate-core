@@ -448,16 +448,23 @@ SUFFIX=$(echo $RANDOM)
 NETWORK="wv-deepltranslate-${SUFFIX}"
 ${CONTAINER_BIN} network create ${NETWORK} >/dev/null
 
+DEEPL_BASE_MOUNT=""
+if [[ -d "${ROOT_DIR}/packages/deepl-base" ]]; then
+    echo ">> Use symlinked deepl-base (for example monorepo)"
+    DEEPL_BASE_PATH="$( readlink -f ${ROOT_DIR}/packages/deepl-base )"
+    DEEPL_BASE_MOUNT="-v ${DEEPL_BASE_PATH}:${DEEPL_BASE_PATH}"
+fi
+
 if [ "${CONTAINER_BIN}" == "docker" ]; then
     # docker needs the add-host for xdebug remote debugging. podman has host.container.internal built in
-    CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR}"
-    CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR}"
+    CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
+    CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
     DOCUMENTATION_COMMON_PARAMS="${CONTAINER_INTERACTIVE} --rm ${USERSET} -v ${ROOT_DIR}:/project"
 else
     # podman
     CONTAINER_HOST="host.containers.internal"
-    CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR}"
-    CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm -v ${ROOT_DIR}:${ROOT_DIR} -w ${ROOT_DIR}"
+    CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT}  -w ${ROOT_DIR}"
+    CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT}  -w ${ROOT_DIR}"
     DOCUMENTATION_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm -v ${ROOT_DIR}:${ROOT_DIR} -v ${ROOT_DIR}:/project"
 fi
 
