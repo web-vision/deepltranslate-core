@@ -19,11 +19,6 @@ defined('TYPO3') or die();
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][\WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook::class]
         = \WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook::class;
 
-    //xclass localizationcontroller for localizeRecords() and process() action
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class] = [
-        'className' => \WebVision\Deepltranslate\Core\Override\LocalizationController::class,
-    ];
-
     //xclass databaserecordlist for rendering custom checkboxes to toggle deepl selection in recordlist
     if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('gridelements') && !empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['gridelements']['nestingInListModule'])) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class] = [
