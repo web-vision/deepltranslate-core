@@ -67,3 +67,10 @@ services:
         identifier: 'deepltranslate-core/deepltranslate-core-localization-modes-process'
         event: WebVision\Deepl\Base\Event\LocalizationProcessPrepareDataHandlerCommandMapEvent
         after: 'deepl-base/process-default-typo3-localization-modes'
+
+  WebVision\Deepltranslate\Core\Event\Listener\RenderPageViewLocalizationDropdownEventListener:
+    tags:
+      - name: 'event.listener'
+        identifier: 'deepltranslate-core/translation-dropdown'
+        event: WebVision\Deepl\Base\Event\ViewHelpers\ModifyInjectVariablesViewHelperEvent
+        after: 'deepl-base/default-translation'
