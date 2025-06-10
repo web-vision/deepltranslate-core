@@ -111,6 +111,7 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
      */
     protected array $testExtensionsToLoad = [
         'web-vision/deepl-base',
+        'web-vision/deeplcom-deepl-php',
         'web-vision/deepltranslate-core',
         __DIR__ . '/Fixtures/Extensions/test_services_override',
     ];

@@ -10,7 +10,6 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     env:
-      TYPO3_EXTENSION_KEY: ${{ secrets.TYPO3_EXTENSION_KEY }}
       TYPO3_API_TOKEN: ${{ secrets.TYPO3_API_TOKEN }}
     permissions:
       contents: write
@@ -63,32 +62,6 @@ jobs:
           extensions: intl, mbstring, json, zip, curl
           tools: composer:v2
 
-      - name: Prepare vendor folder and autoload configuration for TER upload
-        shell: bash
-        run: |
-          rm -rf vendor composer.lock composer.json.orig composer.json.pretty \
-            && mv composer.json composer.json.orig \
-              && composer init -n \
-                --type=project \
-                --license='GPL-2.0-or-later' \
-                --name=release/draft \
-                --description empty \
-                --author='release' \
-              && composer config allow-plugins.php-http/discovery true \
-              && composer require "deeplcom/deepl-php":"$( cat composer.json.orig | jq -r '.require."deeplcom/deepl-php"' )" \
-              && rm -rf composer.lock \
-                vendor/composer \
-                vendor/nyholm \
-                vendor/php-http/multipart-stream-builder \
-                vendor/psr \
-                vendor/symfony \
-                vendor/autoload.php \
-                vendor/bin \
-              && cat <<< $(jq --indent 4 '."autoload"."psr-4" += {"DeepL\\": "vendor/deeplcom/deepl-php/src", "Http\\Discovery\\": "vendor/php-http/discovery/src"}' composer.json.orig) > composer.json.pretty \
-              && rm -rf composer.json \
-              && mv composer.json.pretty composer.json \
-              && rm -rf composer.json.orig
-
       - name: Install tailor
         run: composer global require typo3/tailor --prefer-dist --no-progress --no-suggest
 
@@ -103,7 +76,9 @@ jobs:
       # Note that when release already exists for tag, only files will be uploaded and lets this acting as a
       # fallback to ensure that a real GitHub release is created for the tag along with extension artifacts.
       - name: Create release and upload artifacts in the same step
-        uses: softprops/action-gh-release@v2
+        # @todo Revert to release version when https://github.com/softprops/action-gh-release/issues/628 is fixed.
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
+        # uses: softprops/action-gh-release@v2
         if: ${{startsWith(github.ref, 'refs/tags/') }}
         with:
           name: "[RELEASE] ${{ env.version }}"
@@ -114,13 +89,7 @@ jobs:
             LICENSE
           fail_on_unmatched_files: true
 
-      # @todo Currently an issue exists with the TYPO3 Extension Repository (TER) tailor based uploads, which seems to
-      #       be WAF related and the T3O TER Team working on. Allow this step to fail (continue on error) for now until
-      #       issues has been sorted out.
-      #       https://github.com/TYPO3/tailor/issues/82
       - name: Publish to TER
-        # @todo Remove `continue-on-error` after upload with tailor has been fixed.
-        continue-on-error: true
         run: |
           php ~/.composer/vendor/bin/tailor ter:publish --comment "${{ env.terReleaseNotes }}" ${{ env.version }} \
             --artefact=tailor-version-artefact/${{ env.DETECTED_EXTENSION_KEY }}_${{ env.version }}.zip

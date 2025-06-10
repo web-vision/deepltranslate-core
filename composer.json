@@ -76,13 +76,13 @@
 		"ext-curl": "*",
 		"ext-json": "*",
 		"ext-pdo": "*",
-		"deeplcom/deepl-php": "^1.10.1",
 		"typo3/cms-backend": "^12.4.2 || ^13.4",
 		"typo3/cms-core": "^12.4.2 || ^13.4",
 		"typo3/cms-extbase": "^12.4.2 || ^13.4",
 		"typo3/cms-fluid": "^12.4.2 || ^13.4",
 		"typo3/cms-setup": "^12.4.2 || ^13.4",
-		"web-vision/deepl-base": "1.*.*@dev"
+		"web-vision/deepl-base": "1.*.*@dev",
+		"web-vision/deeplcom-deepl-php": "^1.12.0"
 	},
 	"require-dev": {
 		"b13/container": "^2.3.6 || ^3.1.1",
