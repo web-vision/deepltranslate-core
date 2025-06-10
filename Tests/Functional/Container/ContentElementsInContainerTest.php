@@ -22,6 +22,7 @@ final class ContentElementsInContainerTest extends AbstractDeepLTestCase
     protected array $testExtensionsToLoad = [
         'b13/container',
         'web-vision/deepl-base',
+        'web-vision/deeplcom-deepl-php',
         'web-vision/deepltranslate-core',
         __DIR__ . '/../Fixtures/Extensions/test_services_override',
         __DIR__ . '/Fixtures/Extensions/test_container',
