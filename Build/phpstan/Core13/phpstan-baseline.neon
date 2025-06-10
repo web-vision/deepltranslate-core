@@ -94,8 +94,3 @@ parameters:
 			message: "#^Cannot access property \\$code on DeepL\\\\Language\\|null\\.$#"
 			count: 7
 			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
-
-		-
-			message: "#^Call to an undefined method TYPO3\\\\CMS\\\\Core\\\\View\\\\ViewInterface\\:\\:getRenderingContext\\(\\)\\.$#"
-			count: 3
-			path: ../../../Tests/Functional/ViewHelpers/ExtensionActiveViewHelperTest.php

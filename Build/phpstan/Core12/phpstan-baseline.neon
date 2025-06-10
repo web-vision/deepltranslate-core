@@ -94,18 +94,3 @@ parameters:
 			message: "#^Cannot access property \\$code on DeepL\\\\Language\\|null\\.$#"
 			count: 7
 			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
-
-		-
-			message: "#^Call to method create\\(\\) on an unknown class TYPO3\\\\CMS\\\\Core\\\\View\\\\ViewFactoryInterface\\.$#"
-			count: 1
-			path: ../../../Tests/Functional/ViewHelpers/ExtensionActiveViewHelperTest.php
-
-		-
-			message: "#^Class TYPO3\\\\CMS\\\\Core\\\\View\\\\ViewFactoryInterface not found\\.$#"
-			count: 1
-			path: ../../../Tests/Functional/ViewHelpers/ExtensionActiveViewHelperTest.php
-
-		-
-			message: "#^Instantiated class TYPO3\\\\CMS\\\\Core\\\\View\\\\ViewFactoryData not found\\.$#"
-			count: 1
-			path: ../../../Tests/Functional/ViewHelpers/ExtensionActiveViewHelperTest.php

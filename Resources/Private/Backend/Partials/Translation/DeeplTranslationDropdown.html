@@ -1,0 +1,25 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:deepl="http://typo3.org/ns/WebVision/Deepltranslate/Core/ViewHelpers"
+    xmlns:f="http://typo3.org/ns/TYPO3Fluid/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+>
+<f:if condition="{context.newLanguageOptions}">
+    <deepl:be.access.deeplTranslateAllowed>
+        <f:if condition="{deeplLanguages -> f:count()} > 0">
+            <div class="col row">
+                <label class="col-sm-4 col">{f:translate(key: 'backend.label', extensionName: 'deepltranslate_core')}</label>
+                <div class="col col-sm-8">
+                    <select class="form-select" name="createNewLanguage" data-global-event="change" data-action-navigate="$value">
+                        <option><f:translate key="backend.label" extensionName="deepltranslate_core" /></option>
+                        <f:for each="{deeplLanguages}" as="languageName" key="url">
+                            <option value="{url}">{languageName}</option>
+                        </f:for>
+                    </select>
+                </div>
+            </div>
+        </f:if>
+    </deepl:be.access.deeplTranslateAllowed>
+</f:if>
+</html>
