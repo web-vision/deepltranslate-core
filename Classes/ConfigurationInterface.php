@@ -13,4 +13,7 @@ namespace WebVision\Deepltranslate\Core;
 interface ConfigurationInterface
 {
     public function getApiKey(): string;
+    public function isDeeplTranslateAllowed(int $pageId): bool;
+
+    public function isCoreTranslationDisabled(int $pageId): bool;
 }

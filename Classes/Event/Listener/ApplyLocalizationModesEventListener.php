@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Event\Listener;
 
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use WebVision\Deepl\Base\Controller\Backend\LocalizationController;
 use WebVision\Deepl\Base\Event\GetLocalizationModesEvent;
 use WebVision\Deepl\Base\Localization\LocalizationMode;
@@ -27,7 +28,7 @@ final class ApplyLocalizationModesEventListener
                 description: $event->getLanguageService()->sL('LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:localize.educate.deepltranslate'),
                 icon: ($majorVersion === 13 ? 'actions-localize-deepl-13' : 'actions-localize-deepl'),
                 before: [],
-                after: ['translate', 'copy'],
+                after: [LocalizationController::ACTION_LOCALIZE, LocalizationController::ACTION_COPY],
             );
         }
         if ($this->allowDeeplTranslateAuto($event)) {
@@ -38,7 +39,7 @@ final class ApplyLocalizationModesEventListener
                 description: $event->getLanguageService()->sL('LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:localize.educate.deepltranslateAuto'),
                 icon: ($majorVersion === 13 ? 'actions-localize-deepl-13' : 'actions-localize-deepl'),
                 before: [],
-                after: ['translate', 'copy', 'deepltranslate'],
+                after: [LocalizationController::ACTION_LOCALIZE, LocalizationController::ACTION_COPY, 'deepltranslate'],
             );
         }
         if ($modes !== []) {
@@ -48,8 +49,22 @@ final class ApplyLocalizationModesEventListener
 
     private function allowDeeplTranslate(GetLocalizationModesEvent $event): bool
     {
-        // @todo Prepared for PageTSConfig feature to toggle `deepltranslate`.
-        return true;
+        $pageTsConfig = $event->getPageTsConfig();
+        if (!is_array($pageTsConfig['mod.'] ?? null)
+            || !is_array($pageTsConfig['mod.']['web_layout.'] ?? null)
+            || !is_array($pageTsConfig['mod.']['web_layout.']['localization.'] ?? null)
+            || !(
+                is_bool($pageTsConfig['mod.']['web_layout.']['localization.']['enableDeeplTranslate'] ?? null)
+                || is_int($pageTsConfig['mod.']['web_layout.']['localization.']['enableDeeplTranslate'] ?? null)
+                || (
+                    is_string($pageTsConfig['mod.']['web_layout.']['localization.']['enableDeeplTranslate'] ?? null)
+                    && MathUtility::canBeInterpretedAsInteger($pageTsConfig['mod.']['web_layout.']['localization.']['enableDeeplTranslate'])
+                )
+            )
+        ) {
+            return true;
+        }
+        return (bool)$pageTsConfig['mod.']['web_layout.']['localization.']['enableDeeplTranslate'];
     }
 
     private function allowDeeplTranslateAuto(GetLocalizationModesEvent $event): bool
