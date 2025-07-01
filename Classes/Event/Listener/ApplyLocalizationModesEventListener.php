@@ -27,7 +27,7 @@ final class ApplyLocalizationModesEventListener
                 description: $event->getLanguageService()->sL('LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:localize.educate.deepltranslate'),
                 icon: ($majorVersion === 13 ? 'actions-localize-deepl-13' : 'actions-localize-deepl'),
                 before: [],
-                after: ['translate', 'copy'],
+                after: [LocalizationController::ACTION_LOCALIZE, LocalizationController::ACTION_COPY],
             );
         }
         if ($this->allowDeeplTranslateAuto($event)) {
@@ -38,7 +38,7 @@ final class ApplyLocalizationModesEventListener
                 description: $event->getLanguageService()->sL('LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:localize.educate.deepltranslateAuto'),
                 icon: ($majorVersion === 13 ? 'actions-localize-deepl-13' : 'actions-localize-deepl'),
                 before: [],
-                after: ['translate', 'copy', 'deepltranslate'],
+                after: [LocalizationController::ACTION_LOCALIZE, LocalizationController::ACTION_COPY],
             );
         }
         if ($modes !== []) {
