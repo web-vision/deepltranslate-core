@@ -34,4 +34,9 @@ $EM_CONF[$_EXTKEY] = [
             'gridelements' => '*',
         ],
     ],
+    'autoload' => [
+        'psr-4' => [
+            'WebVision\\Deepltranslate\\Core\\' => 'Classes',
+        ],
+    ],
 ];
