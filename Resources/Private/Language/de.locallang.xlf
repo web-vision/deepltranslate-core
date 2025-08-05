@@ -96,7 +96,7 @@
 				<target>Förmlichere Sprache bevorzugen, Fallback-Standard</target>
 			</trans-unit>
 			<trans-unit id="site_configuration.deepl.field.formality.items.prefer_less">
-				<source>Prefer informal language, fallback default</source>
+				<source>Prefer more informal language, fallback default</source>
 				<target>Informelle Sprache bevorzugen, Fallback-Standard</target>
 			</trans-unit>
 
