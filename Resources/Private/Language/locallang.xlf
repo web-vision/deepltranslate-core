@@ -73,10 +73,10 @@
 				<source>More informal language</source>
 			</trans-unit>
 			<trans-unit id="site_configuration.deepl.field.formality.items.prefer_more">
-				<source>Prefer more language, fallback default</source>
+				<source>Prefer more formal language, fallback default</source>
 			</trans-unit>
 			<trans-unit id="site_configuration.deepl.field.formality.items.prefer_less">
-				<source>Prefer informal language, fallback default</source>
+				<source>Prefer more informal language, fallback default</source>
 			</trans-unit>
 
 			<trans-unit id="usages.toolbar-label">
