@@ -6,6 +6,7 @@ namespace WebVision\Deepltranslate\Core\Tests\Functional\Services;
 
 use DeepL\Usage;
 use DeepL\UsageDetail;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
@@ -103,5 +104,40 @@ final class UsageServiceTest extends AbstractDeepLTestCase
         $character = $usage->character;
         static::assertInstanceOf(UsageDetail::class, $character);
         static::assertEquals(strlen($translateContent), $character->count);
+    }
+
+    public static function numberFormatterLocalesDataProvider(): \Generator
+    {
+        yield 'Default formats to english' => [
+            'user' => 1,
+            'number' => 20000,
+            'expectedFormat' => '20,000',
+        ];
+        yield 'BE uc lang "de" formats german' => [
+            'user' => 2,
+            'number' => 93254850,
+            'expectedFormat' => '93.254.850',
+        ];
+    }
+    /**
+     * This test ensures that in PHP >=8.4 the NumberFormatter works correctly.
+     * With migrated TYPO3 data there is the possibility that uc['lang'] is set to 'default',
+     * which is no correct format for a locale the number formatter accepts. THis will lead
+     * to an error during initialisation.
+     */
+    #[Test]
+    #[DataProvider('numberFormatterLocalesDataProvider')]
+    public function numberFormatRespectsLocalesAndDefault(
+        int $user,
+        int $number,
+        string $expectedFormat
+    ): void {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/Pages.csv');
+        $this->setUpBackendUser($user);
+        /** @var UsageService $usageService */
+        $usageService = $this->get(UsageService::class);
+
+        $formatted = $usageService->formatNumber($number);
+        static::assertEquals($expectedFormat, $formatted);
     }
 }
