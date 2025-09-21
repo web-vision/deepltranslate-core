@@ -8,6 +8,9 @@ use DeepL\GlossaryEntries;
 use DeepL\GlossaryInfo;
 use DeepL\GlossaryLanguagePair;
 use DeepL\Language;
+use DeepL\MultilingualGlossaryDictionaryEntries;
+use DeepL\MultilingualGlossaryDictionaryInfo;
+use DeepL\MultilingualGlossaryInfo;
 use DeepL\TextResult;
 use DeepL\Usage;
 use Psr\Log\LoggerAwareInterface;
@@ -92,4 +95,24 @@ interface ClientInterface extends LoggerAwareInterface
      * @throws ApiKeyNotSetException
      */
     public function getUsage(): ?Usage;
+
+    /**
+     * @param MultilingualGlossaryDictionaryEntries[] $dictionaries
+     */
+    public function createMultilingualGlossary(string $name, array $dictionaries = []): MultilingualGlossaryInfo;
+
+    /**
+     * @param MultilingualGlossaryDictionaryEntries[] $dictionaries
+     */
+    public function updateMultilingualGlossary(string $glossaryId, array $dictionaries, string $newName = ''): MultilingualGlossaryInfo;
+    public function replaceMultilingualGlossary(string $glossaryId, MultilingualGlossaryDictionaryEntries $dictionaries): MultilingualGlossaryDictionaryInfo;
+
+    public function deleteMultilingualGlossary(string $glossaryId): void;
+
+    public function deleteGlossaryDictionary(string $glossaryId, string $sourceLanguage, string $targetLanguage): void;
+
+    /**
+     * @return MultilingualGlossaryInfo[]
+     */
+    public function listMultilingualGlossaries(): array;
 }
