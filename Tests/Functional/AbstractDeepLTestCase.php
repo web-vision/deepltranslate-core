@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Tests\Functional;
 
 use Closure;
-use DeepL\Translator;
+use DeepL\DeepLClient;
 use DeepL\TranslatorOptions;
 use Exception;
 use phpmock\phpunit\PHPMock;
@@ -222,9 +222,9 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         $client->setLogger(new NullLogger());
 
         // use closure to set private option for translation
-        $translator = new Translator(self::getInstanceIdentifier(), $mergedOptions);
+        $translator = new DeepLClient(self::getInstanceIdentifier(), $mergedOptions);
         Closure::bind(
-            function (Translator $translator) {
+            function (DeepLClient $translator) {
                 $this->translator = $translator;
             },
             $client,
