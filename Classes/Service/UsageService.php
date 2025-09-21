@@ -7,6 +7,7 @@ namespace WebVision\Deepltranslate\Core\Service;
 use DeepL\Usage;
 use TYPO3\CMS\Backend\Toolbar\Enumeration\InformationStatus;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Event\Listener\UsageToolBarEventListener;
@@ -14,12 +15,10 @@ use WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook;
 
 final class UsageService implements UsageServiceInterface
 {
-    protected ClientInterface $client;
-
     public function __construct(
-        ClientInterface $client
+        private readonly ClientInterface $client,
+        private readonly Locales $locales
     ) {
-        $this->client = $client;
     }
 
     public function getCurrentUsage(): ?Usage
@@ -61,14 +60,16 @@ final class UsageService implements UsageServiceInterface
      */
     public function formatNumber(int $number)
     {
-        $language = 'en';
+        $language = 'default';
         if ($this->getBackendUser() !== null) {
             $uc = $this->getBackendUser()->uc;
             if (is_array($uc) && array_key_exists('lang', $uc)) {
                 $language = $uc['lang'];
             }
         }
-        $numberFormatter = new \NumberFormatter($language, \NumberFormatter::DECIMAL);
+
+        $locale = $this->locales->createLocale($language);
+        $numberFormatter = new \NumberFormatter($locale->getLanguageCode(), \NumberFormatter::DECIMAL);
         return $numberFormatter->format($number);
     }
 
