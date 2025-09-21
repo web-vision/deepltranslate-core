@@ -21,13 +21,9 @@ use WebVision\Deepltranslate\Core\Service\UsageService;
 #[Autoconfigure(public: true)]
 final class UsageProcessAfterFinishHook
 {
-    private UsageService $usageService;
-
     public function __construct(
-        UsageService $usageService
-    ) {
-        $this->usageService = $usageService;
-    }
+        private UsageService $usageService,
+    ) {}
 
     public function processCmdmap_afterFinish(DataHandler $dataHandler): void
     {

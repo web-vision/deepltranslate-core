@@ -14,13 +14,9 @@ use WebVision\Deepltranslate\Core\Service\DeeplService;
 #[Autoconfigure(public: true)]
 final class SiteConfigSupportedLanguageItemsProcFunc
 {
-    private DeeplService $deeplService;
-
     public function __construct(
-        DeeplService $deeplService
-    ) {
-        $this->deeplService = $deeplService;
-    }
+        private DeeplService $deeplService,
+    ) {}
 
     public function getSupportedLanguageForField(array &$configuration): void
     {

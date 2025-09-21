@@ -1,22 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method WebVision\\Deepltranslate\\Core\\Client\:\:translate\(\) never returns array\<DeepL\\TextResult\> so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: ../../../Classes/Client.php
-
-		-
 			message: '#^Method WebVision\\Deepltranslate\\Core\\Form\\Item\\SiteConfigSupportedLanguageItemsProcFunc\:\:getSupportedLanguageForField\(\) has parameter \$configuration with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../../../Classes/Form/Item/SiteConfigSupportedLanguageItemsProcFunc.php
-
-		-
-			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../../Classes/Hooks/AbstractTranslateHook.php
 
 		-
 			message: '#^Strict comparison using \!\=\= between numeric\-string and '''' will always evaluate to true\.$#'
@@ -133,73 +121,13 @@ parameters:
 			path: ../../../Tests/Functional/AbstractDeepLTestCase.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\GlossaryInfo'' and array\<DeepL\\GlossaryInfo\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\GlossaryLanguagePair'' and array\<DeepL\\GlossaryLanguagePair\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\Language'' and array\<DeepL\\Language\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\GlossaryInfo\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\GlossaryLanguagePair\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\Language\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\Language'' and array\<DeepL\\Language\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
-
-		-
 			message: '#^Cannot access property \$code on DeepL\\Language\|null\.$#'
 			identifier: property.nonObject
 			count: 7
 			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\{uid\: int, title\: string, language_isocode\: string, languageCode\: string, formality\: string\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/Services/LanguageServiceTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 2
 			path: ../../../Tests/Unit/Access/AllowedTranslateAccessTest.php
-
-		-
-			message: '#^PHPDoc tag @var with type WebVision\\Deepltranslate\\Core\\ConfigurationInterface is not subtype of native type PHPUnit\\Framework\\MockObject\\MockObject\.$#'
-			identifier: varTag.nativeType
-			count: 7
-			path: ../../../Tests/Unit/ClientTest.php

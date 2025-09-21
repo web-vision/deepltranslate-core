@@ -13,16 +13,6 @@ use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
 #[CoversClass(SiteConfigSupportedLanguageItemsProcFunc::class)]
 final class SiteConfigSupportedLanguageItemsProcFuncTest extends AbstractDeepLTestCase
 {
-    protected function setUp(): void
-    {
-        $this->configurationToUseInTestInstance = array_merge(
-            $this->configurationToUseInTestInstance,
-            require __DIR__ . '/../../Fixtures/ExtensionConfig.php'
-        );
-
-        parent::setUp();
-    }
-
     #[Test]
     public function getSupportedLanguageFormFields(): void
     {
