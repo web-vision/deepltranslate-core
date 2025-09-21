@@ -70,14 +70,15 @@ final class UsageService implements UsageServiceInterface
             // locale en or null, so we call with default parameter.
             $numberFormatter = new \NumberFormatter('en', \NumberFormatter::DECIMAL);
         } else {
-            $language = 'en';
+            $language = 'default';
             if ($this->getBackendUser() !== null) {
                 $uc = $this->getBackendUser()->uc;
                 if (is_array($uc) && array_key_exists('lang', $uc)) {
                     $language = $uc['lang'];
                 }
             }
-            $numberFormatter = new \NumberFormatter($language, \NumberFormatter::DECIMAL);
+            $locale = ($language !== 'default') ? $language : 'en';
+            $numberFormatter = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
         }
         return $numberFormatter->format($number);
     }
