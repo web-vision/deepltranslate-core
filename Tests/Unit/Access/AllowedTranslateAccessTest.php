@@ -22,30 +22,30 @@ class AllowedTranslateAccessTest extends UnitTestCase
     #[Test]
     public function hasInterfaceImplementation(): void
     {
-        static::assertInstanceOf(AccessItemInterface::class, $this->accessInstance);
+        $this->assertInstanceOf(AccessItemInterface::class, $this->accessInstance);
     }
 
     #[Test]
     public function getIdentifier(): void
     {
-        static::assertSame('translateAllowed', $this->accessInstance->getIdentifier());
+        $this->assertSame('translateAllowed', $this->accessInstance->getIdentifier());
     }
 
     #[Test]
     public function getTitle(): void
     {
-        static::assertIsString($this->accessInstance->getTitle());
+        $this->assertIsString($this->accessInstance->getTitle());
     }
 
     #[Test]
     public function getDescription(): void
     {
-        static::assertIsString($this->accessInstance->getDescription());
+        $this->assertIsString($this->accessInstance->getDescription());
     }
 
     #[Test]
     public function getIconIdentifier(): void
     {
-        static::assertSame('deepl-logo', $this->accessInstance->getIconIdentifier());
+        $this->assertSame('deepl-logo', $this->accessInstance->getIconIdentifier());
     }
 }

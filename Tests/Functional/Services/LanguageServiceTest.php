@@ -130,12 +130,12 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
 
         $sourceLanguageRecord = $languageService->getSourceLanguage($siteInformation);
 
-        static::assertArrayHasKey('uid', $sourceLanguageRecord);
-        static::assertArrayHasKey('title', $sourceLanguageRecord);
-        static::assertArrayHasKey('language_isocode', $sourceLanguageRecord);
+        $this->assertArrayHasKey('uid', $sourceLanguageRecord);
+        $this->assertArrayHasKey('title', $sourceLanguageRecord);
+        $this->assertArrayHasKey('language_isocode', $sourceLanguageRecord);
 
-        static::assertSame(0, $sourceLanguageRecord['uid']);
-        static::assertSame('EN', $sourceLanguageRecord['language_isocode']);
+        $this->assertSame(0, $sourceLanguageRecord['uid']);
+        $this->assertSame('EN', $sourceLanguageRecord['language_isocode']);
     }
 
     #[Test]
@@ -149,7 +149,7 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
 
         $sourceLanguageRecord = $languageService->getSourceLanguage($siteInformation);
 
-        static::assertContains('auto', $sourceLanguageRecord);
+        $this->assertContains('auto', $sourceLanguageRecord);
     }
 
     #[Test]
@@ -162,14 +162,14 @@ final class LanguageServiceTest extends AbstractDeepLTestCase
         $siteInformation = $siteFinder->getSiteByPageId(1);
 
         $targetLanguageRecord = $languageService->getTargetLanguage($siteInformation, 2);
-        static::assertIsArray($targetLanguageRecord);
+        $this->assertIsArray($targetLanguageRecord);
 
-        static::assertArrayHasKey('uid', $targetLanguageRecord);
-        static::assertArrayHasKey('title', $targetLanguageRecord);
-        static::assertArrayHasKey('language_isocode', $targetLanguageRecord);
+        $this->assertArrayHasKey('uid', $targetLanguageRecord);
+        $this->assertArrayHasKey('title', $targetLanguageRecord);
+        $this->assertArrayHasKey('language_isocode', $targetLanguageRecord);
 
-        static::assertSame(2, $targetLanguageRecord['uid']);
-        static::assertSame('DE', $targetLanguageRecord['language_isocode']);
+        $this->assertSame(2, $targetLanguageRecord['uid']);
+        $this->assertSame('DE', $targetLanguageRecord['language_isocode']);
     }
 
     #[Test]
