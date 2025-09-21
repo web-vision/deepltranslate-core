@@ -41,8 +41,8 @@ final class ClientTest extends AbstractDeepLTestCase
             'DE'
         );
 
-        static::assertInstanceOf(TextResult::class, $response);
-        static::assertSame(self::EXAMPLE_TEXT['de'], $response->text);
+        $this->assertInstanceOf(TextResult::class, $response);
+        $this->assertSame(self::EXAMPLE_TEXT['de'], $response->text);
     }
 
     #[Test]
@@ -51,8 +51,8 @@ final class ClientTest extends AbstractDeepLTestCase
         $client = $this->get(ClientInterface::class);
         $response = $client->getSupportedLanguageByType();
 
-        static::assertIsArray($response);
-        static::assertContainsOnlyInstancesOf(Language::class, $response);
+        $this->assertIsArray($response);
+        $this->assertContainsOnlyInstancesOf(Language::class, $response);
     }
 
     #[Test]
@@ -61,8 +61,8 @@ final class ClientTest extends AbstractDeepLTestCase
         $client = $this->get(ClientInterface::class);
         $response = $client->getGlossaryLanguagePairs();
 
-        static::assertIsArray($response);
-        static::assertContainsOnlyInstancesOf(GlossaryLanguagePair::class, $response);
+        $this->assertIsArray($response);
+        $this->assertContainsOnlyInstancesOf(GlossaryLanguagePair::class, $response);
     }
 
     #[Test]
@@ -81,10 +81,10 @@ final class ClientTest extends AbstractDeepLTestCase
             ],
         );
 
-        static::assertInstanceOf(GlossaryInfo::class, $response);
-        static::assertSame(1, $response->entryCount);
-        static::assertIsString($response->glossaryId);
-        static::assertInstanceOf(DateTime::class, $response->creationTime);
+        $this->assertInstanceOf(GlossaryInfo::class, $response);
+        $this->assertSame(1, $response->entryCount);
+        $this->assertIsString($response->glossaryId);
+        $this->assertInstanceOf(DateTime::class, $response->creationTime);
     }
 
     #[Test]
@@ -93,8 +93,8 @@ final class ClientTest extends AbstractDeepLTestCase
         $client = $this->get(ClientInterface::class);
         $response = $client->getAllGlossaries();
 
-        static::assertIsArray($response);
-        static::assertContainsOnlyInstancesOf(GlossaryInfo::class, $response);
+        $this->assertIsArray($response);
+        $this->assertContainsOnlyInstancesOf(GlossaryInfo::class, $response);
     }
 
     #[Test]
@@ -115,9 +115,9 @@ final class ClientTest extends AbstractDeepLTestCase
 
         $response = $client->getGlossary($glossary->glossaryId);
 
-        static::assertInstanceOf(GlossaryInfo::class, $response);
-        static::assertSame($glossary->glossaryId, $response->glossaryId);
-        static::assertSame(1, $response->entryCount);
+        $this->assertInstanceOf(GlossaryInfo::class, $response);
+        $this->assertSame($glossary->glossaryId, $response->glossaryId);
+        $this->assertSame(1, $response->entryCount);
     }
 
     #[Test]
@@ -140,7 +140,7 @@ final class ClientTest extends AbstractDeepLTestCase
 
         $client->deleteGlossary($glossaryId);
 
-        static::assertNull($client->getGlossary($glossaryId));
+        $this->assertNull($client->getGlossary($glossaryId));
     }
 
     #[Test]
@@ -161,7 +161,7 @@ final class ClientTest extends AbstractDeepLTestCase
 
         $response = $client->getGlossaryEntries($glossary->glossaryId);
 
-        static::assertInstanceOf(GlossaryEntries::class, $response);
-        static::assertSame(1, count($response->getEntries()));
+        $this->assertInstanceOf(GlossaryEntries::class, $response);
+        $this->assertSame(1, count($response->getEntries()));
     }
 }

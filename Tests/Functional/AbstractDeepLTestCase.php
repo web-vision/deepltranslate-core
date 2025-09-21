@@ -283,10 +283,10 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         try {
             $function();
         } catch (Exception $exception) {
-            static::assertStringContainsString($needle, $exception->getMessage());
+            $this->assertStringContainsString($needle, $exception->getMessage());
             return $exception;
         }
-        static::fail("Expected exception containing '$needle' but nothing was thrown");
+        $this->fail("Expected exception containing '$needle' but nothing was thrown");
     }
 
     /**
@@ -297,10 +297,10 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         try {
             $function();
         } catch (Exception $exception) {
-            static::assertEquals($class, get_class($exception));
+            $this->assertEquals($class, get_class($exception));
             return $exception;
         }
-        static::fail("Expected exception of class '$class' but nothing was thrown");
+        $this->fail("Expected exception of class '$class' but nothing was thrown");
     }
 
     /**

@@ -77,7 +77,7 @@ return (new PhpCsFixer\Config())
         'no_empty_phpdoc' => true,
         'no_null_property_initialization' => true,
         'php_unit_mock_short_will_return' => true,
-        'php_unit_test_case_static_method_calls' => ['call_type' => 'static'],
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
         'single_trait_insert_per_statement' => true,
     ])
     ->setFinder($finder);

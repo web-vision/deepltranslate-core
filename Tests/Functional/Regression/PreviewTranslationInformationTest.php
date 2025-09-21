@@ -125,10 +125,10 @@ final class PreviewTranslationInformationTest extends AbstractDeepLTestCase
         $requestContext = (new InternalRequestContext())->withBackendUserId(1);
         $request = new InternalRequest('https://acme.com/de/artikel/');
         $response = $this->executeFrontendSubRequest($request, $requestContext);
-        static::assertSame(200, $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
 
         $content = (string)$response->getBody();
-        static::assertNotEmpty($content);
-        static::assertStringContainsString($expectedContent, $content, 'preview translation label is rendered in frontend preview');
+        $this->assertNotEmpty($content);
+        $this->assertStringContainsString($expectedContent, $content, 'preview translation label is rendered in frontend preview');
     }
 }
