@@ -19,10 +19,6 @@ final class UsageServiceTest extends AbstractDeepLTestCase
 
     protected function setUp(): void
     {
-        $this->configurationToUseInTestInstance = array_merge(
-            $this->configurationToUseInTestInstance,
-            require __DIR__ . '/../Fixtures/ExtensionConfig.php'
-        );
 
         parent::setUp();
 

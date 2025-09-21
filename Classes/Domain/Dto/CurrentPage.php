@@ -18,10 +18,10 @@ use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
  * @see DeepLGlossaryIdEvent for a usage example
  */
 #[Exclude]
-final class CurrentPage
+final readonly class CurrentPage
 {
     public function __construct(
-        public readonly int $uid,
-        public readonly string $title
+        public int $uid,
+        public string $title,
     ) {}
 }

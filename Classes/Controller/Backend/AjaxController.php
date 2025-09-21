@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Http\JsonResponse;
-use WebVision\Deepltranslate\Core\Configuration;
+use WebVision\Deepltranslate\Core\ConfigurationInterface;
 
 /**
  * Controller for fetching the DeepL settings via Ajax route for usage in JavaScript inside the backend
@@ -21,7 +21,7 @@ use WebVision\Deepltranslate\Core\Configuration;
 final readonly class AjaxController
 {
     public function __construct(
-        private Configuration $configuration,
+        private ConfigurationInterface $configuration,
     ) {}
 
     /**

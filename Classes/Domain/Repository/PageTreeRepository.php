@@ -12,7 +12,11 @@ use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class PageTreeRepository
+/**
+ * @internal cloned from TYPO3 due to deprecation in TYPO3 v11 and removal in TYPO3 v12.
+ * @todo Find a suitable replacement in TYPO3 core to remove this maintenance burden.
+ */
+final class PageTreeRepository
 {
     /**
      * Recursively fetch all descendants of a given page

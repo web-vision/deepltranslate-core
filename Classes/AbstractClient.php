@@ -4,50 +4,44 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core;
 
-use DeepL\Translator;
-use DeepL\TranslatorOptions;
+use DeepL\DeepLException;
+use DeepL\Language;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
+use WebVision\Deepltranslate\Core\Client\DeepLClientFactoryInterface;
+use WebVision\Deepltranslate\Core\Client\DeepLClientInterface;
 
 /**
  * @internal No public usage
  */
 abstract class AbstractClient implements ClientInterface
 {
-    protected ConfigurationInterface $configuration;
-
-    protected ?Translator $translator = null;
-
+    protected ?DeepLClientInterface $client;
+    protected DeepLClientFactoryInterface $clientFactory;
     protected LoggerInterface $logger;
 
-    public function __construct(ConfigurationInterface $configuration)
-    {
-        $this->configuration = $configuration;
-    }
-
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
-    }
-
     /**
-     * Wrapper function to handel ApiKey exception
-     *
-     * @throws ApiKeyNotSetException
+     * @return Language[]
      */
-    protected function getTranslator(): Translator
+    public function getSupportedLanguageByType(string $type = 'target'): array
     {
-        if ($this->translator instanceof Translator) {
-            return $this->translator;
+        try {
+            return ($type === 'target')
+                ? $this->client()->getTargetLanguages()
+                : $this->client()->getSourceLanguages();
+        } catch (DeepLException $exception) {
+            $this->logger->error(sprintf(
+                '%s (%d)',
+                $exception->getMessage(),
+                $exception->getCode()
+            ));
         }
-        if ($this->configuration->getApiKey() === '') {
-            throw new ApiKeyNotSetException('The api key is not set', 1708081233823);
-        }
-        $options[TranslatorOptions::HTTP_CLIENT] = GeneralUtility::makeInstance(GuzzleClientFactory::class)->getClient();
-        $this->translator = new Translator($this->configuration->getApiKey(), $options);
-        return $this->translator;
+
+        return [];
     }
 
+    protected function client(): DeepLClientInterface
+    {
+        $this->client ??= $this->clientFactory->create($this);
+        return $this->client;
+    }
 }

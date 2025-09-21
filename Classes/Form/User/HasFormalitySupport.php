@@ -14,13 +14,9 @@ use WebVision\Deepltranslate\Core\Service\DeeplService;
 #[Autoconfigure(public: true)]
 final class HasFormalitySupport
 {
-    private DeeplService $deeplService;
-
     public function __construct(
-        DeeplService $deeplService
-    ) {
-        $this->deeplService = $deeplService;
-    }
+        private DeeplService $deeplService,
+    ) {}
 
     /**
      * @param array{record?: array{deeplTargetLanguage?: array<int, string>|string|null}} $params
