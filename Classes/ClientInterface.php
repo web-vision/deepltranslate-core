@@ -53,11 +53,13 @@ interface ClientInterface extends LoggerAwareInterface
      * @return GlossaryInfo[]
      *
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getAllGlossaries(): array;
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getGlossary(string $glossaryId): ?GlossaryInfo;
 
@@ -65,6 +67,7 @@ interface ClientInterface extends LoggerAwareInterface
      * @param array<int, array{source: string, target: string}> $entries
      *
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function createGlossary(
         string $glossaryName,
@@ -75,11 +78,13 @@ interface ClientInterface extends LoggerAwareInterface
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function deleteGlossary(string $glossaryId): void;
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getGlossaryEntries(string $glossaryId): ?GlossaryEntries;
 
