@@ -118,7 +118,7 @@ final class ContentElementsInContainerTest extends AbstractDeepLTestCase
         $dataHandler->start([], $cmdMap);
         $dataHandler->process_cmdmap();
 
-        static::assertEmpty($dataHandler->errorLog);
+        $this->assertEmpty($dataHandler->errorLog);
         self::assertCSVDataSet(__DIR__ . '/Fixtures/Result/container_translated.csv');
     }
 }

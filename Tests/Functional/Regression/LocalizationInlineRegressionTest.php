@@ -104,7 +104,7 @@ final class LocalizationInlineRegressionTest extends AbstractDeepLTestCase
         $dataHandler->start([], $commandMap);
         $dataHandler->process_cmdmap();
 
-        static::assertEmpty($dataHandler->errorLog);
+        $this->assertEmpty($dataHandler->errorLog);
         self::assertCSVDataSet(__DIR__ . '/Fixtures/Results/pageWithMediaResult.csv');
     }
 }

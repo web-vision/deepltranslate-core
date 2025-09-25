@@ -8,6 +8,9 @@ use DeepL\GlossaryEntries;
 use DeepL\GlossaryInfo;
 use DeepL\GlossaryLanguagePair;
 use DeepL\Language;
+use DeepL\MultilingualGlossaryDictionaryEntries;
+use DeepL\MultilingualGlossaryDictionaryInfo;
+use DeepL\MultilingualGlossaryInfo;
 use DeepL\TextResult;
 use DeepL\Usage;
 use Psr\Log\LoggerAwareInterface;
@@ -53,11 +56,13 @@ interface ClientInterface extends LoggerAwareInterface
      * @return GlossaryInfo[]
      *
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getAllGlossaries(): array;
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getGlossary(string $glossaryId): ?GlossaryInfo;
 
@@ -65,6 +70,7 @@ interface ClientInterface extends LoggerAwareInterface
      * @param array<int, array{source: string, target: string}> $entries
      *
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function createGlossary(
         string $glossaryName,
@@ -75,11 +81,13 @@ interface ClientInterface extends LoggerAwareInterface
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function deleteGlossary(string $glossaryId): void;
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getGlossaryEntries(string $glossaryId): ?GlossaryEntries;
 
@@ -87,4 +95,24 @@ interface ClientInterface extends LoggerAwareInterface
      * @throws ApiKeyNotSetException
      */
     public function getUsage(): ?Usage;
+
+    /**
+     * @param MultilingualGlossaryDictionaryEntries[] $dictionaries
+     */
+    public function createMultilingualGlossary(string $name, array $dictionaries = []): MultilingualGlossaryInfo;
+
+    /**
+     * @param MultilingualGlossaryDictionaryEntries[] $dictionaries
+     */
+    public function updateMultilingualGlossary(string $glossaryId, array $dictionaries, string $newName = ''): MultilingualGlossaryInfo;
+    public function replaceMultilingualGlossary(string $glossaryId, MultilingualGlossaryDictionaryEntries $dictionaries): MultilingualGlossaryDictionaryInfo;
+
+    public function deleteMultilingualGlossary(string $glossaryId): void;
+
+    public function deleteGlossaryDictionary(string $glossaryId, string $sourceLanguage, string $targetLanguage): void;
+
+    /**
+     * @return MultilingualGlossaryInfo[]
+     */
+    public function listMultilingualGlossaries(): array;
 }
