@@ -8,16 +8,16 @@ use DeepL\Usage;
 use TYPO3\CMS\Backend\Toolbar\Enumeration\InformationStatus;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Event\Listener\UsageToolBarEventListener;
 use WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook;
+use WebVision\Deepltranslate\Core\UsageInterface;
 
 final class UsageService implements UsageServiceInterface
 {
-    protected ClientInterface $client;
+    protected UsageInterface $client;
 
     public function __construct(
-        ClientInterface $client
+        UsageInterface $client
     ) {
         $this->client = $client;
     }

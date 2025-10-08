@@ -33,7 +33,7 @@ services:
   WebVision\Deepltranslate\Core\Controller\Backend\AjaxController:
     public: true
 
-  WebVision\Deepltranslate\Core\ClientInterface:
+  WebVision\Deepltranslate\Core\TranslatorInterface:
     class: WebVision\Deepltranslate\Core\Client
 
   WebVision\Deepltranslate\Core\Event\Listener\RenderLocalizationSelect:

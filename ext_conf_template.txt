@@ -1,2 +1,16 @@
-# cat=Settings/O; type=string; label= Deepl API Key
-apiKey =
+# cat=Settings//O; type=string; label=Deepl API Key
+apiKey=
+# cat=Api//1; type=options[Latency optimized=latency_optimized,Quality optimized=quality_optimized, Prefer quality optimized (with fallback)=prefer_quality_optimized]; label=DeepL model: Default prefer quality optimized
+modelType=prefer_quality_optimized
+# cat=Api//2; type=options[No splitting=0, Split at punctuation and newlines=1, Split only at new lines=nonewlines]; label=Enable Text splitting: Default "Split at punctuation and newlines"
+splitSentences=1
+# cat=Api//3; type=boolean; label=Keep existing formatting
+preserveFormatting=0
+# cat=Api//4; type=string; label=Exclude content from being translated in between these tags: Comma separated, Useful for placeholders, shortcodes, pre
+ignoreTags=
+#cat=Api//5; type=string; label=Prevent splitting inside these tags: Comma separated, Allows the API keeping the text unsplitted
+nonSplittingTags=
+#cat=Api//6; type=string; label=Split inside these tags: Comma separated, Defines tags, which should be splitted (p, div)
+splittingTags=
+# cat=Api//7; type=boolean; Enable automatic detection of document structure in XML/HTML
+outlineDetection=1

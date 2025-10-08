@@ -5,30 +5,28 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Service;
 
 use DeepL\Language;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
-use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
+use WebVision\Deepltranslate\Core\TranslatorInterface;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
-final class DeeplService implements LoggerAwareInterface
+final class DeeplService
 {
-    use LoggerAwareTrait;
-
     private FrontendInterface $cache;
 
-    private ClientInterface $client;
+    private TranslatorInterface $client;
     private ProcessingInstruction $processingInstruction;
 
     public function __construct(
         FrontendInterface $cache,
-        ClientInterface $client,
+        TranslatorInterface $client,
         ProcessingInstruction $processingInstruction,
-        private readonly EventDispatcher $eventDispatcher
+        private readonly EventDispatcher $eventDispatcher,
+        private readonly LoggerInterface $logger
     ) {
         $this->cache = $cache;
         $this->client = $client;
@@ -59,7 +57,7 @@ final class DeeplService implements LoggerAwareInterface
     public function translateContent(TranslateContext $translateContext): string
     {
         if ($this->processingInstruction->isDeeplMode() === false) {
-            $this->logger?->warning('DeepL mode not set. Exit.');
+            $this->logger->warning('DeepL mode not set. Exit.');
             return $translateContext->getContent();
         }
         // If the source language is set to Autodetect, no glossary can be detected.
@@ -89,7 +87,7 @@ final class DeeplService implements LoggerAwareInterface
         }
 
         if ($response === null) {
-            $this->logger?->warning('Translation not successful');
+            $this->logger->warning('Translation not successful');
 
             return '';
         }
@@ -225,7 +223,7 @@ final class DeeplService implements LoggerAwareInterface
         try {
             return $this->client->getSupportedLanguageByType($type);
         } catch (ApiKeyNotSetException $exception) {
-            $this->logger?->error(sprintf('%s (%d)', $exception->getMessage(), $exception->getCode()));
+            $this->logger->error(sprintf('%s (%d)', $exception->getMessage(), $exception->getCode()));
             return [];
         }
     }
