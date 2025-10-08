@@ -67,7 +67,6 @@ final class FormalityUpgradeWizardTest extends AbstractDeepLTestCase
     {
         $this->configurationToUseInTestInstance = array_merge(
             $this->configurationToUseInTestInstance,
-            require __DIR__ . '/../Fixtures/ExtensionConfig.php',
             [
                 'EXTENSIONS' => [
                     'deepltranslate_core' => [

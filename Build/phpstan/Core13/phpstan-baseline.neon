@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method WebVision\\Deepltranslate\\Core\\Client\:\:translate\(\) never returns array\<DeepL\\TextResult\> so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: ../../../Classes/Client.php
-
-		-
 			message: '#^Method WebVision\\Deepltranslate\\Core\\Form\\Item\\SiteConfigSupportedLanguageItemsProcFunc\:\:getSupportedLanguageForField\(\) has parameter \$configuration with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -197,9 +191,3 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 2
 			path: ../../../Tests/Unit/Access/AllowedTranslateAccessTest.php
-
-		-
-			message: '#^PHPDoc tag @var with type WebVision\\Deepltranslate\\Core\\ConfigurationInterface is not subtype of native type PHPUnit\\Framework\\MockObject\\MockObject\.$#'
-			identifier: varTag.nativeType
-			count: 7
-			path: ../../../Tests/Unit/ClientTest.php

@@ -69,17 +69,11 @@ final class TranslationWithModifiedTcaConfigurationTest extends AbstractDeepLTes
         'web-vision/deepl-base',
         'web-vision/deeplcom-deepl-php',
         'web-vision/deepltranslate-core',
-        __DIR__ . '/../Fixtures/Extensions/test_services_override',
         __DIR__ . '/../Fixtures/Extensions/test_tca_override',
     ];
 
     protected function setUp(): void
     {
-        $this->configurationToUseInTestInstance = array_merge(
-            $this->configurationToUseInTestInstance,
-            require __DIR__ . '/../Fixtures/ExtensionConfig.php'
-        );
-
         parent::setUp();
 
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');

@@ -2,11 +2,14 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\DependencyInjection\PublicServicePass;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Dashboard\WidgetRegistry;
+use WebVision\Deepltranslate\Core\Attribute\DeepLClient;
 use WebVision\Deepltranslate\Core\Service\UsageService;
 use WebVision\Deepltranslate\Core\Widgets\UsageWidget;
 
@@ -56,4 +59,11 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
                 'width' => 'small',
             ]);
     }
+
+    $containerBuilder->registerAttributeForAutoconfiguration(
+        DeepLClient::class,
+        static function (ChildDefinition $definition, DeepLClient $attribute): void {}
+    );
+    // Ensure that Process::TAG_NAME processes are set as public services
+    $containerBuilder->addCompilerPass(new PublicServicePass(DeepLClient::TAG_NAME));
 };

@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Event\Listener\UsageToolBarEventListener;
 use WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook;
+use WebVision\Deepltranslate\Core\UsageInterface;
 
 /**
  * Service for getting the current count and limit of DeepL API
@@ -20,6 +21,10 @@ use WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook;
 #[Autoconfigure(public: true)]
 final readonly class UsageService implements UsageServiceInterface
 {
+    /**
+     * @param UsageInterface $client
+     * @param Locales $locales
+     */
     public function __construct(
         private ClientInterface $client,
         private Locales $locales,

@@ -43,24 +43,6 @@ final class LocalizationInlineRegressionTest extends AbstractDeepLTestCase
         ],
     ];
 
-    /**
-     * @var non-empty-string[]
-     */
-    protected array $testExtensionsToLoad = [
-        'web-vision/deepl-base',
-        'web-vision/deeplcom-deepl-php',
-        'web-vision/deepltranslate-core',
-        __DIR__ . '/../Fixtures/Extensions/test_services_override',
-    ];
-
-    protected array $configurationToUseInTestInstance = [
-        'EXTENSIONS' => [
-            'deepltranslate_core' => [
-                'apiKey' => 'mock_server',
-            ],
-        ],
-    ];
-
     protected array $pathsToProvideInTestInstance = [
         'typo3conf/ext/deepltranslate_core/Tests/Functional/Regression/Fixtures/Files' => 'fileadmin',
     ];
