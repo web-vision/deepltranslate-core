@@ -17,8 +17,9 @@ use Symfony\Component\DependencyInjection\Container;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\StringUtility;
 use WebVision\Deepltranslate\Core\Client;
-use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\ConfigurationInterface;
+use WebVision\Deepltranslate\Core\TranslatorInterface;
+use WebVision\Deepltranslate\Core\UsageInterface;
 
 abstract class AbstractDeepLTestCase extends FunctionalTestCase
 {
@@ -218,8 +219,7 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
             ->method('getApiKey')
             ->willReturn(self::getInstanceIdentifier());
 
-        $client = new Client($mockConfiguration);
-        $client->setLogger(new NullLogger());
+        $client = new Client($mockConfiguration, new NullLogger());
 
         // use closure to set private option for translation
         $translator = new DeepLClient(self::getInstanceIdentifier(), $mergedOptions);
@@ -233,7 +233,8 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
 
         /** @var Container $container */
         $container = $this->getContainer();
-        $container->set(ClientInterface::class, $client);
+        $container->set(TranslatorInterface::class, $client);
+        $container->set(UsageInterface::class, $client);
     }
 
     public static function readFile(string $filepath): string

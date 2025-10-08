@@ -4,6 +4,8 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use WebVision\Deepltranslate\Core\ClientInterface;
+use WebVision\Deepltranslate\Core\TranslatorInterface;
+use WebVision\Deepltranslate\Core\UsageInterface;
 
 return function (ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder) {
     $services = $containerConfigurator->services();
@@ -16,6 +18,9 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
     // functional testcases can set a special configured or mocked service
     // instance for the alias. No need to have it public in general.
     $services
-        ->set(ClientInterface::class)
+        ->set(TranslatorInterface::class)
+        ->public();
+    $services
+        ->set(UsageInterface::class)
         ->public();
 };

@@ -6,6 +6,7 @@ namespace WebVision\Deepltranslate\Core\Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\NullLogger;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 use WebVision\Deepltranslate\Core\Client;
 use WebVision\Deepltranslate\Core\ConfigurationInterface;
@@ -31,7 +32,7 @@ class ClientTest extends UnitTestCase
     {
         /** @var ConfigurationInterface $configurationMock */
         $configurationMock = $this->createMockConfigurationWithEmptyApiKey();
-        $client = new Client($configurationMock);
+        $client = new Client($configurationMock, new NullLogger());
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
@@ -45,7 +46,7 @@ class ClientTest extends UnitTestCase
     {
         /** @var ConfigurationInterface $configurationMock */
         $configurationMock = $this->createMockConfigurationWithEmptyApiKey();
-        $client = new Client($configurationMock);
+        $client = new Client($configurationMock, new NullLogger());
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
@@ -59,7 +60,7 @@ class ClientTest extends UnitTestCase
     {
         /** @var ConfigurationInterface $configurationMock */
         $configurationMock = $this->createMockConfigurationWithEmptyApiKey();
-        $client = new Client($configurationMock);
+        $client = new Client($configurationMock, new NullLogger());
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
@@ -83,7 +84,7 @@ class ClientTest extends UnitTestCase
     {
         /** @var ConfigurationInterface $configurationMock */
         $configurationMock = $this->createMockConfigurationWithEmptyApiKey();
-        $client = new Client($configurationMock);
+        $client = new Client($configurationMock, new NullLogger());
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
@@ -97,7 +98,7 @@ class ClientTest extends UnitTestCase
     {
         /** @var ConfigurationInterface $configurationMock */
         $configurationMock = $this->createMockConfigurationWithEmptyApiKey();
-        $client = new Client($configurationMock);
+        $client = new Client($configurationMock, new NullLogger());
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
@@ -111,7 +112,7 @@ class ClientTest extends UnitTestCase
     {
         /** @var ConfigurationInterface $configurationMock */
         $configurationMock = $this->createMockConfigurationWithEmptyApiKey();
-        $client = new Client($configurationMock);
+        $client = new Client($configurationMock, new NullLogger());
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
@@ -125,7 +126,7 @@ class ClientTest extends UnitTestCase
     {
         /** @var ConfigurationInterface $configurationMock */
         $configurationMock = $this->createMockConfigurationWithEmptyApiKey();
-        $client = new Client($configurationMock);
+        $client = new Client($configurationMock, new NullLogger());
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);

@@ -4,26 +4,43 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core;
 
+use DeepL\DeepLClient;
+use DeepL\DeepLClientOptions;
 use DeepL\DeepLException;
 use DeepL\GlossaryEntries;
 use DeepL\GlossaryInfo;
 use DeepL\GlossaryLanguagePair;
 use DeepL\Language;
-use DeepL\MultilingualGlossaryDictionaryEntries;
-use DeepL\MultilingualGlossaryDictionaryInfo;
-use DeepL\MultilingualGlossaryInfo;
 use DeepL\TextResult;
 use DeepL\TranslateTextOptions;
 use DeepL\Usage;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 
 /**
  * @internal No public usage
+ * @todo split the client into two separate services?
  */
 #[AsAlias(id: ClientInterface::class, public: true)]
-final class Client extends AbstractClient
+final class Client implements TranslatorInterface, UsageInterface
 {
+    private ?DeepLClient $translator;
+    public function __construct(
+        private readonly ConfigurationInterface $configuration,
+        private readonly LoggerInterface $logger
+    ) {
+        if ($this->configuration->getApiKey() === '') {
+            $this->logger->notice('DeepL API key is not set. DeepL translation is disabled');
+            $this->translator = null;
+            return;
+        }
+        $options[DeepLClientOptions::HTTP_CLIENT] = GeneralUtility::makeInstance(GuzzleClientFactory::class)->getClient();
+        $this->translator = new DeepLClient($this->configuration->getApiKey(), $options);
+    }
+
     /**
      * @return TextResult|TextResult[]|null
      *
@@ -35,7 +52,7 @@ final class Client extends AbstractClient
         string $targetLang,
         string $glossary = '',
         string $formality = ''
-    ) {
+    ): array|TextResult|null {
         $options = [
             // @todo Make this configurable, either as global setting or dependency injection (factory?) / event
             TranslateTextOptions::FORMALITY => $formality ?: 'default',
@@ -50,7 +67,7 @@ final class Client extends AbstractClient
         }
 
         try {
-            return $this->getTranslator()->translateText(
+            return $this->translator?->translateText(
                 $content,
                 $sourceLang,
                 $targetLang,
@@ -75,9 +92,9 @@ final class Client extends AbstractClient
     public function getSupportedLanguageByType(string $type = 'target'): array
     {
         try {
-            return ($type === 'target')
-                ? $this->getTranslator()->getTargetLanguages()
-                : $this->getTranslator()->getSourceLanguages();
+            return (($type === 'target')
+                ? $this->translator?->getTargetLanguages()
+                : $this->translator?->getSourceLanguages()) ?? [];
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -97,7 +114,7 @@ final class Client extends AbstractClient
     public function getGlossaryLanguagePairs(): array
     {
         try {
-            return $this->getTranslator()->getGlossaryLanguages();
+            return $this->translator?->getGlossaryLanguages() ?? [];
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -117,7 +134,7 @@ final class Client extends AbstractClient
     public function getAllGlossaries(): array
     {
         try {
-            return $this->getTranslator()->listGlossaries();
+            return $this->translator?->listGlossaries() ?? [];
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -135,7 +152,7 @@ final class Client extends AbstractClient
     public function getGlossary(string $glossaryId): ?GlossaryInfo
     {
         try {
-            return $this->getTranslator()->getGlossary($glossaryId);
+            return $this->translator?->getGlossary($glossaryId);
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -173,12 +190,12 @@ final class Client extends AbstractClient
             $prepareEntriesForGlossary[$source] = $target;
         }
         try {
-            return $this->getTranslator()->createGlossary(
+            return $this->translator?->createGlossary(
                 $glossaryName,
                 $sourceLang,
                 $targetLang,
                 GlossaryEntries::fromEntries($prepareEntriesForGlossary)
-            );
+            ) ?? throw new DeepLException();
         } catch (DeepLException $e) {
             return new GlossaryInfo(
                 '',
@@ -198,7 +215,7 @@ final class Client extends AbstractClient
     public function deleteGlossary(string $glossaryId): void
     {
         try {
-            $this->getTranslator()->deleteGlossary($glossaryId);
+            $this->translator?->deleteGlossary($glossaryId);
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -214,7 +231,7 @@ final class Client extends AbstractClient
     public function getGlossaryEntries(string $glossaryId): ?GlossaryEntries
     {
         try {
-            return $this->getTranslator()->getGlossaryEntries($glossaryId);
+            return $this->translator?->getGlossaryEntries($glossaryId);
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -232,7 +249,7 @@ final class Client extends AbstractClient
     public function getUsage(): ?Usage
     {
         try {
-            return $this->getTranslator()->getUsage();
+            return $this->translator?->getUsage();
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -242,68 +259,5 @@ final class Client extends AbstractClient
         }
 
         return null;
-    }
-
-    /**
-     * @throws DeepLException
-     * @throws ApiKeyNotSetException
-     */
-    public function createMultilingualGlossary(string $name, array $dictionaries = []): MultilingualGlossaryInfo
-    {
-        return $this->getTranslator()->createMultilingualGlossary($name, $dictionaries);
-    }
-
-    /**
-     * @throws DeepLException
-     * @throws ApiKeyNotSetException
-     */
-    public function updateMultilingualGlossary(string $glossaryId, array $dictionaries, string $newName = ''): MultilingualGlossaryInfo
-    {
-        return $this->getTranslator()->updateMultilingualGlossary(
-            $glossaryId,
-            $newName !== '' ? $newName : null,
-            $dictionaries
-        );
-    }
-
-    /**
-     * @throws DeepLException
-     * @throws ApiKeyNotSetException
-     */
-    public function replaceMultilingualGlossary(string $glossaryId, MultilingualGlossaryDictionaryEntries $dictionaries): MultilingualGlossaryDictionaryInfo
-    {
-        return $this->getTranslator()->replaceMultilingualGlossaryDictionary($glossaryId, $dictionaries);
-    }
-
-    /**
-     * @throws DeepLException
-     * @throws ApiKeyNotSetException
-     */
-    public function deleteMultilingualGlossary(string $glossaryId): void
-    {
-        $this->getTranslator()->deleteMultilingualGlossary($glossaryId);
-    }
-
-    /**
-     * @throws DeepLException
-     * @throws ApiKeyNotSetException
-     */
-    public function listMultilingualGlossaries(): array
-    {
-        return $this->getTranslator()->listMultilingualGlossaries();
-    }
-
-    /**
-     * @throws DeepLException
-     * @throws ApiKeyNotSetException
-     */
-    public function deleteGlossaryDictionary(string $glossaryId, string $sourceLanguage, string $targetLanguage): void
-    {
-        $this->getTranslator()->deleteMultilingualGlossaryDictionary(
-            $glossaryId,
-            null,
-            $sourceLanguage,
-            $targetLanguage
-        );
     }
 }
