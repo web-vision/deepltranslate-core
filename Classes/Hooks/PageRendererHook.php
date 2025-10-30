@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Hooks;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
+/**
+ * Adds the labels from deepltranslate_core to the backend, so they are available, as the default core functionality
+ * is not working
+ */
+#[Autoconfigure(public: true)]
 final class PageRendererHook
 {
     /**

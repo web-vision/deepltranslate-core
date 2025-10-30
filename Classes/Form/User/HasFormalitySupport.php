@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Form\User;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Backend\Form\FormDataProvider\EvaluateDisplayConditions;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 
-class HasFormalitySupport
+/**
+ * Checks a language having support for formality or not.
+ */
+#[Autoconfigure(public: true)]
+final class HasFormalitySupport
 {
     private DeeplService $deeplService;
 

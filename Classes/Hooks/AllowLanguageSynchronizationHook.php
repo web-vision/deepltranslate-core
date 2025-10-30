@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Hooks;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
-class AllowLanguageSynchronizationHook
+/**
+ * Changes the `l10n_state` for fields with allowLanguageSynchronisation enabled to custom.
+ * This is required to allow overriding the translation.
+ */
+#[Autoconfigure(public: true)]
+final class AllowLanguageSynchronizationHook
 {
     public function processDatamap_beforeStart(DataHandler $dataHandler): void
     {
@@ -25,11 +31,7 @@ class AllowLanguageSynchronizationHook
 
                     $columnConfig = $GLOBALS['TCA'][$table]['columns'][$column];
 
-                    if (isset($columnConfig['config']['behaviour'])
-                        && is_array($columnConfig['config']['behaviour'])
-                        && isset($columnConfig['config']['behaviour']['allowLanguageSynchronization'])
-                        && (bool)$columnConfig['config']['behaviour']['allowLanguageSynchronization'] === true
-                    ) {
+                    if ((bool)($columnConfig['config']['behaviour']['allowLanguageSynchronization'] ?? false) === true) {
                         $l10nState[$column] = (($columnConfig['l10n_mode'] ?? '') === 'prefixLangTitle')
                             ? 'custom'
                             : 'parent';

@@ -4,10 +4,17 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Service;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 
+/**
+ * Service for detecting correct target and source languages from DeepL
+ *
+ * @internal No public API
+ */
+#[Autoconfigure(public: true)]
 final class LanguageService
 {
     protected DeeplService $deeplService;

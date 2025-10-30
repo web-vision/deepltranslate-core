@@ -13,29 +13,6 @@ services:
     factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
     arguments: ['deepltranslate_core']
 
-  WebVision\Deepltranslate\Core\Service\:
-    resource: '../Classes/Service/*'
-    public: true
-
-  WebVision\Deepltranslate\Core\Hooks\:
-    resource: '../Classes/Hooks/*'
-    public: true
-
-  WebVision\Deepltranslate\Core\Service\ProcessingInstruction:
-    arguments:
-      $runtimeCache: '@cache.runtime'
-
-  WebVision\Deepltranslate\Core\Service\DeeplService:
-    public: true
-    arguments:
-      $cache: '@cache.deepltranslateCore'
-
-  WebVision\Deepltranslate\Core\Controller\Backend\AjaxController:
-    public: true
-
-  WebVision\Deepltranslate\Core\ClientInterface:
-    class: WebVision\Deepltranslate\Core\Client
-
   WebVision\Deepltranslate\Core\Event\Listener\RenderLocalizationSelect:
     tags:
       - name: 'event.listener'

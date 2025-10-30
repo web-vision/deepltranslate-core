@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Service;
 
 use DeepL\Usage;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Backend\Toolbar\Enumeration\InformationStatus;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Localization\Locales;
@@ -13,6 +14,10 @@ use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Event\Listener\UsageToolBarEventListener;
 use WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook;
 
+/**
+ * Service for getting the current count and limit of DeepL API
+ */
+#[Autoconfigure(public: true)]
 final class UsageService implements UsageServiceInterface
 {
     public function __construct(

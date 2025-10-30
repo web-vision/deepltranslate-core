@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Service;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 
 /**
  * @internal not part of public deepl extension api
  */
+#[Autoconfigure(public: true)]
 final class IconOverlayGenerator
 {
     private IconFactory $iconFactory;

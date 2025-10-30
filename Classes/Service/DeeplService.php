@@ -7,6 +7,8 @@ namespace WebVision\Deepltranslate\Core\Service;
 use DeepL\Language;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use WebVision\Deepltranslate\Core\ClientInterface;
@@ -15,6 +17,10 @@ use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
+/**
+ * Main entry point for connecting TYPO3 backend to the DeepL API
+ */
+#[Autoconfigure(public: true)]
 final class DeeplService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
@@ -25,6 +31,7 @@ final class DeeplService implements LoggerAwareInterface
     private ProcessingInstruction $processingInstruction;
 
     public function __construct(
+        #[Autowire(service: 'cache.deepltranslateCore')]
         FrontendInterface $cache,
         ClientInterface $client,
         ProcessingInstruction $processingInstruction,

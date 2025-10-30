@@ -15,6 +15,9 @@ use WebVision\Deepltranslate\Core\Service\UsageService;
 /**
  * `EXT:dashboard` widget compatible with TYPO3 v12 to display deepl api usage.
  *
+ * Cannot be autoconfigured, as this class depends on EXT:dashboard, which is not installed in every system.
+ * Registration and configuring is done in Configuration/Services.php
+ *
  * @internal implementation only and not part of public API.
  */
 final class UsageWidget implements RequestAwareWidgetInterface, WidgetInterface
