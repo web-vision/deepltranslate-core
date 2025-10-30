@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Domain\Dto;
 
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 
 /**
@@ -14,8 +15,9 @@ use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
  * detecting the right page,
  * for example, while detecting a glossary.
  *
- * @see DeepLGlossaryIdEvent for an usage example
+ * @see DeepLGlossaryIdEvent for a usage example
  */
+#[Exclude]
 final class CurrentPage
 {
     public function __construct(

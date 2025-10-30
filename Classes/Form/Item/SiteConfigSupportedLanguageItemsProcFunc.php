@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Form\Item;
 
 use DeepL\Language;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 
-class SiteConfigSupportedLanguageItemsProcFunc
+/**
+ * Adds DeepL related fields to the Site configuration
+ */
+#[Autoconfigure(public: true)]
+final class SiteConfigSupportedLanguageItemsProcFunc
 {
     private DeeplService $deeplService;
 

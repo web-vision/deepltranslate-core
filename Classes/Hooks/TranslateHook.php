@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Hooks;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -12,7 +13,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 
-class TranslateHook extends AbstractTranslateHook
+/**
+ * The main translation rendering on localization.
+ */
+#[Autoconfigure(public: true)]
+final class TranslateHook extends AbstractTranslateHook
 {
     /**
      * @param array{uid: int} $languageRecord

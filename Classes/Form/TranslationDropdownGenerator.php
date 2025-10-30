@@ -23,10 +23,6 @@ use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
  */
 final class TranslationDropdownGenerator
 {
-    public function __construct()
-    {
-    }
-
     /**
      * @param iterable<SiteLanguage> $siteLanguages
      * @throws \Doctrine\DBAL\Exception

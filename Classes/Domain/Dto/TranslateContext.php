@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Domain\Dto;
 
-class TranslateContext
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
+
+/**
+ * DTO providing the data shipped to DeepL translation.
+ */
+#[Exclude]
+final class TranslateContext
 {
     protected string $content = '';
 

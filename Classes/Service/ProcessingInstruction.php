@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Service;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 
+/**
+ * This class defines instructions, how to work within DeepL translations
+ * @internal No public API
+ */
+#[Autoconfigure(public: true)]
 final class ProcessingInstruction
 {
     protected const PROCESSING_CACHE_IDENTIFIER = 'deepl-processing-cache';
     private FrontendInterface $runtimeCache;
 
     public function __construct(
+        #[Autowire(service: 'cache.runtime')]
         FrontendInterface $runtimeCache
     ) {
         $this->runtimeCache = $runtimeCache;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Hooks;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -13,7 +14,12 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Service\UsageService;
 
-class UsageProcessAfterFinishHook
+/**
+ * This hook adds a FlashMessage, if the usage quota is reaching a critical level, so editors can take care
+ * on and ensure to either increase their quota in DeepL or stop translating to keep the hard limit untouched.
+ */
+#[Autoconfigure(public: true)]
+final class UsageProcessAfterFinishHook
 {
     private UsageService $usageService;
 
@@ -25,9 +31,7 @@ class UsageProcessAfterFinishHook
 
     public function processCmdmap_afterFinish(DataHandler $dataHandler): void
     {
-        if (!isset($dataHandler->cmdmap['localization']['custom']['mode'])
-            || $dataHandler->cmdmap['localization']['custom']['mode'] !== 'deepl'
-        ) {
+        if (!isset($dataHandler->cmdmap['deepltranslate'])) {
             return;
         }
 
