@@ -14,7 +14,6 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Domain\Repository\PageRepository;
-use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
@@ -61,6 +60,7 @@ abstract class AbstractTranslateHook
 
     /**
      * @internal
+     * @deprecated Use {self::createTranslateContextForRecords()} instead.
      *
      * @throws LanguageRecordNotFoundException
      * @throws LanguageIsoCodeNotFoundException
@@ -68,17 +68,15 @@ abstract class AbstractTranslateHook
     protected function createTranslateContext(string $content, int $targetLanguageUid, Site $site): TranslateContext
     {
         $context = new TranslateContext($content);
-
         $sourceLanguageRecord = $this->languageService->getSourceLanguage($site);
-
         $context->setSourceLanguageCode($sourceLanguageRecord['languageCode']);
 
         try {
             $targetLanguageRecord = $this->languageService->getTargetLanguage($site, $targetLanguageUid);
         } catch (\Throwable $e) {
-            throw new InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 sprintf(
-                    'The target language is not DeepL supported. Possibly wrong Site configuration. Message: %s',
+                    'Target language not supported by DeepL. Possibly wrong Site configuration. Message: %s',
                     $e->getMessage(),
                 ),
                 1746962367,
@@ -97,17 +95,47 @@ abstract class AbstractTranslateHook
         return $context;
     }
 
-    protected function findCurrentParentPage(string $tableName, int $currentRecordId): int
+    /**
+     * @internal
+     *
+     * @param array{uid: int, title: string, language_isocode: string, languageCode: string} $sourceLanguageRecord
+     * @param array{uid: int, title: string, language_isocode: string, languageCode: string, formality: string} $targetLanguageRecord
+     *
+     * @throws LanguageRecordNotFoundException
+     * @throws LanguageIsoCodeNotFoundException
+     */
+    protected function createTranslateContextForRecords(string $content, array $sourceLanguageRecord, array $targetLanguageRecord): TranslateContext
     {
-        if ($tableName === 'pages') {
-            $pageId = $currentRecordId;
-        } else {
-            /** @var array{pid: int|string} $currentPageRecord */
-            $currentPageRecord = BackendUtility::getRecord($tableName, $currentRecordId);
-            $pageId = (int)$currentPageRecord['pid'];
+        $context = new TranslateContext($content);
+        $context->setSourceLanguageCode($sourceLanguageRecord['languageCode']);
+        $context->setTargetLanguageCode($targetLanguageRecord['languageCode']);
+
+        if (
+            $targetLanguageRecord['formality'] !== ''
+            && $this->deeplService->hasLanguageFormalitySupport($targetLanguageRecord['languageCode'])
+        ) {
+            $context->setFormality($targetLanguageRecord['formality']);
         }
 
-        return $pageId;
+        return $context;
+    }
+
+    /**
+     * @param array<string, mixed>|int $currentRecord
+     */
+    protected function findCurrentParentPage(string $tableName, int|array $currentRecord): int
+    {
+        if (is_int($currentRecord)) {
+            /** @var array<string, mixed> $currentRecord */
+            $currentRecord = BackendUtility::getRecord($tableName, $currentRecord);
+            if (!is_array($currentRecord)) {
+                return 0;
+            }
+        }
+        return match($tableName) {
+            'pages' => (int)($currentRecord['uid'] ?? 0),
+            default => (int)($currentRecord['pid'] ?? 0),
+        };
     }
 
     protected function flashMessages(string $message, string $title, ContextualFeedbackSeverity $severity): void
