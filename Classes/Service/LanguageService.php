@@ -28,12 +28,25 @@ final class LanguageService
     /**
      * @return array{uid: int, title: string, language_isocode: string, languageCode: string}
      */
-    public function getSourceLanguage(Site $currentSite): array
+    public function getSourceLanguage(Site $currentSite, int $languageId = 0): array
     {
-        $languageIsoCode = $currentSite->getDefaultLanguage()->getLocale()->getLanguageCode();
+        try {
+            $language = $currentSite->getLanguageById($languageId);
+        } catch (\Exception $e) {
+            if ($e->getCode() === 1522960188) {
+                throw new LanguageRecordNotFoundException(
+                    sprintf('Language "%d" in site "%s" not found.', $languageId, $currentSite->getIdentifier()),
+                    1764155930,
+                    $e,
+                );
+            }
+            throw $e;
+        }
+
+        $languageIsoCode = $language->getLocale()->getLanguageCode();
         $sourceLanguageRecord = [
-            'uid' => $currentSite->getDefaultLanguage()->getLanguageId(),
-            'title' => $currentSite->getDefaultLanguage()->getTitle(),
+            'uid' => $language->getLanguageId(),
+            'title' => $language->getTitle(),
             'language_isocode' => strtoupper($languageIsoCode),
             'languageCode' => strtoupper($languageIsoCode),
         ];
