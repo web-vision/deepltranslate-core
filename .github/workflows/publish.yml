@@ -46,16 +46,7 @@ jobs:
           } >> "$GITHUB_ENV"
           echo "DETECTED_EXTENSION_KEY=$(cat composer.json | jq -r '.extra."typo3/cms"."extension-key"' )" >> "$GITHUB_ENV"
 
-      - name: Setup PHP 7.4 ( wv_deepltranslate 4.x )
-        if: github.event.base_ref == 'refs/heads/4'
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.4
-          extensions: intl, mbstring, json, zip, curl
-          tools: composer:v2
-
-      - name: Setup PHP 8.1 ( deepltranlsate-core 5.x )
-        if: github.event.base_ref == 'refs/heads/main'
+      - name: Setup PHP 8.1
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.1
@@ -63,13 +54,11 @@ jobs:
           tools: composer:v2
 
       - name: Install tailor
-        run: composer global require typo3/tailor --prefer-dist --no-progress --no-suggest
+        run: |
+          composer global require typo3/tailor --prefer-dist --no-progress --no-suggest
 
       # Note that step will fail when `env.version` does not match the `ext_emconf.php` version.
       - name: Create local TER package upload artifact
-        env:
-          # See https://github.com/TYPO3/tailor?tab=readme-ov-file#exclude-paths-from-packaging
-          TYPO3_EXCLUDE_FROM_PACKAGING: Build/tailor/ExcludeFromPackaging.php
         run: |
           php ~/.composer/vendor/bin/tailor create-artefact ${{ env.version }} ${{ env.DETECTED_EXTENSION_KEY }}
 
