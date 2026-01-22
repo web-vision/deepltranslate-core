@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Event\Listener;
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use WebVision\Deepl\Base\Controller\Backend\LocalizationController;
 use WebVision\Deepl\Base\Event\GetLocalizationModesEvent;
 use WebVision\Deepl\Base\Localization\LocalizationMode;
+use WebVision\Deepltranslate\Core\Access\AllowedTranslateAccess;
 
 /**
  * Provides deepltranslate related localization modes by listening to the PSR-14
@@ -18,6 +20,10 @@ final class ApplyLocalizationModesEventListener
 {
     public function __invoke(GetLocalizationModesEvent $event): void
     {
+        if (!$this->deeplTranslateAllowed()) {
+            // Non-admin user does not have the permission for deepl, return early.
+            return;
+        }
         $modes = [];
         $majorVersion = (new Typo3Version())->getMajorVersion();
         if ($this->allowDeeplTranslate($event)) {
@@ -56,5 +62,19 @@ final class ApplyLocalizationModesEventListener
     {
         // @todo Prepared for PageTSConfig feature to toggle `deepltranslateauto`.
         return true;
+    }
+
+    private function deeplTranslateAllowed(): bool
+    {
+        $user = $this->getBackendUser();
+        if ($user === null) {
+            return false;
+        }
+        return $user->isAdmin() || $user->check('custom_options', AllowedTranslateAccess::ALLOWED_TRANSLATE_OPTION_VALUE);
+    }
+
+    private function getBackendUser(): ?BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'] ?? null;
     }
 }
