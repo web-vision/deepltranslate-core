@@ -33,6 +33,10 @@ final class TranslationDropdownGenerator
         int $id,
         string|UriInterface $requestUri
     ): string {
+        if (!$this->deeplTranslateAllowed()) {
+            // Non-admin user does not have the permission for deepl, return early.
+            return '';
+        }
         $availableTranslations = [];
         foreach ($siteLanguages as $siteLanguage) {
             if (
