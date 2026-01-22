@@ -67,10 +67,10 @@ final class ApplyLocalizationModesEventListener
     private function deeplTranslateAllowed(): bool
     {
         $user = $this->getBackendUser();
-        if ($user === null) {
-            return false;
+        if ($user !== null) {
+            return $user->isAdmin() || $user->check('custom_options', AllowedTranslateAccess::ALLOWED_TRANSLATE_OPTION_VALUE);
         }
-        return $user->isAdmin() || $user->check('custom_options', AllowedTranslateAccess::ALLOWED_TRANSLATE_OPTION_VALUE);
+        return false;
     }
 
     private function getBackendUser(): ?BackendUserAuthentication
