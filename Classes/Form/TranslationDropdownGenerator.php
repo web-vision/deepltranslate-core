@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use WebVision\Deepltranslate\Core\Access\AllowedTranslateAccess;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
 /**
@@ -38,11 +39,19 @@ final class TranslationDropdownGenerator
             return '';
         }
         $availableTranslations = [];
+        $user = $this->getBackendUser();
+        if ($user === null) {
+            return '';
+        }
         foreach ($siteLanguages as $siteLanguage) {
             if (
                 $siteLanguage->getLanguageId() === 0
                 || $siteLanguage->getLanguageId() === -1
             ) {
+                continue;
+            }
+            if (!$user->isAdmin() && $user->checkLanguageAccess($siteLanguage->getLanguageId())) {
+                // User does not have access to edit for this language, skip it.
                 continue;
             }
             $availableTranslations[$siteLanguage->getLanguageId()] = $siteLanguage->getTitle();
@@ -106,6 +115,15 @@ final class TranslationDropdownGenerator
             return $output;
         }
         return '';
+    }
+
+    private function deeplTranslateAllowed(): bool
+    {
+        $user = $this->getBackendUser();
+        if ($user !== null) {
+            return $user->isAdmin() || $user->check('custom_options', AllowedTranslateAccess::ALLOWED_TRANSLATE_OPTION_VALUE);
+        }
+        return false;
     }
 
     private function getLocalization(): LanguageService
