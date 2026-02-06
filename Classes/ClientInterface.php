@@ -4,43 +4,20 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core;
 
+use DeepL\DeepLClient;
 use DeepL\GlossaryEntries;
 use DeepL\GlossaryInfo;
 use DeepL\GlossaryLanguagePair;
-use DeepL\Language;
-use DeepL\TextResult;
-use DeepL\Usage;
-use Psr\Log\LoggerAwareInterface;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 
 /**
  * Interface for custom client implementation and which methods are expected.
  *
  * @internal use only for testing, not part of public extension API.
+ * @property DeepLClient $translator
  */
-interface ClientInterface extends LoggerAwareInterface
+interface ClientInterface
 {
-    /**
-     * Dispatches an translation request towards the api.
-     *
-     * @return TextResult|TextResult[]|null
-     *
-     * @throws ApiKeyNotSetException
-     */
-    public function translate(
-        string $content,
-        ?string $sourceLang,
-        string $targetLang,
-        string $glossary = '',
-        string $formality = ''
-    );
-
-    /**
-     * @return Language[]
-     *
-     * @throws ApiKeyNotSetException
-     */
-    public function getSupportedLanguageByType(string $type = 'target'): array;
 
     /**
      * @return GlossaryLanguagePair[]
@@ -53,11 +30,13 @@ interface ClientInterface extends LoggerAwareInterface
      * @return GlossaryInfo[]
      *
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getAllGlossaries(): array;
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getGlossary(string $glossaryId): ?GlossaryInfo;
 
@@ -65,6 +44,7 @@ interface ClientInterface extends LoggerAwareInterface
      * @param array<int, array{source: string, target: string}> $entries
      *
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function createGlossary(
         string $glossaryName,
@@ -75,16 +55,13 @@ interface ClientInterface extends LoggerAwareInterface
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function deleteGlossary(string $glossaryId): void;
 
     /**
      * @throws ApiKeyNotSetException
+     * @deprecated This function is deprecated in favour of multilingual glossaries and will be removed in future versions
      */
     public function getGlossaryEntries(string $glossaryId): ?GlossaryEntries;
-
-    /**
-     * @throws ApiKeyNotSetException
-     */
-    public function getUsage(): ?Usage;
 }

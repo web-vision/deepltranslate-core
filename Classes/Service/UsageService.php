@@ -10,9 +10,9 @@ use TYPO3\CMS\Backend\Toolbar\Enumeration\InformationStatus;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Event\Listener\UsageToolBarEventListener;
 use WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook;
+use WebVision\Deepltranslate\Core\UsageInterface;
 
 /**
  * Service for getting the current count and limit of DeepL API

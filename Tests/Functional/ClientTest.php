@@ -14,7 +14,7 @@ use Helmich\JsonAssert\JsonAssertions;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use WebVision\Deepltranslate\Core\Client;
-use WebVision\Deepltranslate\Core\ClientInterface;
+use WebVision\Deepltranslate\Core\TranslatorInterface;
 
 #[CoversClass(Client::class)]
 final class ClientTest extends AbstractDeepLTestCase
@@ -34,41 +34,41 @@ final class ClientTest extends AbstractDeepLTestCase
     public function checkResponseFromTranslateContent(): void
     {
         $translateContent = self::EXAMPLE_TEXT['en'];
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $response = $client->translate(
             $translateContent,
             'EN',
             'DE'
         );
 
-        static::assertInstanceOf(TextResult::class, $response);
-        static::assertSame(self::EXAMPLE_TEXT['de'], $response->text);
+        $this->assertInstanceOf(TextResult::class, $response);
+        $this->assertSame(self::EXAMPLE_TEXT['de'], $response->text);
     }
 
     #[Test]
     public function checkResponseFromSupportedTargetLanguage(): void
     {
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $response = $client->getSupportedLanguageByType();
 
-        static::assertIsArray($response);
-        static::assertContainsOnlyInstancesOf(Language::class, $response);
+        $this->assertIsArray($response);
+        $this->assertContainsOnlyInstancesOf(Language::class, $response);
     }
 
     #[Test]
     public function checkResponseFromGlossaryLanguagePairs(): void
     {
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $response = $client->getGlossaryLanguagePairs();
 
-        static::assertIsArray($response);
-        static::assertContainsOnlyInstancesOf(GlossaryLanguagePair::class, $response);
+        $this->assertIsArray($response);
+        $this->assertContainsOnlyInstancesOf(GlossaryLanguagePair::class, $response);
     }
 
     #[Test]
     public function checkResponseFromCreateGlossary(): void
     {
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $response = $client->createGlossary(
             'Deepl-Client-Create-Function-Test:' . __FUNCTION__,
             'de',
@@ -81,26 +81,26 @@ final class ClientTest extends AbstractDeepLTestCase
             ],
         );
 
-        static::assertInstanceOf(GlossaryInfo::class, $response);
-        static::assertSame(1, $response->entryCount);
-        static::assertIsString($response->glossaryId);
-        static::assertInstanceOf(DateTime::class, $response->creationTime);
+        $this->assertInstanceOf(GlossaryInfo::class, $response);
+        $this->assertSame(1, $response->entryCount);
+        $this->assertIsString($response->glossaryId);
+        $this->assertInstanceOf(DateTime::class, $response->creationTime);
     }
 
     #[Test]
     public function checkResponseGetAllGlossaries(): void
     {
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $response = $client->getAllGlossaries();
 
-        static::assertIsArray($response);
-        static::assertContainsOnlyInstancesOf(GlossaryInfo::class, $response);
+        $this->assertIsArray($response);
+        $this->assertContainsOnlyInstancesOf(GlossaryInfo::class, $response);
     }
 
     #[Test]
     public function checkResponseFromGetGlossary(): void
     {
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $glossary = $client->createGlossary(
             'Deepl-Client-Create-Function-Test:' . __FUNCTION__,
             'de',
@@ -115,15 +115,15 @@ final class ClientTest extends AbstractDeepLTestCase
 
         $response = $client->getGlossary($glossary->glossaryId);
 
-        static::assertInstanceOf(GlossaryInfo::class, $response);
-        static::assertSame($glossary->glossaryId, $response->glossaryId);
-        static::assertSame(1, $response->entryCount);
+        $this->assertInstanceOf(GlossaryInfo::class, $response);
+        $this->assertSame($glossary->glossaryId, $response->glossaryId);
+        $this->assertSame(1, $response->entryCount);
     }
 
     #[Test]
     public function checkGlossaryDeletedNotCatchable(): void
     {
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $glossary = $client->createGlossary(
             'Deepl-Client-Create-Function-Test' . __FUNCTION__,
             'de',
@@ -140,13 +140,13 @@ final class ClientTest extends AbstractDeepLTestCase
 
         $client->deleteGlossary($glossaryId);
 
-        static::assertNull($client->getGlossary($glossaryId));
+        $this->assertNull($client->getGlossary($glossaryId));
     }
 
     #[Test]
     public function checkResponseFromGetGlossaryEntries(): void
     {
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $glossary = $client->createGlossary(
             'Deepl-Client-Create-Function-Test:' . __FUNCTION__,
             'de',
@@ -161,7 +161,7 @@ final class ClientTest extends AbstractDeepLTestCase
 
         $response = $client->getGlossaryEntries($glossary->glossaryId);
 
-        static::assertInstanceOf(GlossaryEntries::class, $response);
-        static::assertSame(1, count($response->getEntries()));
+        $this->assertInstanceOf(GlossaryEntries::class, $response);
+        $this->assertSame(1, count($response->getEntries()));
     }
 }

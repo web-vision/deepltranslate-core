@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Tests\Functional;
 
 use Closure;
-use DeepL\Translator;
+use DeepL\DeepLClient;
 use DeepL\TranslatorOptions;
 use Exception;
 use phpmock\phpunit\PHPMock;
@@ -17,8 +17,9 @@ use Symfony\Component\DependencyInjection\Container;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\StringUtility;
 use WebVision\Deepltranslate\Core\Client;
-use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\ConfigurationInterface;
+use WebVision\Deepltranslate\Core\TranslatorInterface;
+use WebVision\Deepltranslate\Core\UsageInterface;
 
 abstract class AbstractDeepLTestCase extends FunctionalTestCase
 {
@@ -218,13 +219,12 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
             ->method('getApiKey')
             ->willReturn(self::getInstanceIdentifier());
 
-        $client = new Client($mockConfiguration);
-        $client->setLogger(new NullLogger());
+        $client = new Client($mockConfiguration, new NullLogger());
 
         // use closure to set private option for translation
-        $translator = new Translator(self::getInstanceIdentifier(), $mergedOptions);
+        $translator = new DeepLClient(self::getInstanceIdentifier(), $mergedOptions);
         Closure::bind(
-            function (Translator $translator) {
+            function (DeepLClient $translator) {
                 $this->translator = $translator;
             },
             $client,
@@ -233,7 +233,8 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
 
         /** @var Container $container */
         $container = $this->getContainer();
-        $container->set(ClientInterface::class, $client);
+        $container->set(TranslatorInterface::class, $client);
+        $container->set(UsageInterface::class, $client);
     }
 
     public static function readFile(string $filepath): string
@@ -283,10 +284,10 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         try {
             $function();
         } catch (Exception $exception) {
-            static::assertStringContainsString($needle, $exception->getMessage());
+            $this->assertStringContainsString($needle, $exception->getMessage());
             return $exception;
         }
-        static::fail("Expected exception containing '$needle' but nothing was thrown");
+        $this->fail("Expected exception containing '$needle' but nothing was thrown");
     }
 
     /**
@@ -297,10 +298,10 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         try {
             $function();
         } catch (Exception $exception) {
-            static::assertEquals($class, get_class($exception));
+            $this->assertEquals($class, get_class($exception));
             return $exception;
         }
-        static::fail("Expected exception of class '$class' but nothing was thrown");
+        $this->fail("Expected exception of class '$class' but nothing was thrown");
     }
 
     /**

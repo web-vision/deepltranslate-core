@@ -124,7 +124,7 @@ final class TranslateHookTest extends AbstractDeepLTestCase
             'DE',
         );
 
-        static::assertSame($expectedTranslation, $content);
+        $this->assertSame($expectedTranslation, $content);
     }
 
     #[Test]
@@ -149,7 +149,7 @@ final class TranslateHookTest extends AbstractDeepLTestCase
             'BS'
         );
 
-        static::assertSame('', $content);
+        $this->assertSame('', $content);
     }
 
     #[Test]
@@ -188,10 +188,10 @@ final class TranslateHookTest extends AbstractDeepLTestCase
             1,
         )->fetchAssociative();
 
-        static::assertIsArray($pageRow);
-        static::assertArrayHasKey('tx_wvdeepltranslate_content_not_checked', $pageRow);
-        static::assertSame(1, (int)$pageRow['tx_wvdeepltranslate_content_not_checked']);
-        static::assertArrayHasKey('tx_wvdeepltranslate_translated_time', $pageRow);
-        static::assertGreaterThan(0, (int)$pageRow['tx_wvdeepltranslate_translated_time']);
+        $this->assertIsArray($pageRow);
+        $this->assertArrayHasKey('tx_wvdeepltranslate_content_not_checked', $pageRow);
+        $this->assertSame(1, (int)$pageRow['tx_wvdeepltranslate_content_not_checked']);
+        $this->assertArrayHasKey('tx_wvdeepltranslate_translated_time', $pageRow);
+        $this->assertGreaterThan(0, (int)$pageRow['tx_wvdeepltranslate_translated_time']);
     }
 }

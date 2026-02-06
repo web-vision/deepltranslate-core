@@ -38,7 +38,7 @@ class HasFormalitySupportTest extends AbstractDeepLTestCase
             ],
         ], $evaluateDisplayConditionsMock);
 
-        static::assertTrue($isFormalitySupported);
+        $this->assertTrue($isFormalitySupported);
     }
 
     #[Test]
@@ -56,7 +56,7 @@ class HasFormalitySupportTest extends AbstractDeepLTestCase
             ],
         ], $evaluateDisplayConditionsMock);
 
-        static::assertFalse($isFormalitySupported);
+        $this->assertFalse($isFormalitySupported);
     }
 
     #[Test]
@@ -68,7 +68,7 @@ class HasFormalitySupportTest extends AbstractDeepLTestCase
 
         $isFormalitySupported = $subject->checkFormalitySupport([], $evaluateDisplayConditionsMock);
 
-        static::assertFalse($isFormalitySupported);
+        $this->assertFalse($isFormalitySupported);
     }
 
     #[Test]
@@ -84,6 +84,6 @@ class HasFormalitySupportTest extends AbstractDeepLTestCase
             ],
         ], $evaluateDisplayConditionsMock);
 
-        static::assertFalse($isFormalitySupported);
+        $this->assertFalse($isFormalitySupported);
     }
 }

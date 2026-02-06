@@ -31,7 +31,7 @@ final class SiteConfigSupportedLanguageItemsProcFuncTest extends AbstractDeepLTe
 
         $func->getSupportedLanguageForField($fieldConfig);
 
-        static::assertArrayHasKey('items', $fieldConfig);
-        static::assertTrue((count($fieldConfig['items']) > 2));
+        $this->assertArrayHasKey('items', $fieldConfig);
+        $this->assertTrue((count($fieldConfig['items']) > 2));
     }
 }
