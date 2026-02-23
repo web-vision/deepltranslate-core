@@ -43,7 +43,7 @@ abstract class AbstractClient implements ClientInterface
             return $this->translator;
         }
         if ($this->configuration->getApiKey() === '') {
-            throw new ApiKeyNotSetException('The api key ist not set', 1708081233823);
+            throw new ApiKeyNotSetException('The api key is not set', 1708081233823);
         }
         $options[TranslatorOptions::HTTP_CLIENT] = GeneralUtility::makeInstance(GuzzleClientFactory::class)->getClient();
         $this->translator = new Translator($this->configuration->getApiKey(), $options);
