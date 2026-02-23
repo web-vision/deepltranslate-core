@@ -35,7 +35,7 @@ class ClientTest extends UnitTestCase
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
-        static::expectExceptionMessage('The api key ist not set');
+        static::expectExceptionMessage('The api key is not set');
 
         $client->getSupportedLanguageByType();
     }
@@ -49,7 +49,7 @@ class ClientTest extends UnitTestCase
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
-        static::expectExceptionMessage('The api key ist not set');
+        static::expectExceptionMessage('The api key is not set');
 
         $client->getGlossaryLanguagePairs();
     }
@@ -63,7 +63,7 @@ class ClientTest extends UnitTestCase
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
-        static::expectExceptionMessage('The api key ist not set');
+        static::expectExceptionMessage('The api key is not set');
 
         $response = $client->createGlossary(
             'Deepl-Client-Create-Function-Test:' . __FUNCTION__,
@@ -87,7 +87,7 @@ class ClientTest extends UnitTestCase
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
-        static::expectExceptionMessage('The api key ist not set');
+        static::expectExceptionMessage('The api key is not set');
 
         $response = $client->getGlossary('61567955-8db8-493d-aa20-28bbba6fb438');
     }
@@ -101,7 +101,7 @@ class ClientTest extends UnitTestCase
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
-        static::expectExceptionMessage('The api key ist not set');
+        static::expectExceptionMessage('The api key is not set');
 
         $client->deleteGlossary('25d90db6-bcab-4130-ab36-4514dd5d87ec');
     }
@@ -115,7 +115,7 @@ class ClientTest extends UnitTestCase
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
-        static::expectExceptionMessage('The api key ist not set');
+        static::expectExceptionMessage('The api key is not set');
 
         $response = $client->getGlossaryEntries('a44703d5-ece7-4230-a67b-1a07153768d6');
     }
@@ -129,7 +129,7 @@ class ClientTest extends UnitTestCase
 
         static::expectException(ApiKeyNotSetException::class);
         static::expectExceptionCode(1708081233823);
-        static::expectExceptionMessage('The api key ist not set');
+        static::expectExceptionMessage('The api key is not set');
 
         $client->translate(
             'proton beam',
