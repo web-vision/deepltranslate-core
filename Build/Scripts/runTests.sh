@@ -21,7 +21,7 @@ waitFor() {
             COUNT=\$((COUNT + 1));
         done;
     "
-    ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name wait-for-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_ALPINE} /bin/sh -c "${TESTCOMMAND}"
+    ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name wait-for-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} /bin/sh -c "${TESTCOMMAND}"
     if [[ $? -gt 0 ]]; then
         kill -SIGINT -$$
     fi
@@ -161,6 +161,7 @@ Options:
             - phpstan: phpstan analyze
             - phpstanGenerateBaseline: regenerate phpstan baseline, handy after phpstan updates
             - unit: PHP unit tests
+            - unitRandom: PHP unit tests in randomized order
 
     -b <docker|podman>
         Container environment:
@@ -423,9 +424,7 @@ if [[ -z "${CONTAINER_BIN}" ]]; then
 fi
 
 IMAGE_PHP="ghcr.io/typo3/core-testing-$(echo "php${PHP_VERSION}" | sed -e 's/\.//'):latest"
-IMAGE_ALPINE="docker.io/alpine:3.8"
 IMAGE_DOCS="ghcr.io/typo3-documentation/render-guides:latest"
-IMAGE_SELENIUM="docker.io/selenium/standalone-chrome:4.0.0-20211102"
 IMAGE_MARIADB="docker.io/mariadb:${DBMS_VERSION}"
 IMAGE_MYSQL="docker.io/mysql:${DBMS_VERSION}"
 IMAGE_POSTGRES="docker.io/postgres:${DBMS_VERSION}-alpine"
@@ -436,10 +435,6 @@ IMAGE_DEEPL="ghcr.io/web-vision/wv-deeplmockapi-server:latest"
 # In a perfect world selenium would have a arm64 integrated, but that is not on the horizon.
 # So for the time being we have to use seleniarm image.
 ARCH=$(uname -m)
-if [ ${ARCH} = "arm64" ]; then
-    IMAGE_SELENIUM="docker.io/seleniarm/standalone-chromium:4.1.2-20220227"
-fi
-echo "Architecture" ${ARCH} "requires" ${IMAGE_SELENIUM} "to run acceptance tests."
 
 # Set $1 to first mass argument, this is the optional test file or test directory to execute
 shift $((OPTIND - 1))
@@ -527,13 +522,17 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         ;;
     composerUpdate)
-        COMMAND=(Build/Scripts/composer-for-core-version.sh ${CORE_VERSION})
-        ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} "${COMMAND[@]}"
+        # backup current composer.json
+        cp -Rf composer.json composer.json.orig
+        rm -rf vendor composer.lock
+        ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-update-${CORE_VERSION}-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} composer require --dev "typo3/minimal":"^${CORE_VERSION}"
         SUITE_EXIT_CODE=$?
+        # restore composer json
+        cp -Rf composer.json.orig composer.json
         ;;
     functional)
         PHPUNIT_CONFIG_FILE="Build/phpunit/FunctionalTests.xml"
-        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-${DBMS} "$@")
+        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-${DBMS},not-core-${CORE_VERSION} "$@")
         echo "Using deepl-mockserver"
         ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name deepl-func-${SUFFIX} --network ${NETWORK} -d ${IMAGE_DEEPL} >/dev/null
         waitFor deepl-func-${SUFFIX} 3000
@@ -598,13 +597,13 @@ case ${TEST_SUITE} in
         ;;
     unit)
         PHPUNIT_CONFIG_FILE="Build/phpunit/UnitTests.xml"
-        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} "$@")
+        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-core-${CORE_VERSION} "$@")
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     unitRandom)
         PHPUNIT_CONFIG_FILE="Build/phpunit/UnitTests.xml"
-        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --order-by=random ${PHPUNIT_RANDOM} "$@")
+        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-core-${CORE_VERSION} --order-by=random ${PHPUNIT_RANDOM} "$@")
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name unit-random-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} "${COMMAND[@]}"
         SUITE_EXIT_CODE=$?
         ;;

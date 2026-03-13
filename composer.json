@@ -85,17 +85,16 @@
 		"web-vision/deeplcom-deepl-php": "^1.16.1"
 	},
 	"require-dev": {
-		"b13/container": "^2.3.6 || ^3.1.1",
-		"friendsofphp/php-cs-fixer": "^3.41",
-		"helhum/typo3-console": "^7.1.6 || ^8.0.2",
-		"helmich/phpunit-json-assert": "^3.4.3 || ^3.5.1",
+		"b13/container": "^2.3.6 || ^3.2.2",
+		"friendsofphp/php-cs-fixer": "^3.94.2",
+		"helmich/phpunit-json-assert": "^3.4.3 || ^3.5.5",
 		"helmich/typo3-typoscript-lint": "^3.1.0",
 		"nikic/php-parser": "^4.15.1 || ^5.1.0",
-		"php-mock/php-mock-phpunit": "^2.6",
-		"phpstan/phpstan": "^1.10",
-		"phpunit/phpunit": "^10.5",
-		"ramsey/uuid": "^4.2",
-		"saschaegerer/phpstan-typo3": "^1.9",
+		"php-mock/php-mock-phpunit": "^2.15.0",
+		"phpstan/phpstan": "^1.12.33",
+		"phpunit/phpunit": "^10.5.63",
+		"ramsey/uuid": "^4.9.2",
+		"saschaegerer/phpstan-typo3": "^1.10.2",
 		"sbuerk/typo3-site-based-test-trait": "^1.0.2 || ^2.0.1",
 		"sbuerk/typo3-styleguide-selector": "^12.0.5 || ^13.4",
 		"typo3/cms-belog": "^12.4.2 || ^13.4",
@@ -111,8 +110,7 @@
 		"typo3/cms-styleguide": "^12.0.5 || ^13.4",
 		"typo3/cms-tstemplate": "^12.4.2 || ^13.4",
 		"typo3/cms-workspaces": "^12.4.2 || ^13.4",
-		"typo3/testing-framework": "^8.2.7",
-		"web-vision/contribution": "@dev"
+		"typo3/testing-framework": "^8.3.1"
 	},
 	"suggest": {
         "b13/container": "Just to be loaded after EXT:container",
@@ -132,38 +130,6 @@
 		"psr-4": {
 			"WebVision\\Deepltranslate\\Core\\Tests\\": "Tests",
 			"WebVision\\TestingFrameworkBackendUserHandlerReplacement\\": "Tests/Functional/Fixtures/Extensions/testing_framework_backenduserhandler_replacement/Classes"
-		}
-	},
-	"scripts": {
-		"cs": "@php .Build/bin/php-cs-fixer",
-		"tl": "@php .Build/bin/typoscript-lint",
-		"phpstan": "@php .Build/bin/phpstan",
-		"phpunit": "@php .Build/bin/phpunit",
-		"typo3": "@php .Build/bin/typo3",
-		"cs:check": "@cs fix --config Build/php-cs-fixer/php-cs-rules.php --ansi --diff --verbose --dry-run",
-		"cs:fix": "@cs fix --config Build/php-cs-fixer/php-cs-rules.php --ansi",
-		"analyze:php:12": "@phpstan analyse --ansi --no-progress --memory-limit=768M --configuration=Build/phpstan/Core12/phpstan.neon",
-		"analyze:baseline:12": "@phpstan analyse --ansi --no-progress --memory-limit=768M --configuration=Build/phpstan/Core11/phpstan.neon --generate-baseline=Build/phpstan/Core12/phpstan-baseline.neon",
-		"lint:typoscript": "@tl --ansi --config=./Build/typoscript-lint/typoscript-lint.yml",
-		"lint:php": "find .*.php *.php Classes Configuration Tests -name '*.php' -print0 | xargs -r -0 -n 1 -P 4 php -l",
-		"test:php": [
-			"@test:php:unit",
-			"@test:php:functional"
-		],
-		"test:php:unit": "@phpunit --colors=always --configuration Build/phpunit/UnitTests.xml",
-		"test:php:functional": "@test:php:unit --configuration Build/phpunit/FunctionalTests.xml",
-		"ddev:setup-instance": [
-			"@typo3 setup --driver=mysqli --host=db --port=3306 --dbname=db --username=db --password=db --project-name=deepltranslate-core --server-type=apache",
-			"@typo3 ddev:generate"
-		]
-	},
-	"scripts-descriptions": {
-		"ddev:setup-instance": "Setup new ddev instance using EXT:styleguide generator"
-	},
-	"repositories": {
-		"local": {
-			"type": "path",
-			"url": "packages/*"
 		}
 	}
 }

@@ -1,8 +1,0 @@
-#!/bin/bash
-
-## Description: Local TYPO3 version switcher
-## Usage: update-to {11}
-## Example: "ddev update-to 11"
-## ProjectTypes: typo3
-
-bash ./Build/Scripts/composer-for-core-version.sh $*
