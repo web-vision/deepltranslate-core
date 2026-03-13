@@ -68,7 +68,7 @@
 			"app-dir": ".Build"
 		},
 		"branch-alias": {
-			"dev-main": "5.x.x-dev"
+			"dev-main": "6.0.x-dev"
 		}
 	},
 	"require": {

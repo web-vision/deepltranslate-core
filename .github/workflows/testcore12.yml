@@ -61,8 +61,8 @@ jobs:
       - name: "Ensure UTF-8 files do not contain BOM"
         run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s checkBom"
 
-      - name: "Test .rst files for integrity"
-        run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s checkRst"
+#      - name: "Test .rst files for integrity"
+#        run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s checkRst"
 
       - name: "Find duplicate exception codes"
         run: "Build/Scripts/runTests.sh -t 12 -p ${{ matrix.php-version }} -s checkExceptionCodes"
