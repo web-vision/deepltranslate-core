@@ -386,7 +386,7 @@ fi
 
 handleDbmsOptions
 
-COMPOSER_ROOT_VERSION="5.x.x-dev"
+COMPOSER_ROOT_VERSION="6.0.x-dev"
 CONTAINER_INTERACTIVE="-it --init"
 HOST_UID=$(id -u)
 USERSET=""

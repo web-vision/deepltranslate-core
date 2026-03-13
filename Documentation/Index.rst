@@ -45,3 +45,4 @@
     Faq/Index
     Reference/Index
     KnownIssues/Index
+    Changelog/Changelog-6
