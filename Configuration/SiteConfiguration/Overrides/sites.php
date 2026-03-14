@@ -3,13 +3,9 @@
 use WebVision\Deepltranslate\Core\Form\Item\SiteConfigSupportedLanguageItemsProcFunc;
 
 (static function (): void {
-    $ll = function (string $identifier) {
-        return 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:' . $identifier;
-    };
-
     $GLOBALS['SiteConfiguration']['site_language']['columns']['deeplTargetLanguage'] = [
-        'label' => $ll('site_configuration.deepl.field.targetlanguage.label'),
-        'description' => $ll('site_configuration.deepl.field.targetlanguage.description'),
+        'label' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:site_configuration.deepl.field.targetlanguage.label',
+        'description' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:site_configuration.deepl.field.targetlanguage.description',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
@@ -22,8 +18,8 @@ use WebVision\Deepltranslate\Core\Form\Item\SiteConfigSupportedLanguageItemsProc
     ];
 
     $GLOBALS['SiteConfiguration']['site_language']['columns']['deeplFormality'] = [
-        'label' => $ll('site_configuration.deepl.field.formality.label'),
-        'description' => $ll('site_configuration.deepl.field.formality.description'),
+        'label' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:site_configuration.deepl.field.formality.label',
+        'description' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:site_configuration.deepl.field.formality.description',
         'displayCond' => [
             'AND' => [
                 'USER:' . \WebVision\Deepltranslate\Core\Form\User\HasFormalitySupport::class . '->checkFormalitySupport',
@@ -34,24 +30,24 @@ use WebVision\Deepltranslate\Core\Form\Item\SiteConfigSupportedLanguageItemsProc
             'renderType' => 'selectSingle',
             'items' => [
                 [
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'label' : 0) => 'default',
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'value' : 1) => 'default',
+                    'label' => 'default',
+                    'value' => 'default',
                 ],
                 [
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'label' : 0) => 'more formal language',
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'value' : 1) => 'more',
+                    'label' => 'more formal language',
+                    'value' => 'more',
                 ],
                 [
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'label' : 0) => 'more informal language',
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'value' : 1) => 'less',
+                    'label' => 'more informal language',
+                    'value' => 'less',
                 ],
                 [
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'label' : 0) => 'prefer more language, fallback default',
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'value' : 1) => 'prefer_more',
+                    'label' => 'prefer more language, fallback default',
+                    'value' => 'prefer_more',
                 ],
                 [
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'label' : 0) => 'prefer informal language, fallback default',
-                    ((new \TYPO3\CMS\Core\Information\Typo3Version())->getMajorVersion() >= 12 ? 'value' : 1) => 'prefer_less',
+                    'label' => 'prefer informal language, fallback default',
+                    'value' => 'prefer_less',
                 ],
             ],
             'minitems' => 0,

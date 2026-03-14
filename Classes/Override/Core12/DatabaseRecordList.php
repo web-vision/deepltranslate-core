@@ -11,6 +11,7 @@ use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 /**
  * Class for rendering of Web>List module
  *
+ * @todo Check if this is needed for TYPO3 v13/v14 and move to corresponding folder or remove it.
  * @internal
  * @override
  */

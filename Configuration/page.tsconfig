@@ -1,5 +1,7 @@
 @import 'EXT:deepltranslate_core/Configuration/TsConfig/Page/pagetsconfig.tsconfig'
 
-# Registration of Fluid backend for TYPO3 v12
+# Registration of Fluid backend since TYPO3 v12
 # @see https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.0/Feature-96812-OverrideBackendTemplatesWithTSconfig.html
+# @todo Check if some template overrides are only required for a specific TYPO3 version, move them around and add
+#       conditional based view registration in that case.
 templates.typo3/cms-backend.1689247071899 = web-vision/deepltranslate-core:Resources/Private/Backend/
