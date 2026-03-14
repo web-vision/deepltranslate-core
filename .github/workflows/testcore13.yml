@@ -77,7 +77,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.2', '8.3', '8.4' ]
+        # @todo Use PHP8.5 as upper version onces deeplphp is updated to a compatible version.
+        php-version: [ '8.2', '8.4' ]
     permissions:
       # actions: read|write|none
       actions: none

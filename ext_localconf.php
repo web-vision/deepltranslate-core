@@ -19,6 +19,8 @@ defined('TYPO3') or die();
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][\WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook::class]
         = \WebVision\Deepltranslate\Core\Hooks\UsageProcessAfterFinishHook::class;
 
+    // @todo Check if these Core12 xclasses are needed for v13, then move to dedicated Core13 folder. In case also
+    //       needed for TYPO3 v14 make it working for both versions.
     //xclass databaserecordlist for rendering custom checkboxes to toggle deepl selection in recordlist
     if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('gridelements') && !empty($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['gridelements']['nestingInListModule'])) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class] = [
@@ -42,6 +44,7 @@ defined('TYPO3') or die();
     // We need to provide the global backend javascript module instead of calling page-renderer here directly - which
     // cannot be done and checking the context (FE/BE) directly. Instantiating PageRenderer here directly would be
     // emitted an exception as the cache configuration manager cannot be retrieved in this early stage.
+    // @todo Check if this is still required.
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][1684661135]
         = \WebVision\Deepltranslate\Core\Hooks\PageRendererHook::class . '->renderPreProcess';
 

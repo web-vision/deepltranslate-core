@@ -10,6 +10,8 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 /**
  * Adds the labels from deepltranslate_core to the backend, so they are available, as the default core functionality
  * is not working
+ *
+ * @todo Check if this is still required.
  */
 #[Autoconfigure(public: true)]
 final class PageRendererHook

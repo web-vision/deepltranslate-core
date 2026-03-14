@@ -5,6 +5,10 @@
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
 >
+<f:comment><!-- /*
+    @todo Check if this template override is still needed in the same way for TYPO3v14, otherwise
+          move in CORE-13 related subfolder and provide it only for TYPO3 v13.
+*/--></f:comment>
 <f:if condition="{context.newLanguageOptions}">
     <deepl:be.access.deeplTranslateAllowed>
         <f:if condition="{deeplLanguages -> f:count()} > 0">
