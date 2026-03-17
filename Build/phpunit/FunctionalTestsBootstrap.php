@@ -23,6 +23,7 @@
  * before instantiating the test suites.
  */
 (static function () {
+
     /**
      * @todo Fix testing-framework extension package information loading within the framework and remove workaround
      *       here after upgrade to testing-framework release containing the fix.
