@@ -531,7 +531,7 @@ case ${TEST_SUITE} in
         ;;
     functional)
         PHPUNIT_CONFIG_FILE="Build/phpunit/FunctionalTests.xml"
-        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-${DBMS},not-core-${CORE_VERSION} "$@")
+        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-${DBMS} --exclude-group not-core-${CORE_VERSION} "$@")
         echo "Using deepl-mockserver"
         ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name deepl-func-${SUFFIX} --network ${NETWORK} -d ${IMAGE_DEEPL} >/dev/null
         waitFor deepl-func-${SUFFIX} 3000
