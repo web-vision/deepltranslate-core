@@ -23,6 +23,5 @@ final class CurrentPage
     public function __construct(
         public readonly int $uid,
         public readonly string $title
-    ) {
-    }
+    ) {}
 }

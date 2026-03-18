@@ -13,7 +13,6 @@ use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 
 class ClientTest extends UnitTestCase
 {
-
     private function createMockConfigurationWithEmptyApiKey(): MockObject
     {
         $mockConfiguration = $this->getMockBuilder(ConfigurationInterface::class)

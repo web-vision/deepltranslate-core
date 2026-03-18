@@ -12,15 +12,15 @@ use Symfony\Component\DependencyInjection\Attribute\Exclude;
 #[Exclude]
 final class TranslateContext
 {
-    protected string $content = '';
+    private string $content = '';
 
-    protected string $targetLanguageCode = '';
+    private string $targetLanguageCode = '';
 
-    protected string $sourceLanguageCode = '';
+    private string $sourceLanguageCode = '';
 
-    protected string $formality = 'default';
+    private string $formality = 'default';
 
-    protected string $glossaryId = '';
+    private string $glossaryId = '';
 
     public function __construct(string $content)
     {

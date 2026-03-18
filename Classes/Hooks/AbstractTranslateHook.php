@@ -132,7 +132,7 @@ abstract class AbstractTranslateHook
                 return 0;
             }
         }
-        return match($tableName) {
+        return match ($tableName) {
             'pages' => (int)($currentRecord['uid'] ?? 0),
             default => (int)($currentRecord['pid'] ?? 0),
         };

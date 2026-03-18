@@ -16,18 +16,6 @@ final class ContentElementsInContainerTest extends AbstractDeepLTestCase
 {
     use SiteBasedTestTrait;
 
-    /**
-     * @var non-empty-string[]
-     */
-    protected array $testExtensionsToLoad = [
-        'b13/container',
-        'web-vision/deepl-base',
-        'web-vision/deeplcom-deepl-php',
-        'web-vision/deepltranslate-core',
-        __DIR__ . '/../Fixtures/Extensions/test_services_override',
-        __DIR__ . '/Fixtures/Extensions/test_container',
-    ];
-
     protected const LANGUAGE_PRESETS = [
         'EN' => [
             'id' => 0,
@@ -75,6 +63,18 @@ final class ContentElementsInContainerTest extends AbstractDeepLTestCase
         ],
     ];
 
+    /**
+     * @var non-empty-string[]
+     */
+    protected array $testExtensionsToLoad = [
+        'b13/container',
+        'web-vision/deepl-base',
+        'web-vision/deeplcom-deepl-php',
+        'web-vision/deepltranslate-core',
+        __DIR__ . '/../Fixtures/Extensions/test_services_override',
+        __DIR__ . '/Fixtures/Extensions/test_container',
+    ];
+
     protected function setUp(): void
     {
         $this->configurationToUseInTestInstance = array_merge(
@@ -118,7 +118,7 @@ final class ContentElementsInContainerTest extends AbstractDeepLTestCase
         $dataHandler->start([], $cmdMap);
         $dataHandler->process_cmdmap();
 
-        static::assertEmpty($dataHandler->errorLog);
+        $this->assertEmpty($dataHandler->errorLog);
         self::assertCSVDataSet(__DIR__ . '/Fixtures/Result/container_translated.csv');
     }
 }

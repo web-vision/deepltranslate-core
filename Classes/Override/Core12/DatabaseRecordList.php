@@ -48,8 +48,8 @@ trait DatabaseRecordList
         $possibleTranslations = $this->possibleTranslations;
         if ($table === 'pages') {
             // Calculate possible translations for pages
-            $possibleTranslations = array_map(static fn ($siteLanguage) => $siteLanguage->getLanguageId(), $this->languagesAllowedForUser);
-            $possibleTranslations = array_filter($possibleTranslations, static fn ($languageUid) => $languageUid > 0);
+            $possibleTranslations = array_map(static fn($siteLanguage) => $siteLanguage->getLanguageId(), $this->languagesAllowedForUser);
+            $possibleTranslations = array_filter($possibleTranslations, static fn($languageUid) => $languageUid > 0);
         }
         $languageInformation = $this->translateTools->getSystemLanguages($pageId);
         foreach ($possibleTranslations as $lUid_OnPage) {

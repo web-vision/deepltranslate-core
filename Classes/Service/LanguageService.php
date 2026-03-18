@@ -17,7 +17,7 @@ use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 #[Autoconfigure(public: true)]
 final class LanguageService
 {
-    protected DeeplService $deeplService;
+    private DeeplService $deeplService;
 
     public function __construct(
         DeeplService $deeplService

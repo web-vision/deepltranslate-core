@@ -21,12 +21,12 @@ class AccessRegistryTest extends UnitTestCase
         $identifier = 'testIdentifier';
 
         $accessObject = $this->createMock(AccessItemInterface::class);
-        $accessObject->expects(static::once())->method('getIdentifier')->willReturn($identifier);
+        $accessObject->expects($this->once())->method('getIdentifier')->willReturn($identifier);
 
         $accessRegistry->addAccess($accessObject);
         $object = $accessRegistry->getAccess($identifier);
 
-        static::assertSame($accessObject, $object);
+        $this->assertSame($accessObject, $object);
     }
 
     #[Test]
@@ -34,6 +34,6 @@ class AccessRegistryTest extends UnitTestCase
     {
         $accessRegistry = new AccessRegistry();
 
-        static::assertNull($accessRegistry->getAccess('nonExistentIdentifier'));
+        $this->assertNull($accessRegistry->getAccess('nonExistentIdentifier'));
     }
 }

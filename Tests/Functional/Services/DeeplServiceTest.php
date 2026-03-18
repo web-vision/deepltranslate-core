@@ -45,7 +45,7 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
             'DE'
         );
 
-        static::assertSame(self::EXAMPLE_TEXT['en'], $translateContent);
+        $this->assertSame(self::EXAMPLE_TEXT['en'], $translateContent);
     }
 
     /**
@@ -65,7 +65,7 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
             'EN'
         );
 
-        static::assertSame($expectedTranslation, $translateContent);
+        $this->assertSame($expectedTranslation, $translateContent);
     }
 
     /**
@@ -85,7 +85,7 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
             'auto'
         );
 
-        static::assertSame($expectedTranslation, $translateContent);
+        $this->assertSame($expectedTranslation, $translateContent);
     }
 
     #[Test]
@@ -100,7 +100,7 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
 
         $translateContent = $deeplService->translateContent($translateContext);
 
-        static::assertSame('proton beam', $translateContent);
+        $this->assertSame('proton beam', $translateContent);
     }
 
     #[Test]
@@ -115,7 +115,7 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
 
         $translateContent = $deeplService->translateContent($translateContext);
 
-        static::assertSame('Protonenstrahl', $translateContent);
+        $this->assertSame('Protonenstrahl', $translateContent);
     }
 
     #[Test]
@@ -130,7 +130,7 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
 
         $translateContent = $deeplService->translateContent($translateContext);
 
-        static::assertSame('Protonenstrahl', $translateContent);
+        $this->assertSame('Protonenstrahl', $translateContent);
     }
 
     #[Test]
@@ -139,14 +139,14 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
         /** @var DeeplService $deeplService */
         $deeplService = $this->get(DeeplService::class);
 
-        static::assertContainsOnlyInstancesOf(Language::class, $deeplService->getSupportLanguage()['target']);
+        $this->assertContainsOnlyInstancesOf(Language::class, $deeplService->getSupportLanguage()['target']);
 
-        static::assertEquals('EN-GB', $deeplService->detectTargetLanguage('EN-GB')->code);
-        static::assertEquals('EN-US', $deeplService->detectTargetLanguage('EN-US')->code);
-        static::assertEquals('DE', $deeplService->detectTargetLanguage('DE')->code);
-        static::assertEquals('UK', $deeplService->detectTargetLanguage('UK')->code);
-        static::assertNull($deeplService->detectTargetLanguage('EN'));
-        static::assertNull($deeplService->detectTargetLanguage('BS'));
+        $this->assertEquals('EN-GB', $deeplService->detectTargetLanguage('EN-GB')->code);
+        $this->assertEquals('EN-US', $deeplService->detectTargetLanguage('EN-US')->code);
+        $this->assertEquals('DE', $deeplService->detectTargetLanguage('DE')->code);
+        $this->assertEquals('UK', $deeplService->detectTargetLanguage('UK')->code);
+        $this->assertNull($deeplService->detectTargetLanguage('EN'));
+        $this->assertNull($deeplService->detectTargetLanguage('BS'));
     }
 
     #[Test]
@@ -155,10 +155,10 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
         /** @var DeeplService $deeplService */
         $deeplService = $this->get(DeeplService::class);
 
-        static::assertTrue($deeplService->isTargetLanguageSupported('DE'));
+        $this->assertTrue($deeplService->isTargetLanguageSupported('DE'));
         // We should avoid using a real existing language here, as the tests will fail,
         // if the language gets supported by DeepL and the mock server is updated.
-        static::assertFalse($deeplService->isTargetLanguageSupported('BS'));
+        $this->assertFalse($deeplService->isTargetLanguageSupported('BS'));
     }
 
     #[Test]
@@ -167,12 +167,12 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
         /** @var DeeplService $deeplService */
         $deeplService = $this->get(DeeplService::class);
 
-        static::assertEquals('DE', $deeplService->detectSourceLanguage('DE')->code);
-        static::assertEquals('UK', $deeplService->detectSourceLanguage('UK')->code);
-        static::assertEquals('EN', $deeplService->detectSourceLanguage('EN')->code);
-        static::assertNull($deeplService->detectSourceLanguage('EN-GB'));
-        static::assertNull($deeplService->detectSourceLanguage('EN-US'));
-        static::assertNull($deeplService->detectSourceLanguage('BS'));
+        $this->assertEquals('DE', $deeplService->detectSourceLanguage('DE')->code);
+        $this->assertEquals('UK', $deeplService->detectSourceLanguage('UK')->code);
+        $this->assertEquals('EN', $deeplService->detectSourceLanguage('EN')->code);
+        $this->assertNull($deeplService->detectSourceLanguage('EN-GB'));
+        $this->assertNull($deeplService->detectSourceLanguage('EN-US'));
+        $this->assertNull($deeplService->detectSourceLanguage('BS'));
     }
 
     #[Test]
@@ -181,7 +181,7 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
         /** @var DeeplService $deeplService */
         $deeplService = $this->get(DeeplService::class);
 
-        static::assertTrue($deeplService->isSourceLanguageSupported('DE'));
+        $this->assertTrue($deeplService->isSourceLanguageSupported('DE'));
     }
 
     #[Test]
@@ -191,9 +191,9 @@ final class DeeplServiceTest extends AbstractDeepLTestCase
         $deeplService = $this->get(DeeplService::class);
 
         $hasFormalitySupport = $deeplService->hasLanguageFormalitySupport('DE');
-        static::assertTrue($hasFormalitySupport);
+        $this->assertTrue($hasFormalitySupport);
         $hasNotFormalitySupport = $deeplService->hasLanguageFormalitySupport('EN-GB');
-        static::assertFalse($hasNotFormalitySupport);
+        $this->assertFalse($hasNotFormalitySupport);
     }
 
 }

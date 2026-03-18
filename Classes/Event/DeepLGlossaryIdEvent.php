@@ -23,6 +23,5 @@ final class DeepLGlossaryIdEvent
         public readonly string $sourceLanguage,
         public readonly string $targetLanguage,
         public readonly ?CurrentPage $currentPage
-    ) {
-    }
+    ) {}
 }
