@@ -2,14 +2,24 @@
 
 declare(strict_types=1);
 
-namespace WebVision\Deepltranslate\Core\Event\Listener;
+namespace WebVision\Deepltranslate\Core\Core13\EventListener;
 
 use TYPO3\CMS\Backend\View\PageLayoutContext;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use WebVision\Deepl\Base\Event\ViewHelpers\ModifyInjectVariablesViewHelperEvent;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
+/**
+ * @depreacted used only for TYPO3 v13 compatibility and will not be dispatched for TYPO3 v14
+ *             and should be resort to TYPO3 v14 localization handler feature provided by the
+ *             TYPO3 Core.
+ */
 final class RenderPageViewLocalizationDropdownEventListener
 {
+    #[AsEventListener(
+        identifier: 'deepltranslate-core/translation-dropdown',
+        after: 'deepl-base/default-translation',
+    )]
     public function __invoke(ModifyInjectVariablesViewHelperEvent $event): void
     {
         if ($event->getIdentifier() !== 'languageTranslationDropdown') {

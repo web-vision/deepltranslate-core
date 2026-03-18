@@ -8,7 +8,7 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use WebVision\Deepl\Base\Event\ViewHelpers\ModifyInjectVariablesViewHelperEvent;
-use WebVision\Deepltranslate\Core\Event\Listener\RenderPageViewLocalizationDropdownEventListener;
+use WebVision\Deepltranslate\Core\Core13\EventListener\RenderPageViewLocalizationDropdownEventListener;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
 /**

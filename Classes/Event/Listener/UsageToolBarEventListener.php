@@ -7,6 +7,7 @@ namespace WebVision\Deepltranslate\Core\Event\Listener;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Backend\Backend\Event\SystemInformationToolbarCollectorEvent;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 use WebVision\Deepltranslate\Core\Service\UsageService;
@@ -23,6 +24,9 @@ class UsageToolBarEventListener implements LoggerAwareInterface
         $this->usageService = $usageService;
     }
 
+    #[AsEventListener(
+        identifier: 'deepltranslate-core/usages',
+    )]
     public function __invoke(SystemInformationToolbarCollectorEvent $systemInformation): void
     {
         $character = null;

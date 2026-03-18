@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Event\Listener;
 
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Event\AfterCacheableContentIsGeneratedEvent;
@@ -14,15 +14,20 @@ use TYPO3\CMS\Frontend\Event\AfterCacheableContentIsGeneratedEvent;
  * Event listener to render the frontend preview flag information.
  *
  * @internal for `deepltranslate-core` internal usage and not part of public API.
+ * @todo Check the whole implementation for TYPO3 v14 not having TSFE for content rendering
+ *       anymore. At best replace with a single solution for v13 and v14 avoiding TSFE for
+ *       both versions.
  */
 final class RenderTranslatedFlagInFrontendPreviewMode
 {
+    #[AsEventListener(
+        identifier: 'deepltranslate-core/render-translated-flag-in-frontend-preview-mode',
+    )]
     public function __invoke(AfterCacheableContentIsGeneratedEvent $event): void
     {
+        // @todo check this for TYPO3 v14 which dropped TSFE completely to retrieve the config.
         $controller = $this->getTypoScriptFrontendController($event);
-        $context = ((new Typo3Version())->getMajorVersion() >= 13)
-            ? GeneralUtility::makeInstance(Context::class)
-            : $controller->getContext();
+        $context = GeneralUtility::makeInstance(Context::class);
         if (
             !$this->isInPreviewMode($context)
             || $this->processWorkspacePreview($context)
