@@ -1,134 +1,137 @@
 {
-	"name": "web-vision/deepltranslate-core",
-	"type": "typo3-cms-extension",
-	"description": "This extension provides option to translate content element, and TCA record texts to DeepL supported languages using DeepL API services with TYPO3 CMS",
-	"license": ["GPL-2.0-or-later"],
-	"homepage": "https://www.web-vision.de/en/automated-translations-with-typo3-and-deepl.html",
-	"minimum-stability": "dev",
-	"prefer-stable": true,
-	"keywords": [
-		"TYPO3 CMS",
-		"extension",
-		"translate",
-		"deepl",
-		"googletranslate"
-	],
-	"authors": [
-		{
-			"name": "web-vision GmbH",
-			"email": "hello@web-vision.de",
-			"role": "Maintainer"
-		},
-		{
-			"name": "Mark Houben",
-			"email": "markhouben91@gmail.com",
-			"role": "Developer"
-		},
-		{
-			"name": "Markus Hofmann",
-			"email": "typo3@calien.de",
-			"role": "Developer"
-		},
-		{
-			"name": "Riad Zejnilagic Trumic",
-			"role": "Developer"
-		},
-		{
-			"name": "Stefan Bürk",
-			"role": "Developer",
-			"email": "stefan@buerk.tech"
-		}
-	],
-	"support": {
-		"issues": "https://github.com/web-vision/deepltranslate-core/issues",
-		"source": "https://github.com/web-vision/deepltranslate-core"
-	},
-	"conflict": {
-		"studiomitte/recordlist-thumbnail": "*",
-		"webvision/wv_deepltranslate": "*"
-	},
-	"config": {
-		"vendor-dir": ".Build/vendor",
-		"bin-dir": ".Build/bin",
-		"optimize-autoloader": true,
-		"sort-packages": true,
-		"allow-plugins": {
-			"typo3/class-alias-loader": true,
-			"typo3/cms-composer-installers": true,
-			"helhum/typo3-console-plugin": true,
-			"php-http/discovery": true
-		}
-	},
-	"extra": {
-		"typo3/cms": {
-			"cms-package-dir": "{$vendor-dir}/typo3/cms",
-			"extension-key": "deepltranslate_core",
-			"ignore-as-root": false,
-			"web-dir": ".Build/Web",
-			"app-dir": ".Build"
-		},
-		"branch-alias": {
-			"dev-main": "6.0.x-dev"
-		}
-	},
-	"require": {
-		"php": " ^8.2 || ^8.3 || ^8.4 || ^8.5",
-		"ext-curl": "*",
-		"ext-json": "*",
-		"ext-pdo": "*",
-		"typo3/cms-backend": "^13.4",
-		"typo3/cms-core": "^13.4",
-		"typo3/cms-extbase": "^13.4",
-		"typo3/cms-fluid": "^13.4",
-		"typo3/cms-setup": "^13.4",
-		"web-vision/deepl-base": "^1.0.3@dev",
-		"web-vision/deeplcom-deepl-php": "^1.16.1"
-	},
-	"require-dev": {
-		"b13/container": "^3.2.2",
-		"friendsofphp/php-cs-fixer": "^3.94.2",
-		"helmich/phpunit-json-assert": "^3.4.3 || ^3.5.5",
-		"helmich/typo3-typoscript-lint": "^3.1.0",
-		"nikic/php-parser": "^4.15.1 || ^5.1.0",
-		"php-mock/php-mock-phpunit": "^2.15.0",
-		"phpstan/phpstan": "^2.1.42",
-		"phpunit/phpunit": "^11.5.55",
-		"ramsey/uuid": "^4.9.2",
-		"saschaegerer/phpstan-typo3": "^2.1.1 || ^3.0.1",
-		"sbuerk/typo3-site-based-test-trait": "^2.0.1 || ^3.0.0",
-		"typo3/cms-belog": "^13.4",
-		"typo3/cms-dashboard": "^13.4",
-		"typo3/cms-extensionmanager": "^13.4",
-		"typo3/cms-filelist": "^13.4",
-		"typo3/cms-fluid-styled-content": "^13.4",
-		"typo3/cms-frontend": "^13.4",
-		"typo3/cms-info": "^13.4",
-		"typo3/cms-install": "^13.4",
-		"typo3/cms-lowlevel": "^13.4",
-		"typo3/cms-rte-ckeditor": "^13.4",
-		"typo3/cms-styleguide": "^13.4",
-		"typo3/cms-tstemplate": "^13.4",
-		"typo3/cms-workspaces": "^13.4",
-		"typo3/testing-framework": "^9.4"
-	},
-	"suggest": {
+    "name": "web-vision/deepltranslate-core",
+    "type": "typo3-cms-extension",
+    "description": "This extension provides option to translate content element, and TCA record texts to DeepL supported languages using DeepL API services with TYPO3 CMS",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "homepage": "https://www.web-vision.de/en/automated-translations-with-typo3-and-deepl.html",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "keywords": [
+        "TYPO3 CMS",
+        "extension",
+        "translate",
+        "deepl",
+        "googletranslate"
+    ],
+    "authors": [
+        {
+            "name": "web-vision GmbH",
+            "email": "hello@web-vision.de",
+            "role": "Maintainer"
+        },
+        {
+            "name": "Mark Houben",
+            "email": "markhouben91@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Markus Hofmann",
+            "email": "typo3@calien.de",
+            "role": "Developer"
+        },
+        {
+            "name": "Riad Zejnilagic Trumic",
+            "role": "Developer"
+        },
+        {
+            "name": "Stefan Bürk",
+            "role": "Developer",
+            "email": "stefan@buerk.tech"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/web-vision/deepltranslate-core/issues",
+        "source": "https://github.com/web-vision/deepltranslate-core"
+    },
+    "conflict": {
+        "studiomitte/recordlist-thumbnail": "*",
+        "webvision/wv_deepltranslate": "*"
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true,
+            "helhum/typo3-console-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "extension-key": "deepltranslate_core",
+            "ignore-as-root": false,
+            "web-dir": ".Build/Web",
+            "app-dir": ".Build"
+        },
+        "branch-alias": {
+            "dev-main": "6.0.x-dev"
+        }
+    },
+    "require": {
+        "php": " ^8.2 || ^8.3 || ^8.4 || ^8.5",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "typo3/cms-backend": "^13.4",
+        "typo3/cms-core": "^13.4",
+        "typo3/cms-extbase": "^13.4",
+        "typo3/cms-fluid": "^13.4",
+        "typo3/cms-setup": "^13.4",
+        "web-vision/deepl-base": "^1.0.3@dev",
+        "web-vision/deeplcom-deepl-php": "^1.16.1"
+    },
+    "require-dev": {
+        "b13/container": "^3.2.2",
+        "friendsofphp/php-cs-fixer": "^3.94.2",
+        "helmich/phpunit-json-assert": "^3.4.3 || ^3.5.5",
+        "helmich/typo3-typoscript-lint": "^3.1.0",
+        "nikic/php-parser": "^4.15.1 || ^5.1.0",
+        "php-mock/php-mock-phpunit": "^2.15.0",
+        "phpstan/phpstan": "^2.1.42",
+        "phpunit/phpunit": "^11.5.55",
+        "ramsey/uuid": "^4.9.2",
+        "saschaegerer/phpstan-typo3": "^2.1.1 || ^3.0.1",
+        "sbuerk/typo3-site-based-test-trait": "^2.0.1 || ^3.0.0",
+        "typo3/cms-belog": "^13.4",
+        "typo3/cms-dashboard": "^13.4",
+        "typo3/cms-extensionmanager": "^13.4",
+        "typo3/cms-filelist": "^13.4",
+        "typo3/cms-fluid-styled-content": "^13.4",
+        "typo3/cms-frontend": "^13.4",
+        "typo3/cms-info": "^13.4",
+        "typo3/cms-install": "^13.4",
+        "typo3/cms-lowlevel": "^13.4",
+        "typo3/cms-rte-ckeditor": "^13.4",
+        "typo3/cms-styleguide": "^13.4",
+        "typo3/cms-tstemplate": "^13.4",
+        "typo3/cms-workspaces": "^13.4",
+        "typo3/testing-framework": "^9.4"
+    },
+    "suggest": {
         "b13/container": "Just to be loaded after EXT:container",
-		"web-vision/enable-translated-content": "Adds enable translated content button to language columns in page view",
-		"web-vision/deepltranslate-assets": "Enables the translation of files in FileList Modal via deepl",
-		"typo3/cms-dashboard": "Install the package to enable the widgets from deepltranslate packages",
-		"typo3/cms-install": "Install the package to run DeepL translate related upgrade wizards",
-		"web-vision/deepltranslate-glossary": "TYPO3 powered glossary for DeepL Translate. Manage your glossary for optimized translations",
-		"gridelementsteam/gridelements": "This suggest is only for load order adjusting issues with gridelements"
-	},
-	"autoload": {
-		"psr-4": {
-			"WebVision\\Deepltranslate\\Core\\": "Classes"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"WebVision\\Deepltranslate\\Core\\Tests\\": "Tests",
-			"WebVision\\TestingFrameworkBackendUserHandlerReplacement\\": "Tests/Functional/Fixtures/Extensions/testing_framework_backenduserhandler_replacement/Classes"
-		}
-	}
+        "web-vision/enable-translated-content": "Adds enable translated content button to language columns in page view",
+        "web-vision/deepltranslate-assets": "Enables the translation of files in FileList Modal via deepl",
+        "typo3/cms-dashboard": "Install the package to enable the widgets from deepltranslate packages",
+        "typo3/cms-install": "Install the package to run DeepL translate related upgrade wizards",
+        "web-vision/deepltranslate-glossary": "TYPO3 powered glossary for DeepL Translate. Manage your glossary for optimized translations",
+        "gridelementsteam/gridelements": "This suggest is only for load order adjusting issues with gridelements"
+    },
+    "autoload": {
+        "psr-4": {
+            "WebVision\\Deepltranslate\\Core\\": "Classes",
+            "WebVision\\Deepltranslate\\Core\\Core13\\": "Core13"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WebVision\\Deepltranslate\\Core\\Tests\\": "Tests",
+            "WebVision\\TestingFrameworkBackendUserHandlerReplacement\\": "Tests/Functional/Fixtures/Extensions/testing_framework_backenduserhandler_replacement/Classes"
+        }
+    }
 }

@@ -7,24 +7,6 @@ parameters:
 			path: ../../../Classes/Client.php
 
 		-
-			message: '#^Parameter \#1 \$array \(array\{0\: WebVision\\Deepl\\Base\\Localization\\LocalizationMode, 1\?\: WebVision\\Deepl\\Base\\Localization\\LocalizationMode\}\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
-			count: 1
-			path: ../../../Classes/Event/Listener/ApplyLocalizationModesEventListener.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$renderingAllowed\.$#'
-			identifier: property.notFound
-			count: 1
-			path: ../../../Classes/Event/Listener/RenderLocalizationSelect.php
-
-		-
-			message: '#^Call to an undefined method TYPO3\\CMS\\Frontend\\Controller\\TypoScriptFrontendController\:\:getContext\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: ../../../Classes/Event/Listener/RenderTranslatedFlagInFrontendPreviewMode.php
-
-		-
 			message: '#^Method WebVision\\Deepltranslate\\Core\\Form\\Item\\SiteConfigSupportedLanguageItemsProcFunc\:\:getSupportedLanguageForField\(\) has parameter \$configuration with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -143,6 +125,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../../Classes/Utility/HtmlUtility.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{0\: WebVision\\Deepl\\Base\\Localization\\LocalizationMode, 1\?\: WebVision\\Deepl\\Base\\Localization\\LocalizationMode\}\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: ../../../Core13/EventListener/ApplyLocalizationModesEventListener.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$renderingAllowed\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../Core13/EventListener/RenderLocalizationSelect.php
 
 		-
 			message: '#^Parameter \#2 \$length of function fread expects int\<1, max\>, int\<0, max\> given\.$#'
