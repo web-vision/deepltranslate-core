@@ -15,7 +15,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 #[Autoconfigure(public: true)]
 final class ProcessingInstruction
 {
-    protected const PROCESSING_CACHE_IDENTIFIER = 'deepl-processing-cache';
+    private const PROCESSING_CACHE_IDENTIFIER = 'deepl-processing-cache';
     private FrontendInterface $runtimeCache;
 
     public function __construct(

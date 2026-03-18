@@ -15,8 +15,7 @@ final class DisallowTableFromDeeplTranslateEvent
     public function __construct(
         public readonly string $tableName,
         private bool $translateButtonsAllowed = true
-    ) {
-    }
+    ) {}
 
     public function isTranslateButtonsAllowed(): bool
     {

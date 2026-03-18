@@ -7,11 +7,9 @@ namespace WebVision\Deepltranslate\Core\Tests\Functional;
 use Closure;
 use DeepL\Translator;
 use DeepL\TranslatorOptions;
-use Exception;
 use phpmock\phpunit\PHPMock;
 use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
-use RuntimeException;
 use SBUERK\TYPO3\Testing\TestCase\FunctionalTestCase;
 use Symfony\Component\DependencyInjection\Container;
 use TYPO3\CMS\Core\Information\Typo3Version;
@@ -23,42 +21,6 @@ use WebVision\Deepltranslate\Core\ConfigurationInterface;
 abstract class AbstractDeepLTestCase extends FunctionalTestCase
 {
     use PHPMock;
-
-    /**
-     * @var string
-     */
-    protected $authKey = 'mock_server';
-
-    /**
-     * @var string|false
-     */
-    protected $serverUrl = false;
-
-    /**
-     * @var string|false
-     */
-    protected $proxyUrl = false;
-
-    protected bool $isMockServer = false;
-
-    protected bool $isMockProxyServer = false;
-
-    protected ?string $sessionNoResponse = null;
-
-    protected ?string $session429Count = null;
-    protected ?string $sessionInitCharacterLimit = null;
-
-    protected ?string $sessionInitDocumentLimit = null;
-
-    protected ?string $sessionInitTeamDocumentLimit = null;
-
-    protected ?string $sessionDocFailure = null;
-
-    protected ?int $sessionDocQueueTime = null;
-
-    protected ?int $sessionDocTranslateTime = null;
-
-    protected ?bool $sessionExpectProxy = null;
 
     /**
      * @var array<non-empty-string, non-empty-string>
@@ -99,6 +61,46 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         'zh' => '质子束',
     ];
 
+    protected const EXAMPLE_DOCUMENT_INPUT = AbstractDeepLTestCase::EXAMPLE_TEXT['en'];
+
+    protected const EXAMPLE_DOCUMENT_OUTPUT = AbstractDeepLTestCase::EXAMPLE_TEXT['de'];
+
+    /**
+     * @var string
+     */
+    protected $authKey = 'mock_server';
+
+    /**
+     * @var string|false
+     */
+    protected $serverUrl = false;
+
+    /**
+     * @var string|false
+     */
+    protected $proxyUrl = false;
+
+    protected bool $isMockServer = false;
+
+    protected bool $isMockProxyServer = false;
+
+    protected ?string $sessionNoResponse = null;
+
+    protected ?string $session429Count = null;
+    protected ?string $sessionInitCharacterLimit = null;
+
+    protected ?string $sessionInitDocumentLimit = null;
+
+    protected ?string $sessionInitTeamDocumentLimit = null;
+
+    protected ?string $sessionDocFailure = null;
+
+    protected ?int $sessionDocQueueTime = null;
+
+    protected ?int $sessionDocTranslateTime = null;
+
+    protected ?bool $sessionExpectProxy = null;
+
     /**
      * @var non-empty-string[]
      */
@@ -115,10 +117,6 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         'web-vision/deepltranslate-core',
         __DIR__ . '/Fixtures/Extensions/test_services_override',
     ];
-
-    protected const EXAMPLE_DOCUMENT_INPUT = AbstractDeepLTestCase::EXAMPLE_TEXT['en'];
-
-    protected const EXAMPLE_DOCUMENT_OUTPUT = AbstractDeepLTestCase::EXAMPLE_TEXT['de'];
 
     protected string $EXAMPLE_LARGE_DOCUMENT_INPUT = '';
 
@@ -139,14 +137,14 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         if ($this->isMockServer) {
             $this->authKey = 'mock_server';
             if ($this->serverUrl === false) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     'DEEPL_SERVER_URL environment variable must be set if using a mock server',
                     1733938285,
                 );
             }
         } else {
             if (getenv('DEEPL_AUTH_KEY') === false) {
-                throw new RuntimeException(
+                throw new \RuntimeException(
                     'DEEPL_AUTH_KEY environment variable must be set unless using a mock server',
                     1733938290,
                 );
@@ -223,7 +221,7 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
 
         // use closure to set private option for translation
         $translator = new Translator(self::getInstanceIdentifier(), $mergedOptions);
-        Closure::bind(
+        \Closure::bind(
             function (Translator $translator) {
                 $this->translator = $translator;
             },
@@ -278,29 +276,29 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         return [$tempDir, $exampleDocument, $exampleLargeDocument, $outputDocumentPath];
     }
 
-    public function assertExceptionContains(string $needle, callable $function): Exception
+    public function assertExceptionContains(string $needle, callable $function): \Exception
     {
         try {
             $function();
-        } catch (Exception $exception) {
-            static::assertStringContainsString($needle, $exception->getMessage());
+        } catch (\Exception $exception) {
+            $this->assertStringContainsString($needle, $exception->getMessage());
             return $exception;
         }
-        static::fail("Expected exception containing '$needle' but nothing was thrown");
+        $this->fail("Expected exception containing '$needle' but nothing was thrown");
     }
 
     /**
      * @param class-string $class
      */
-    public function assertExceptionClass(string $class, callable $function): Exception
+    public function assertExceptionClass(string $class, callable $function): \Exception
     {
         try {
             $function();
-        } catch (Exception $exception) {
-            static::assertEquals($class, get_class($exception));
+        } catch (\Exception $exception) {
+            $this->assertEquals($class, get_class($exception));
             return $exception;
         }
-        static::fail("Expected exception of class '$class' but nothing was thrown");
+        $this->fail("Expected exception of class '$class' but nothing was thrown");
     }
 
     /**

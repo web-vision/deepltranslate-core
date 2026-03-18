@@ -72,7 +72,7 @@ final class UsageWidget implements RequestAwareWidgetInterface, WidgetInterface
         return $this->options;
     }
 
-    protected function getLanguageService(): LanguageService
+    private function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }

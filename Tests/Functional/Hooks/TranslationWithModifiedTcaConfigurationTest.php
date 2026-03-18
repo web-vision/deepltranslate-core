@@ -119,7 +119,7 @@ final class TranslationWithModifiedTcaConfigurationTest extends AbstractDeepLTes
         $dataHandler->start([], $cmdMap);
         $dataHandler->process_cmdmap();
 
-        static::assertEmpty($dataHandler->errorLog);
+        $this->assertEmpty($dataHandler->errorLog);
         self::assertCSVDataSet(__DIR__ . '/Fixtures/Results/page_translated.csv');
     }
 }

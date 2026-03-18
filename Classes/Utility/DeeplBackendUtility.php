@@ -33,7 +33,7 @@ final class DeeplBackendUtility
 
     private static bool $configurationLoaded = false;
 
-    protected static ?CurrentPage $currentPage = null;
+    private static ?CurrentPage $currentPage = null;
 
     /**
      * @return string

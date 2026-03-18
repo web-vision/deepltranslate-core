@@ -19,6 +19,5 @@ final class RenderLocalizationSelectAllowed
     public function __construct(
         public readonly RequestInterface $request,
         public bool $renderingAllowed = true
-    ) {
-    }
+    ) {}
 }

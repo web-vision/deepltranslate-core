@@ -21,7 +21,6 @@ use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
  */
 final class DeeplTranslateViewHelper extends AbstractViewHelper
 {
-
     public function initializeArguments(): void
     {
         $this->registerArgument(

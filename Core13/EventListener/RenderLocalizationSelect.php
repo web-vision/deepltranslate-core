@@ -21,8 +21,7 @@ final class RenderLocalizationSelect
     public function __construct(
         private readonly TranslationDropdownGenerator $generator,
         private readonly EventDispatcherInterface $eventDispatcher
-    ) {
-    }
+    ) {}
 
     #[AsEventListener(
         identifier: 'deepltranslate/coreSelector',

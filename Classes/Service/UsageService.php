@@ -23,8 +23,7 @@ final class UsageService implements UsageServiceInterface
     public function __construct(
         private readonly ClientInterface $client,
         private readonly Locales $locales
-    ) {
-    }
+    ) {}
 
     public function getCurrentUsage(): ?Usage
     {
