@@ -4,26 +4,21 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Tests\Functional;
 
-use DeepL\GlossaryEntries;
-use DeepL\GlossaryInfo;
-use DeepL\GlossaryLanguagePair;
 use DeepL\Language;
 use DeepL\TextResult;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use WebVision\Deepltranslate\Core\Client;
-use WebVision\Deepltranslate\Core\ClientInterface;
+use WebVision\Deepltranslate\Core\AbstractClient;
 use WebVision\Deepltranslate\Core\TranslatorInterface;
 
-#[CoversClass(Client::class)]
+#[CoversClass(AbstractClient::class)]
 final class ClientTest extends AbstractDeepLTestCase
 {
     #[Test]
     public function checkResponseFromTranslateContent(): void
     {
         $translateContent = self::EXAMPLE_TEXT['en'];
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $response = $client->translate(
             $translateContent,
             'EN',
@@ -37,127 +32,10 @@ final class ClientTest extends AbstractDeepLTestCase
     #[Test]
     public function checkResponseFromSupportedTargetLanguage(): void
     {
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
+        $client = $this->get(TranslatorInterface::class);
         $response = $client->getSupportedLanguageByType();
 
         $this->assertIsArray($response);
         $this->assertContainsOnlyInstancesOf(Language::class, $response);
-    }
-
-    #[Test]
-    public function checkResponseFromGlossaryLanguagePairs(): void
-    {
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
-        $response = $client->getGlossaryLanguagePairs();
-
-        $this->assertIsArray($response);
-        $this->assertContainsOnlyInstancesOf(GlossaryLanguagePair::class, $response);
-    }
-
-    #[Test]
-    public function checkResponseFromCreateGlossary(): void
-    {
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
-        $response = $client->createGlossary(
-            'Deepl-Client-Create-Function-Test:' . __FUNCTION__,
-            'de',
-            'en',
-            [
-                0 => [
-                    'source' => 'hallo Welt',
-                    'target' => 'hello world',
-                ],
-            ],
-        );
-
-        $this->assertInstanceOf(GlossaryInfo::class, $response);
-        $this->assertSame(1, $response->entryCount);
-        $this->assertIsString($response->glossaryId);
-        $this->assertInstanceOf(\DateTime::class, $response->creationTime);
-    }
-
-    #[Test]
-    public function checkResponseGetAllGlossaries(): void
-    {
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
-        $response = $client->getAllGlossaries();
-
-        $this->assertIsArray($response);
-        $this->assertContainsOnlyInstancesOf(GlossaryInfo::class, $response);
-    }
-
-    #[Test]
-    public function checkResponseFromGetGlossary(): void
-    {
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
-        $glossary = $client->createGlossary(
-            'Deepl-Client-Create-Function-Test:' . __FUNCTION__,
-            'de',
-            'en',
-            [
-                0 => [
-                    'source' => 'hallo Welt',
-                    'target' => 'hello world',
-                ],
-            ],
-        );
-
-        $response = $client->getGlossary($glossary->glossaryId);
-
-        $this->assertInstanceOf(GlossaryInfo::class, $response);
-        $this->assertSame($glossary->glossaryId, $response->glossaryId);
-        $this->assertSame(1, $response->entryCount);
-    }
-
-    #[Test]
-    public function checkGlossaryDeletedNotCatchable(): void
-    {
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
-        $glossary = $client->createGlossary(
-            'Deepl-Client-Create-Function-Test' . __FUNCTION__,
-            'de',
-            'en',
-            [
-                0 => [
-                    'source' => 'hallo Welt',
-                    'target' => 'hello world',
-                ],
-            ],
-        );
-
-        $glossaryId = $glossary->glossaryId;
-
-        $client->deleteGlossary($glossaryId);
-
-        $this->assertNull($client->getGlossary($glossaryId));
-    }
-
-    #[Test]
-    public function checkResponseFromGetGlossaryEntries(): void
-    {
-        /** @var TranslatorInterface $client */
-        $client = $this->get(ClientInterface::class);
-        $glossary = $client->createGlossary(
-            'Deepl-Client-Create-Function-Test:' . __FUNCTION__,
-            'de',
-            'en',
-            [
-                0 => [
-                    'source' => 'hallo Welt',
-                    'target' => 'hello world',
-                ],
-            ],
-        );
-
-        $response = $client->getGlossaryEntries($glossary->glossaryId);
-
-        $this->assertInstanceOf(GlossaryEntries::class, $response);
-        $this->assertSame(1, count($response->getEntries()));
     }
 }

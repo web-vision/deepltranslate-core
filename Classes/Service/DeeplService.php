@@ -10,8 +10,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
-use WebVision\Deepltranslate\Core\Client\DeepLClientInterface;
-use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
@@ -24,25 +22,14 @@ use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 #[Autoconfigure(public: true)]
 final class DeeplService
 {
-    private FrontendInterface $cache;
-
-    //private DeepLClientInterface $client;
-    private ProcessingInstruction $processingInstruction;
-
-    /**
-     * @param TranslatorInterface $client
-     */
     public function __construct(
         #[Autowire(service: 'cache.deepltranslateCore')]
-        FrontendInterface $cache,
-        private readonly ClientInterface $client,
-        ProcessingInstruction $processingInstruction,
+        private readonly FrontendInterface $cache,
+        private readonly TranslatorInterface $client,
+        private readonly ProcessingInstruction $processingInstruction,
         private readonly EventDispatcher $eventDispatcher,
         private readonly LoggerInterface $logger
-    ) {
-        $this->cache = $cache;
-        $this->processingInstruction = $processingInstruction;
-    }
+    ) {}
 
     /**
      * DeepL Api Call and format text to use in TYPO3

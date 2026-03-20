@@ -7,12 +7,6 @@ parameters:
 			path: ../../../Classes/Form/Item/SiteConfigSupportedLanguageItemsProcFunc.php
 
 		-
-			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: ../../../Classes/Hooks/AbstractTranslateHook.php
-
-		-
 			message: '#^Strict comparison using \!\=\= between numeric\-string and '''' will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 1
@@ -127,64 +121,10 @@ parameters:
 			path: ../../../Tests/Functional/AbstractDeepLTestCase.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\GlossaryInfo'' and array\<DeepL\\GlossaryInfo\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\GlossaryLanguagePair'' and array\<DeepL\\GlossaryLanguagePair\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\Language'' and array\<DeepL\\Language\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\GlossaryInfo\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\GlossaryLanguagePair\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\Language\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/ClientTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\Language'' and array\<DeepL\\Language\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
-
-		-
 			message: '#^Cannot access property \$code on DeepL\\Language\|null\.$#'
 			identifier: property.nonObject
 			count: 7
 			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\{uid\: int, title\: string, language_isocode\: string, languageCode\: string, formality\: string\} will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: ../../../Tests/Functional/Services/LanguageServiceTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'

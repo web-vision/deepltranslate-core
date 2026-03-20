@@ -211,7 +211,6 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
         $fh = fopen($filepath, 'r');
         $size = filesize($filepath);
         $content = '';
-        /** @phpstan-ignore notIdentical.alwaysTrue */
         if ($fh !== false && $size !== false) {
             $content = fread($fh, $size);
             fclose($fh);
