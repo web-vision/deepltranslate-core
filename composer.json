@@ -55,10 +55,11 @@
         "optimize-autoloader": true,
         "sort-packages": true,
         "allow-plugins": {
+            "helhum/typo3-console-plugin": true,
+            "php-http/discovery": true,
             "typo3/class-alias-loader": true,
             "typo3/cms-composer-installers": true,
-            "helhum/typo3-console-plugin": true,
-            "php-http/discovery": true
+            "vaimo/composer-patches": true
         }
     },
     "extra": {
@@ -67,11 +68,16 @@
             "extension-key": "deepltranslate_core",
             "ignore-as-root": false,
             "web-dir": ".Build/Web",
-            "app-dir": ".Build"
+            "app-dir": ".Build",
+            "Package": {
+                "providesPackages": []
+            },
+            "version": "6.0.0"
         },
         "branch-alias": {
             "dev-main": "6.0.x-dev"
-        }
+        },
+        "patches-search": "patches/"
     },
     "require": {
         "php": " ^8.2 || ^8.3 || ^8.4 || ^8.5",
@@ -83,7 +89,7 @@
         "typo3/cms-extbase": "^13.4",
         "typo3/cms-fluid": "^13.4",
         "typo3/cms-setup": "^13.4",
-        "web-vision/deepl-base": "^1.0.3@dev",
+        "web-vision/deepl-base": "2.0.*@dev",
         "web-vision/deeplcom-deepl-php": "^1.16.1"
     },
     "require-dev": {
@@ -111,7 +117,8 @@
         "typo3/cms-styleguide": "^13.4",
         "typo3/cms-tstemplate": "^13.4",
         "typo3/cms-workspaces": "^13.4",
-        "typo3/testing-framework": "^9.4"
+        "typo3/testing-framework": "^9.5.0",
+        "vaimo/composer-patches": "^6.0.1"
     },
     "suggest": {
         "b13/container": "Just to be loaded after EXT:container",

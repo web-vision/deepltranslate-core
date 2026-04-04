@@ -7,7 +7,7 @@ namespace WebVision\Deepltranslate\Core\Core13\EventListener;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use WebVision\Deepl\Base\Controller\Backend\LocalizationController;
+use WebVision\Deepl\Base\Core13\Controller\Backend\LocalizationController;
 use WebVision\Deepl\Base\Event\GetLocalizationModesEvent;
 use WebVision\Deepl\Base\Localization\LocalizationMode;
 use WebVision\Deepltranslate\Core\Access\AllowedTranslateAccess;
