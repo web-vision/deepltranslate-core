@@ -12,63 +12,36 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [ '8.2' ]
-    permissions:
-      # actions: read|write|none
-      actions: none
-      # checks: read|write|none
-      checks: none
-      # contents: read|write|none
-      contents: read
-      # deployments: read|write|none
-      deployments: none
-      # id-token: read|write|none
-      id-token: none
-      # issues: read|write|none
-      issues: none
-      # discussions: read|write|none
-      discussions: none
-      # packages: read|write|none
-      packages: read
-      # pages: read|write|none
-      pages: none
-      # pull-requests: read|write|none
-      pull-requests: none
-      # repository-projects: read|write|none
-      repository-projects: read
-      # security-events: read|write|none
-      security-events: none
-      # statuses: read|write|none
-      statuses: none
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Prepare dependencies for TYPO3 v13"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s composerUpdate"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s composerUpdate"
 
       - name: "Run TypoScript lint"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s lintTypoScript"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s lintTypoScript"
 
       - name: "Run PHP lint"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s lintPhp"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s lintPhp"
 
       - name: "Validate CGL"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s cgl -n"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s cgl -n"
 
       - name: "Ensure tests methods do not start with \"test\""
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s checkTestMethodsPrefix"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s checkTestMethodsPrefix"
 
       - name: "Ensure UTF-8 files do not contain BOM"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s checkBom"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s checkBom"
 
 #      - name: "Test .rst files for integrity"
 #        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s checkRst"
 
       - name: "Find duplicate exception codes"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s checkExceptionCodes"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s checkExceptionCodes"
 
       - name: "Run PHPStan"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s phpstan"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s phpstan"
 
   testsuite:
     name: all tests with core v13
@@ -78,58 +51,31 @@ jobs:
       fail-fast: false
       matrix:
         # @todo Use PHP8.5 as upper version onces deeplphp is updated to a compatible version.
-        php-version: [ '8.2', '8.4' ]
-    permissions:
-      # actions: read|write|none
-      actions: none
-      # checks: read|write|none
-      checks: none
-      # contents: read|write|none
-      contents: read
-      # deployments: read|write|none
-      deployments: none
-      # id-token: read|write|none
-      id-token: none
-      # issues: read|write|none
-      issues: none
-      # discussions: read|write|none
-      discussions: none
-      # packages: read|write|none
-      packages: read
-      # pages: read|write|none
-      pages: none
-      # pull-requests: read|write|none
-      pull-requests: none
-      # repository-projects: read|write|none
-      repository-projects: read
-      # security-events: read|write|none
-      security-events: none
-      # statuses: read|write|none
-      statuses: none
+        php-version: [ '8.2', '8.5' ]
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Prepare dependencies for TYPO3 v13"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s composerUpdate"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s composerUpdate"
 
       - name: "Unit"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s unit"
+        run: "Build/Scripts/runTests.sh -b podman -b podman -t 13 -p ${{ matrix.php-version }} -s unit"
 
       - name: "Functional SQLite"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s functional -d sqlite"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d sqlite"
 
       - name: "Functional MariaDB 10.5 mysqli"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
 
       - name: "Functional MariaDB 10.5 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
 
       - name: "Functional MySQL 8.0 mysqli"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
 
       - name: "Functional MySQL 8.0 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
 
       - name: "Functional PostgresSQL 10"
-        run: "Build/Scripts/runTests.sh -t 13 -p ${{ matrix.php-version }} -s functional -d postgres"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s functional -d postgres"

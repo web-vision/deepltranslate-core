@@ -15,7 +15,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Verify tag
         run: |
@@ -46,19 +46,11 @@ jobs:
           } >> "$GITHUB_ENV"
           echo "DETECTED_EXTENSION_KEY=$(cat composer.json | jq -r '.extra."typo3/cms"."extension-key"' )" >> "$GITHUB_ENV"
 
-      - name: Setup PHP 7.4 ( wv_deepltranslate 4.x )
-        if: github.event.base_ref == 'refs/heads/4'
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.4
-          extensions: intl, mbstring, json, zip, curl
-          tools: composer:v2
-
-      - name: Setup PHP 8.1 ( deepltranlsate-core 5.x )
+      - name: Setup PHP 8.2
         if: github.event.base_ref == 'refs/heads/main'
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.2
           extensions: intl, mbstring, json, zip, curl
           tools: composer:v2
 
@@ -76,9 +68,7 @@ jobs:
       # Note that when release already exists for tag, only files will be uploaded and lets this acting as a
       # fallback to ensure that a real GitHub release is created for the tag along with extension artifacts.
       - name: Create release and upload artifacts in the same step
-        # @todo Revert to release version when https://github.com/softprops/action-gh-release/issues/628 is fixed.
-        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631
-        # uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2
         if: ${{startsWith(github.ref, 'refs/tags/') }}
         with:
           name: "[RELEASE] ${{ env.version }}"
