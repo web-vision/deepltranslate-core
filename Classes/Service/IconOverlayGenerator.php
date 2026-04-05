@@ -7,6 +7,7 @@ namespace WebVision\Deepltranslate\Core\Service;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 
 /**
  * @internal not part of public deepl extension api
@@ -14,18 +15,14 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 #[Autoconfigure(public: true)]
 final class IconOverlayGenerator
 {
-    private IconFactory $iconFactory;
-
     public function __construct(
-        IconFactory $iconFactory
-    ) {
-        $this->iconFactory = $iconFactory;
-    }
+        private IconFactory $iconFactory,
+    ) {}
 
     /**
      * Get overlay icon
      */
-    public function get(string $baseIdentifier, string $deeplIdentifier = 'deepl-grey-logo', string $size = Icon::SIZE_SMALL): Icon
+    public function get(string $baseIdentifier, string $deeplIdentifier = 'deepl-grey-logo', IconSize $size = IconSize::SMALL): Icon
     {
         return $this->iconFactory->getIcon($baseIdentifier, $size, $deeplIdentifier);
     }

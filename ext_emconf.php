@@ -12,11 +12,11 @@ $EM_CONF[$_EXTKEY] = [
     'constraints' => [
         'depends' => [
             'php' => '8.2.0-8.5.99',
-            'typo3' => '13.4.0-13.4.99',
-            'backend' => '13.4.0-13.4.99',
-            'extbase' => '13.4.0-13.4.99',
-            'fluid' => '13.4.0-13.4.99',
-            'setup' => '13.4.0-13.4.99',
+            'typo3' => '13.4.0-14.2.99',
+            'backend' => '13.4.0-14.2.99',
+            'extbase' => '13.4.0-14.2.99',
+            'fluid' => '13.4.0-14.2.99',
+            'setup' => '13.4.0-14.2.99',
             'deepl_base' => '2.0.0-2.99.99',
             'deeplcom_deeplphp' => '1.16.1-1.99.99',
         ],
@@ -32,12 +32,6 @@ $EM_CONF[$_EXTKEY] = [
             'deepltranslate_assets' => '*',
             'deepltranslate_glossary' => '*',
             'gridelements' => '*',
-        ],
-    ],
-    'autoload' => [
-        'psr-4' => [
-            'WebVision\\Deepltranslate\\Core\\' => 'Classes',
-            'WebVision\\Deepltranslate\\Core\\Core13\\' => 'Core13',
         ],
     ],
 ];

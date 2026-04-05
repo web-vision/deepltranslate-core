@@ -1,0 +1,247 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Client\:\:translate\(\) never returns array\<DeepL\\TextResult\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: ../../../Classes/Client.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Form\\Item\\SiteConfigSupportedLanguageItemsProcFunc\:\:getSupportedLanguageForField\(\) has parameter \$configuration with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../Classes/Form/Item/SiteConfigSupportedLanguageItemsProcFunc.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: ../../../Classes/Hooks/AbstractTranslateHook.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between numeric\-string and '''' will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: ../../../Classes/Hooks/TranslateHook.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\CommandMapPostProcessingHook\:\:processCmdmap_postProcess\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\CommandMapPostProcessingHook\:\:processCmdmap_postProcess\(\) has parameter \$pasteDatamap with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\CommandMapPostProcessingHook\:\:processCmdmap_postProcess\(\) has parameter \$pasteUpdate with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\CommandMapPostProcessingHook\:\:processCmdmap_postProcess\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListCore\:\:makeLocalizationPanel\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
+
+		-
+			message: '#^Parameter \#1 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:isRecordDeletePlaceholder\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
+
+		-
+			message: '#^Parameter \#2 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
+
+		-
+			message: '#^Parameter \#2 \$row \(array\<mixed\>\) of method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListCore\:\:makeLocalizationPanel\(\) should be compatible with parameter \$record \(TYPO3\\CMS\\Core\\Domain\\RecordInterface\) of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListWithGridelements\:\:makeLocalizationPanel\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
+
+		-
+			message: '#^Parameter \#1 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:isRecordDeletePlaceholder\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
+
+		-
+			message: '#^Parameter \#2 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
+
+		-
+			message: '#^Parameter \#2 \$row \(array\<mixed\>\) of method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListWithGridelements\:\:makeLocalizationPanel\(\) should be compatible with parameter \$record \(TYPO3\\CMS\\Core\\Domain\\RecordInterface\) of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: ../../../Classes/Service/UsageService.php
+
+		-
+			message: '#^PHPDoc tag @var with type SplFileInfo is not subtype of native type Symfony\\Component\\Finder\\SplFileInfo\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: ../../../Classes/Upgrades/FormalityUpgradeWizard.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\DeeplBackendUtility\:\:buildBackendRoute\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../Classes/Utility/DeeplBackendUtility.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\DeeplBackendUtility\:\:buildTranslateButton\(\) has parameter \$flagIcon with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Utility/DeeplBackendUtility.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\DeeplBackendUtility\:\:buildTranslateButton\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Utility/DeeplBackendUtility.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\DeeplBackendUtility\:\:buildTranslateButton\(\) has parameter \$lUid_OnPage with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Utility/DeeplBackendUtility.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\DeeplBackendUtility\:\:buildTranslateButton\(\) has parameter \$languageTitle with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Utility/DeeplBackendUtility.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\DeeplBackendUtility\:\:buildTranslateButton\(\) has parameter \$returnUrl with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Utility/DeeplBackendUtility.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\DeeplBackendUtility\:\:buildTranslateButton\(\) has parameter \$table with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: ../../../Classes/Utility/DeeplBackendUtility.php
+
+		-
+			message: '#^Method WebVision\\Deepltranslate\\Core\\Utility\\HtmlUtility\:\:stripSpecificTags\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../../../Classes/Utility/HtmlUtility.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function preg_replace expects array\<float\|int\|string\>\|string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../Classes/Utility/HtmlUtility.php
+
+		-
+			message: '#^Parameter \#2 \$length of function fread expects int\<1, max\>, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../Tests/Functional/AbstractDeepLTestCase.php
+
+		-
+			message: '#^Property WebVision\\Deepltranslate\\Core\\Tests\\Functional\\AbstractDeepLTestCase\:\:\$authKey \(string\) does not accept string\|false\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../Tests/Functional/AbstractDeepLTestCase.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\GlossaryInfo'' and array\<DeepL\\GlossaryInfo\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/ClientTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\GlossaryLanguagePair'' and array\<DeepL\\GlossaryLanguagePair\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/ClientTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\Language'' and array\<DeepL\\Language\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/ClientTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\GlossaryInfo\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/ClientTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\GlossaryLanguagePair\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/ClientTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<DeepL\\Language\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/ClientTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/ClientTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertContainsOnlyInstancesOf\(\) with ''DeepL\\\\Language'' and array\<DeepL\\Language\> will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
+
+		-
+			message: '#^Cannot access property \$code on DeepL\\Language\|null\.$#'
+			identifier: property.nonObject
+			count: 7
+			path: ../../../Tests/Functional/Services/DeeplServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\{uid\: int, title\: string, language_isocode\: string, languageCode\: string, formality\: string\} will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: ../../../Tests/Functional/Services/LanguageServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: ../../../Tests/Unit/Access/AllowedTranslateAccessTest.php
+
+		-
+			message: '#^PHPDoc tag @var with type WebVision\\Deepltranslate\\Core\\ConfigurationInterface is not subtype of native type PHPUnit\\Framework\\MockObject\\MockObject\.$#'
+			identifier: varTag.nativeType
+			count: 7
+			path: ../../../Tests/Unit/ClientTest.php
