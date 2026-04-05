@@ -81,16 +81,15 @@
     },
     "require": {
         "php": " ^8.2 || ^8.3 || ^8.4 || ^8.5",
-        "ext-curl": "*",
+        "ext-intl": "*",
         "ext-json": "*",
-        "ext-pdo": "*",
-        "typo3/cms-backend": "^13.4",
-        "typo3/cms-core": "^13.4",
-        "typo3/cms-extbase": "^13.4",
-        "typo3/cms-fluid": "^13.4",
-        "typo3/cms-setup": "^13.4",
+        "typo3/cms-backend": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-core": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-extbase": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-fluid": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-setup": "13.4.*@dev || 14.2.*@dev",
         "web-vision/deepl-base": "2.0.*@dev",
-        "web-vision/deeplcom-deepl-php": "^1.16.1"
+        "web-vision/deeplcom-deepl-php": "~1.17.0"
     },
     "require-dev": {
         "b13/container": "^3.2.2",
@@ -104,19 +103,19 @@
         "ramsey/uuid": "^4.9.2",
         "saschaegerer/phpstan-typo3": "^2.1.1 || ^3.0.1",
         "sbuerk/typo3-site-based-test-trait": "^2.0.1 || ^3.0.0",
-        "typo3/cms-belog": "^13.4",
-        "typo3/cms-dashboard": "^13.4",
-        "typo3/cms-extensionmanager": "^13.4",
-        "typo3/cms-filelist": "^13.4",
-        "typo3/cms-fluid-styled-content": "^13.4",
-        "typo3/cms-frontend": "^13.4",
-        "typo3/cms-info": "^13.4",
-        "typo3/cms-install": "^13.4",
-        "typo3/cms-lowlevel": "^13.4",
-        "typo3/cms-rte-ckeditor": "^13.4",
-        "typo3/cms-styleguide": "^13.4",
-        "typo3/cms-tstemplate": "^13.4",
-        "typo3/cms-workspaces": "^13.4",
+        "typo3/cms-belog": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-dashboard": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-extensionmanager": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-filelist": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-fluid-styled-content": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-frontend": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-info": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-install": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-lowlevel": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-rte-ckeditor": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-styleguide": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-tstemplate": "13.4.*@dev || 14.2.*@dev",
+        "typo3/cms-workspaces": "13.4.*@dev || 14.2.*@dev",
         "typo3/testing-framework": "^9.5.0",
         "vaimo/composer-patches": "^6.0.1"
     },
@@ -132,7 +131,8 @@
     "autoload": {
         "psr-4": {
             "WebVision\\Deepltranslate\\Core\\": "Classes",
-            "WebVision\\Deepltranslate\\Core\\Core13\\": "Core13"
+            "WebVision\\Deepltranslate\\Core\\Core13\\": "Core13",
+            "WebVision\\Deepltranslate\\Core\\Core14\\": "Core14"
         }
     },
     "autoload-dev": {

@@ -8,8 +8,8 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -64,7 +64,7 @@ final class DeeplBackendUtility
     }
 
     /**
-     * ToDo: Migrated function to own class object "WebVision\Deepltranslate\Core\Form\TranslationButtonGenerator"
+     * @todo    Migrated function to own class object "WebVision\Deepltranslate\Core\Form\TranslationButtonGenerator".
      */
     public static function buildTranslateButton(
         $table,
@@ -99,21 +99,19 @@ final class DeeplBackendUtility
         if ($flagIcon) {
             $iconOverlayGenerator = GeneralUtility::makeInstance(IconOverlayGenerator::class);
             $icon = $iconOverlayGenerator->get($flagIcon);
-            $lC = $icon->render();
+            $localizeIconMarkup = $icon->render();
         } else {
-            $lC = GeneralUtility::makeInstance(
-                IconFactory::class
-            )
+            $localizeIconMarkup = GeneralUtility::makeInstance(IconFactory::class)
                 ->getIcon(
                     'actions-localize-deepl',
-                    Icon::SIZE_SMALL
+                    IconSize::SMALL,
                 )->render();
         }
 
         return '<a href="' . htmlspecialchars($href) . '"'
             . '" class="btn btn-default t3js-action-localize"'
             . ' title="' . $title . '">'
-            . $lC . '</a> ';
+            . $localizeIconMarkup . '</a> ';
     }
 
     /**

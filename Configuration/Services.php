@@ -12,6 +12,7 @@ use WebVision\Deepltranslate\Core\Widgets\UsageWidget;
 
 return function (ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder) {
     $typo3Version = new Typo3Version();
+    $majorVersion = $typo3Version->getMajorVersion();
     $services = $containerConfigurator->services();
 
     //==================================================================================================================
@@ -24,14 +25,15 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
         ->private(); // "private" is the default and can safely be omitted
     //==================================================================================================================
 
-    if ($typo3Version->getMajorVersion() === 13) {
-        //==================================================================================================================
-        // Define the location of the PHP sources of our extension.
-        // In addition, exclude Extbase models that should never be used via DI.
-        //==================================================================================================================
-        $services->load('WebVision\\Deepltranslate\\Core\\Core13\\', __DIR__ . '/../Core13/');
-        //==================================================================================================================
-    }
+    //==================================================================================================================
+    // Define the location of the PHP sources of our extension.
+    // In addition, exclude Extbase models that should never be used via DI.
+    //==================================================================================================================
+    $services->load(
+        sprintf('WebVision\\Deepltranslate\\Core\\Core%s\\', $majorVersion),
+        sprintf(__DIR__ . '/../Core%s/', $majorVersion),
+    );
+    //==================================================================================================================
 
     /**
      * Check if WidgetRegistry is defined, which means that EXT:dashboard is available.
