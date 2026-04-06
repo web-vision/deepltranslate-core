@@ -1,7 +1,7 @@
 {
     "name": "web-vision/deepltranslate-core",
     "type": "typo3-cms-extension",
-    "description": "This extension provides option to translate content element, and TCA record texts to DeepL supported languages using DeepL API services with TYPO3 CMS",
+    "description": "DeepL Translate (CORE) - This extension provides option to translate content element, and TCA record texts to DeepL supported languages.",
     "license": [
         "GPL-2.0-or-later"
     ],
