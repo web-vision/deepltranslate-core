@@ -76,7 +76,12 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
      */
     public function getIconIdentifier(): string
     {
-        return 'actions-localize-deepl-14';
+        return 'actions-localize-deepl-13';
+        // @todo Albeit being a simple copy of the TYPO3 v13 icon file
+        //       and properly registered in `Configuration/Icons.php`
+        //       the icon was not shown in the `deepl-instance-v14`,
+        //       but as the v13 works pretty fine we simply use that.
+        // return 'actions-localize-deepl-14';
     }
 
     public function isAvailable(LocalizationInstructions $instructions): bool
