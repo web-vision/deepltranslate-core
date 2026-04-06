@@ -26,8 +26,7 @@ final class ProcessLocalizationModeEventListener
     )]
     public function __invoke(LocalizationProcessPrepareDataHandlerCommandMapEvent $event): void
     {
-        // @todo Consider to drop `deepltranslateauto` mode.
-        if (!in_array($event->getAction(), ['deepltranslate', 'deepltranslateauto'], true)
+        if (!in_array($event->getAction(), ['deepltranslate'], true)
             || !$event->getLocalizationModes()->hasIdentifier($event->getAction())
         ) {
             // Not responsible, early return.
@@ -36,7 +35,6 @@ final class ProcessLocalizationModeEventListener
         $cmd = $event->getCmd();
         foreach ($event->getUidList() as $currentUid) {
             $cmd['tt_content'][$currentUid] = [
-                // Both modes are handled by the same custom DataHandler command
                 'deepltranslate' => $event->getDestLanguageId(),
             ];
         }

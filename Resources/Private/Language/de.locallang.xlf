@@ -15,17 +15,9 @@
 				<source>Translate with DeepL</source>
 				<target>Mit DeepL übersetzen</target>
 			</trans-unit>
-			<trans-unit id="localize.educate.deepltranslateHeaderAutodetect">
-				<source>Translate with DeepL (autodetect)</source>
-				<target>Mit DeepL übersetzen (autodetect)</target>
-			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslate" xml:space="preserve">
 				<source><![CDATA[Translating content using DeepL Translate will create a translation from the source language to the language translation you selected. The translated content will be fetched from DeepL translation service (DeepL claims 99 percentage accuracy).]]></source>
 				<target><![CDATA[Wenn Sie Inhalte mit DeepL Translate übersetzen, wird eine Übersetzung von der Ausgangssprache in die von Ihnen ausgewählte Sprache erstellt. Der übersetzte Inhalt wird vom DeepL Übersetzungsdienst abgerufen (DeepL behauptet eine 99-prozentige Genauigkeit).]]></target>
-			</trans-unit>
-			<trans-unit id="localize.educate.deepltranslateAuto" xml:space="preserve">
-				<source><![CDATA[Translating content using DeepL Translate (autodetect) will create a translation from the auto detected source language to the language translation you selected. The translated content will be fetched from DeepL translation service (DeepL claims 99 percentage accuracy).]]></source>
-				<target><![CDATA[Wenn Sie Inhalte mit DeepL Translate (automatische Erkennung) übersetzen, wird eine Übersetzung von der automatisch erkannten Ausgangssprache in die von Ihnen ausgewählte Sprache erstellt. Der übersetzte Inhalt wird vom DeepL Übersetzungsdienst abgerufen (DeepL behauptet eine 99-prozentige Genauigkeit).]]></target>
 			</trans-unit>
 			<trans-unit id="localize.educate.deeplSettingsFailure">
 				<source>Please complete missing DeepL configurations.</source>

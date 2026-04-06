@@ -12,15 +12,9 @@
 			<trans-unit id="localize.educate.deepltranslateHeader">
 				<source>Translate with DeepL</source>
 			</trans-unit>
-			<trans-unit id="localize.educate.deepltranslateHeaderAutodetect">
-				<source>Translate with DeepL (autodetect)</source>
-			</trans-unit>
 
 			<trans-unit id="localize.educate.deepltranslate" xml:space="preserve">
 				<source><![CDATA[Translating content using DeepL Translate will create a translation from the source language to the language translation you selected. The translated content will be fetched from DeepL translation service (DeepL claims 99 percentage accuracy).]]></source>
-			</trans-unit>
-			<trans-unit id="localize.educate.deepltranslateAuto" xml:space="preserve">
-				<source><![CDATA[Translating content using DeepL Translate (autodetect) will create a translation from the auto detected source language to the language translation you selected. The translated content will be fetched from DeepL translation service (DeepL claims 99 percentage accuracy).]]></source>
 			</trans-unit>
 
 			<trans-unit id="localize.educate.deeplSettingsFailure">
