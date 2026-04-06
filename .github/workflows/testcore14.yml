@@ -1,0 +1,83 @@
+name: tests core 14
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  code-quality:
+    name: "code quality with core v14"
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '8.2' ]
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+
+      - name: "Prepare dependencies for TYPO3 v14"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s composerUpdate"
+
+      - name: "Validate composer.json"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s composer -- validate --strict --no-check-lock"
+
+      - name: "Run TypoScript lint"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s lintTypoScript"
+
+      - name: "Run PHP lint"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s lintPhp"
+
+      - name: "Validate CGL"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s cgl -n"
+
+      - name: "Ensure tests methods do not start with \"test\""
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s checkTestMethodsPrefix"
+
+      - name: "Ensure UTF-8 files do not contain BOM"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s checkBom"
+
+#      - name: "Test .rst files for integrity"
+#        run: "Build/Scripts/runTests.sh -t 14 -p ${{ matrix.php-version }} -s checkRst"
+
+      - name: "Find duplicate exception codes"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s checkExceptionCodes"
+
+      - name: "Run PHPStan"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s phpstan"
+
+  testsuite:
+    name: all tests with core v14
+    runs-on: ubuntu-22.04
+    needs: code-quality
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '8.2', '8.5' ]
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+
+      - name: "Prepare dependencies for TYPO3 v14"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s composerUpdate"
+
+      - name: "Unit"
+        run: "Build/Scripts/runTests.sh -b podman -b podman -t 14 -p ${{ matrix.php-version }} -s unit"
+
+      - name: "Functional SQLite"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional -d sqlite"
+
+      - name: "Functional MariaDB 10.5 mysqli"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+
+      - name: "Functional MariaDB 10.5 pdo_mysql"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+
+      - name: "Functional MySQL 8.0 mysqli"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+
+      - name: "Functional MySQL 8.0 pdo_mysql"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+
+      - name: "Functional PostgresSQL 10"
+        run: "Build/Scripts/runTests.sh -b podman -t 14 -p ${{ matrix.php-version }} -s functional -d postgres"
