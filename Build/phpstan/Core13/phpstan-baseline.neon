@@ -115,12 +115,6 @@ parameters:
 			path: ../../../Classes/Utility/HtmlUtility.php
 
 		-
-			message: '#^Parameter \#1 \$array \(array\{0\: WebVision\\Deepl\\Base\\Localization\\LocalizationMode, 1\?\: WebVision\\Deepl\\Base\\Localization\\LocalizationMode\}\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
-			count: 1
-			path: ../../../Core13/EventListener/ApplyLocalizationModesEventListener.php
-
-		-
 			message: '#^Access to an undefined property object\:\:\$renderingAllowed\.$#'
 			identifier: property.notFound
 			count: 1
