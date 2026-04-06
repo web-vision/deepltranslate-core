@@ -18,14 +18,14 @@ $EM_CONF[$_EXTKEY] = [
             'fluid' => '13.4.0-14.2.99',
             'setup' => '13.4.0-14.2.99',
             'deepl_base' => '2.0.0-2.99.99',
-            'deeplcom_deeplphp' => '1.16.1-1.99.99',
+            'deeplcom_deeplphp' => '1.17.1-1.99.99',
         ],
         'conflicts' => [
             'recordlist_thumbnail' => '*',
             'wv_deepltranslate' => '*',
         ],
         'suggests' => [
-            'container' => '*',
+            'container' => '3.2.3-3.99.99',
             'dashboard' => '*',
             'install' => '*',
             'enable_translated_content' => '*',

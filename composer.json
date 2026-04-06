@@ -89,7 +89,7 @@
         "typo3/cms-fluid": "13.4.*@dev || 14.2.*@dev",
         "typo3/cms-setup": "13.4.*@dev || 14.2.*@dev",
         "web-vision/deepl-base": "2.0.*@dev",
-        "web-vision/deeplcom-deepl-php": "~1.17.0"
+        "web-vision/deeplcom-deepl-php": "~1.17.1"
     },
     "require-dev": {
         "b13/container": "^3.2.2",
