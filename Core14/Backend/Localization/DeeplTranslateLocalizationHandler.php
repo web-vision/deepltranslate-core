@@ -362,7 +362,7 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
     {
         try {
             // Validate that the record exists
-            $site = $this->siteFinder->getSiteByRootPageId($pageId);
+            $site = $this->siteFinder->getSiteByPageId($pageId);
             $sourceSiteLanguage = $site->getLanguageById($sourceLanguageId);
             $targetSiteLanguage = $site->getLanguageById($targetLanguageId);
             return [
