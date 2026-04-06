@@ -228,6 +228,7 @@ Options:
             - 8.2: (default) use PHP 8.2
             - 8.3: use PHP 8.3
             - 8.4: use PHP 8.4
+            - 8.5: use PHP 8.5
 
     -x
         Only with -s functional|functionalDeprecated|unit|unitDeprecated|unitRandom|acceptance|acceptanceInstall
@@ -334,7 +335,7 @@ while getopts "a:b:s:d:i:p:t:xy:o:nhu" OPT; do
             ;;
         p)
             PHP_VERSION=${OPTARG}
-            if ! [[ ${PHP_VERSION} =~ ^(8.1|8.2|8.3|8.4)$ ]]; then
+            if ! [[ ${PHP_VERSION} =~ ^(8.1|8.2|8.3|8.4|8.5)$ ]]; then
                 INVALID_OPTIONS+=("p ${OPTARG}")
             fi
             ;;
