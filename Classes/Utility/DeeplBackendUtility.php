@@ -124,14 +124,17 @@ final class DeeplBackendUtility
         return (string)$uriBuilder->buildUriFromRoute($route, $parameters);
     }
 
-    public static function checkCanBeTranslated(int $pageId, int $languageId): bool
+    public static function checkCanBeTranslated(int $pageId, int $targetLanguageId, int $sourceLanguageId = 0): bool
     {
+        if ($targetLanguageId === 0) {
+            return false;
+        }
         try {
             /** @var LanguageService $languageService */
             $languageService = GeneralUtility::makeInstance(LanguageService::class);
             $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageId);
-            $languageService->getSourceLanguage($site);
-            $languageService->getTargetLanguage($site, $languageId);
+            $languageService->getSourceLanguage($site, $sourceLanguageId);
+            $languageService->getTargetLanguage($site, $targetLanguageId);
         } catch (LanguageRecordNotFoundException|SiteNotFoundException|InvalidArgumentException) {
             return false;
         }

@@ -15,11 +15,18 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Access\AllowedTranslateAccess;
 use WebVision\Deepltranslate\Core\Event\DisallowTableFromDeeplTranslateEvent;
+use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException as DeeplTranslateCoreInvalidArgumentException;
+use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
+use WebVision\Deepltranslate\Core\Service\LanguageService as DeeplTranslateCoreLanguageService;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
 /**
@@ -36,6 +43,8 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         private EventDispatcherInterface $eventDispatcher,
         private UriBuilder $uriBuilder,
         private LocalizationRepository $localizationRepository,
+        private SiteFinder $siteFinder,
+        private DeeplTranslateCoreLanguageService $deeplTranslateCoreLanguageService,
     ) {}
 
     /**
@@ -91,6 +100,15 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         ));
         if ($event->isTranslateButtonsAllowed() === false) {
             // DeepL based translat disallowed for main record type (table).
+            return false;
+        }
+        $determinedSiteConfiguration = $this->determineSiteConfigAndSiteLanguageForLocalizationInstructions($instructions);
+        $site = $determinedSiteConfiguration['site'] ?? null;
+        $sourceSiteLanguage = $determinedSiteConfiguration['sourceLanguage'];
+        $targetSiteLanguage = $determinedSiteConfiguration['targetLanguage'];
+        if ($this->isDeeplTranslateAllowedForSite($site, $sourceSiteLanguage, $targetSiteLanguage) === false) {
+            // Site configuration and language could not be determined and
+            // thus not having a valid DeepL configuration.
             return false;
         }
         return true;
@@ -293,6 +311,87 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         }
 
         return null;
+    }
+
+    /**
+     * @return array{site: Site|null, sourceLanguage: SiteLanguage|null, targetLanguage: SiteLanguage|null}
+     */
+    private function determineSiteConfigAndSiteLanguageForLocalizationInstructions(LocalizationInstructions $instructions): array
+    {
+        if ($instructions->mainRecordType === 'pages') {
+            return $this->determineSiteInformation(
+                $instructions->recordUid,
+                $instructions->sourceLanguageId,
+                $instructions->targetLanguageId,
+            );
+        }
+        $record = BackendUtility::getRecord($instructions->mainRecordType, $instructions->recordUid);
+        if (!$record) {
+            // Could not retrieve record, which makes it impossible to determine and site configuration.
+            return [
+                'site' => null,
+                'sourceLanguage' => null,
+                'targetLanguage' => null,
+            ];
+        }
+        $recordPid = (int)($record['pid'] ?? 0);
+        if ($recordPid === 0) {
+            // @todo How to handle PID=0 records ? Return as invalid for now.
+            // @todo This would automatically rule out `sys_file` and `sys_file_metadata` (FAL) for now,
+            //       and needs to be implemented to get `EXT:deepltranslate_assets` working for TYPO3v14.
+            return [
+                'site' => null,
+                'sourceLanguage' => null,
+                'targetLanguage' => null,
+            ];
+        }
+        return $this->determineSiteInformation(
+            $recordPid,
+            $instructions->sourceLanguageId,
+            $instructions->targetLanguageId,
+        );
+    }
+
+    /**
+     * @param int $pageId
+     * @param int $sourceLanguageId
+     * @param int $targetLanguageId
+     * @return array{site: Site|null, sourceLanguage: SiteLanguage|null, targetLanguage: SiteLanguage|null}
+     */
+    private function determineSiteInformation(int $pageId, int $sourceLanguageId, int $targetLanguageId): array
+    {
+        try {
+            // Validate that the record exists
+            $site = $this->siteFinder->getSiteByRootPageId($pageId);
+            $sourceSiteLanguage = $site->getLanguageById($sourceLanguageId);
+            $targetSiteLanguage = $site->getLanguageById($targetLanguageId);
+            return [
+                'site' => $site,
+                'sourceLanguage' => $sourceSiteLanguage,
+                'targetLanguage' => $targetSiteLanguage,
+            ];
+        } catch (SiteNotFoundException|\InvalidArgumentException) {
+            return [
+                'site' => null,
+                'sourceLanguage' => null,
+                'targetLanguage' => null,
+            ];
+        }
+    }
+
+    private function isDeeplTranslateAllowedForSite(?Site $site, ?SiteLanguage $sourceLanguage, ?SiteLanguage $targetLanguage): bool
+    {
+        if ($site === null || $sourceLanguage === null || $targetLanguage === null) {
+            return false;
+        }
+        try {
+            $this->deeplTranslateCoreLanguageService->getSourceLanguage($site, $sourceLanguage->getLanguageId());
+            $this->deeplTranslateCoreLanguageService->getTargetLanguage($site, $targetLanguage->getLanguageId());
+        } catch (LanguageRecordNotFoundException|DeeplTranslateCoreInvalidArgumentException) {
+            // Either source or target language is invalid.
+            return false;
+        }
+        return true;
     }
 
     private function isDeeplTranslateAllowedForUser(): bool
