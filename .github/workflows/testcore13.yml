@@ -19,6 +19,9 @@ jobs:
       - name: "Prepare dependencies for TYPO3 v13"
         run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s composerUpdate"
 
+      - name: "Validate composer.json"
+        run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s composer -- validate --strict --no-check-lock"
+
       - name: "Run TypoScript lint"
         run: "Build/Scripts/runTests.sh -b podman -t 13 -p ${{ matrix.php-version }} -s lintTypoScript"
 
@@ -50,7 +53,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # @todo Use PHP8.5 as upper version onces deeplphp is updated to a compatible version.
         php-version: [ '8.2', '8.5' ]
     steps:
       - name: "Checkout"
