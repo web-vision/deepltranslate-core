@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+	<file source-language="en" target-language="de" datatype="plaintext" original="EXT:deepltranslate_core/Resources/Private/Language/Wizards/localization.xlf" date="2025-10-28T00:00:00Z" product-name="deepltranslate_core">
+		<header/>
+		<body>
+			<!-- Handlers -->
+			<trans-unit id="handler.deepltranslate.label">
+				<source>Translate with DeepL</source>
+				<target>Mit DeepL übersetzen</target>
+			</trans-unit>
+			<trans-unit id="handler.deepltranslate.description">
+				<source><![CDATA[Translating content using DeepL Translate will create a translation from the source language to the language translation you selected. The translated content will be fetched from DeepL translation service (DeepL claims 99 percentage accuracy).]]></source>
+				<target><![CDATA[Wenn Sie Inhalte mit DeepL Translate übersetzen, wird eine Übersetzung von der Ausgangssprache in die von Ihnen ausgewählte Sprache erstellt. Der übersetzte Inhalt wird vom DeepL Übersetzungsdienst abgerufen (DeepL behauptet eine 99-prozentige Genauigkeit).]]></target>
+			</trans-unit>
+			<!-- Error Messages -->
+			<trans-unit id="error.recordNotFound">
+				<source>Record with uid "%s" of type "%s" does not exist or is not accessible.</source>
+				<target>Der Datensatz mit der UID „%s“ vom Typ „%s“ existiert nicht oder ist nicht zugänglich.</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
