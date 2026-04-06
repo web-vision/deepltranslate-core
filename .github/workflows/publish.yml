@@ -57,11 +57,14 @@ jobs:
       - name: Install tailor
         run: composer global require typo3/tailor --prefer-dist --no-progress --no-suggest
 
+      - name: Set composer.json version and extra.typo3/cms.version
+        run: |
+          composer config "version" "${{ env.version }}" \
+          && composer config "extra"."typo3/cms"."version" "${{ env.version }}" \
+          && composer validate --strict --no-check-lock --no-check-version
+
       # Note that step will fail when `env.version` does not match the `ext_emconf.php` version.
       - name: Create local TER package upload artifact
-        env:
-          # See https://github.com/TYPO3/tailor?tab=readme-ov-file#exclude-paths-from-packaging
-          TYPO3_EXCLUDE_FROM_PACKAGING: Build/tailor/ExcludeFromPackaging.php
         run: |
           php ~/.composer/vendor/bin/tailor create-artefact ${{ env.version }} ${{ env.DETECTED_EXTENSION_KEY }}
 
@@ -80,9 +83,6 @@ jobs:
           fail_on_unmatched_files: true
 
       - name: Publish to TER
-        env:
-          # See https://github.com/TYPO3/tailor?tab=readme-ov-file#exclude-paths-from-packaging
-          TYPO3_EXCLUDE_FROM_PACKAGING: Build/tailor/ExcludeFromPackaging.php
         run: |
           php ~/.composer/vendor/bin/tailor ter:publish --comment "${{ env.terReleaseNotes }}" ${{ env.version }} \
             --artefact=tailor-version-artefact/${{ env.DETECTED_EXTENSION_KEY }}_${{ env.version }}.zip
