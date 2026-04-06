@@ -49,54 +49,6 @@ parameters:
 			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
 
 		-
-			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListCore\:\:makeLocalizationPanel\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
-
-		-
-			message: '#^Parameter \#1 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:isRecordDeletePlaceholder\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
-
-		-
-			message: '#^Parameter \#2 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
-
-		-
-			message: '#^Parameter \#2 \$row \(array\<mixed\>\) of method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListCore\:\:makeLocalizationPanel\(\) should be compatible with parameter \$record \(TYPO3\\CMS\\Core\\Domain\\RecordInterface\) of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\)$#'
-			identifier: method.childParameterType
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
-
-		-
-			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListWithGridelements\:\:makeLocalizationPanel\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
-
-		-
-			message: '#^Parameter \#1 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:isRecordDeletePlaceholder\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
-
-		-
-			message: '#^Parameter \#2 \$record of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\) expects TYPO3\\CMS\\Core\\Domain\\RecordInterface, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
-
-		-
-			message: '#^Parameter \#2 \$row \(array\<mixed\>\) of method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListWithGridelements\:\:makeLocalizationPanel\(\) should be compatible with parameter \$record \(TYPO3\\CMS\\Core\\Domain\\RecordInterface\) of method TYPO3\\CMS\\Backend\\RecordList\\DatabaseRecordList\:\:makeLocalizationPanel\(\)$#'
-			identifier: method.childParameterType
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
-
-		-
 			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1

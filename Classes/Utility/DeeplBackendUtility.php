@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Utility;
 
+use TYPO3\CMS\Backend\RecordList\DatabaseRecordList;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -64,7 +65,7 @@ final class DeeplBackendUtility
     }
 
     /**
-     * @todo    Migrated function to own class object "WebVision\Deepltranslate\Core\Form\TranslationButtonGenerator".
+     * @todo    Remove when TYPO3 v13 support is dropped together with {@see DatabaseRecordList}.
      */
     public static function buildTranslateButton(
         $table,

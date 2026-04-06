@@ -49,18 +49,6 @@ parameters:
 			path: ../../../Classes/Override/CommandMapPostProcessingHook.php
 
 		-
-			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListCore\:\:makeLocalizationPanel\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListCore.php
-
-		-
-			message: '#^Method WebVision\\Deepltranslate\\Core\\Override\\Core12\\DatabaseRecordListWithGridelements\:\:makeLocalizationPanel\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../../../Classes/Override/Core12/DatabaseRecordListWithGridelements.php
-
-		-
 			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
