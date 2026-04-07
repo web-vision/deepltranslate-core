@@ -1,20 +1,26 @@
 <guides xmlns="https://www.phpdoc.org/guides"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://www.phpdoc.org/guides ../vendor/phpdocumentor/guides-cli/resources/schema/guides.xsd"
+        input-format="rst"
         links-are-relative="true"
->
+        default-code-language="php">
     <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
                project-home="https://github.com/web-vision/deepltranslate-core"
                project-contact="hello@web-vision.de"
                project-repository="https://github.com/web-vision/deepltranslate-core"
                project-issues="https://github.com/web-vision/deepltranslate-core/issues"
-               edit-on-github-branch="main"
                edit-on-github="web-vision/deepltranslate-core"
+               edit-on-github-branch="main"
+               edit-on-github-directory="Documentation"
                typo3-core-preferred="stable"
     />
-    <project title="DeepL Translate"
-             release="main (development)"
-             version="main (development)"
+    <project title="DeepL Translate (CORE)"
+             release="main (development 6.0.0-dev)"
+             version="main (development 6.0.0-dev)"
              copyright="since 2018 by web-vision GmbH &amp; Contributors"
     />
+    <inventory id="t3coreapi" url="https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/"/>
+    <inventory id="t3install" url="https://docs.typo3.org/m/typo3/guide-installation/main/en-us/"/>
+    <inventory id="t3sitepackage" url="https://docs.typo3.org/m/typo3/tutorial-sitepackage/main/en-us/"/>
+    <inventory id="t3viewhelper" url="https://docs.typo3.org/other/typo3/view-helper-reference/main/en-us/"/>
 </guides>

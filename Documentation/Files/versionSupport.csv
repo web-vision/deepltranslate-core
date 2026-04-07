@@ -1,6 +1,9 @@
-"5.0-5.x","12","8.1, 8.2, 8.3, 8.4","yes"
-"4.0-4.x","11-12","7.4, 8.0, 8.1, 8.2, 8.3, 8.4","yes"
-"3.0","9-11",">=7.4","no"
-"2.3","9-11",">=7.4","no"
+"6.x","14.2.*","8.2, 8.3, 8.4, 8.5","yes","web-vision/deepltranslate-core","deepltranslate_core"
+"6.x","13.4.x","8.2, 8.3, 8.4, 8.5","yes","web-vision/deepltranslate-core","deepltranslate_core"
+"5.x","13.4.x","8.1, 8.2, 8.3, 8.4, (8.5)","yes","web-vision/deepltranslate-core","deepltranslate_core"
+"5.x","12.5.x","8.1, 8.2, 8.3, 8.4, (8.5)","yes","web-vision/deepltranslate-core","deepltranslate_core"
+"4.x","11, 12","7.4, 8.0, 8.1, 8.2, 8.3, (8.4)","no","web-vision/wv_deepltranslate","wv_deepltranslate"
+"3.x","9, 10, 11",">=7.4","no","web-vision/wv_deepltranslate","wv_deepltranslate"
+"2.x","9, 10, 11",">=7.4","no","web-vision/wv_deepltranslate","wv_deepltranslate"
 
 

@@ -13,7 +13,7 @@ You can download the extension using one of the following methods:
 
     ..  code-block:: bash
 
-        composer require web-vision/deepltranslate-core
+        composer require 'web-vision/deepltranslate-core':'6.0.*@dev'
 
     in your TYPO3 installation.
 
@@ -26,6 +26,17 @@ You can download the extension using one of the following methods:
     You can always get current version from `TER`_ by downloading the zip
     version. Upload the file afterwards in the Extension Manager.
 
+..  note::
+
+    No release yet and you possible need to allow the installation of
+    development versions:
+
+    * :shell:`composer config minimum-stability "dev"`
+    * :shell:`composer config "prefer-stable" true`
+
+    Currently you need to uninstall any of the addons, private and public,
+    because they are not compatible with `6.0.0-dev` or `TYPO3 v14` yet.
+
 The extension then needs to be :ref:`configured <configuration>`
 in order to display translation buttons in the desired languages.
 
@@ -37,5 +48,5 @@ Compatibility
 DeepL Translate supports:
 
 ..  csv-table:: Changes
-    :header: "DeepL Translate version","TYPO3 Version","PHP version","Supported"
+    :header: "DeepL Translate version","TYPO3 Version","PHP version","Supported","Composer","TER"
     :file: Files/versionSupport.csv
