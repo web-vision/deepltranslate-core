@@ -1,14 +1,39 @@
-[![Latest Stable Version](https://poser.pugx.org/web-vision/wv_deepltranslate/v/stable.svg?style=for-the-badge)](https://packagist.org/packages/web-vision/wv_deepltranslate)
+[![Latest Stable Version](https://poser.pugx.org/web-vision/deepltranslate-core/v/stable.svg?style=for-the-badge)](https://packagist.org/packages/web-vision/deepltranslate-core)
 [![License](https://poser.pugx.org/web-vision/wv_deepltranslate/license?style=for-the-badge)](https://packagist.org/packages/web-vision/wv_deepltranslate)
-[![TYPO3 11.5](https://img.shields.io/badge/TYPO3-11.5-green.svg?style=for-the-badge)](https://get.typo3.org/version/11)
-[![TYPO3 12.4](https://img.shields.io/badge/TYPO3-12.4-green.svg?style=for-the-badge)](https://get.typo3.org/version/12)
-[![Total Downloads](https://poser.pugx.org/web-vision/wv_deepltranslate/downloads.svg?style=for-the-badge)](https://packagist.org/packages/web-vision/wv_deepltranslate)
-[![Monthly Downloads](https://poser.pugx.org/web-vision/wv_deepltranslate/d/monthly?style=for-the-badge)](https://packagist.org/packages/web-vision/wv_deepltranslate)
+[![TYPO3 14.2](https://img.shields.io/badge/TYPO3-14.2-green.svg?style=for-the-badge)](https://get.typo3.org/version/14.2)
+[![TYPO3 13.4](https://img.shields.io/badge/TYPO3-13.4-green.svg?style=for-the-badge)](https://get.typo3.org/version/13.4)
+[![TYPO3 12.4](https://img.shields.io/badge/TYPO3-12.4-green.svg?style=for-the-badge)](https://get.typo3.org/version/12.4)
+[![Total Downloads (deepltranslate_core) >= 5.x](https://poser.pugx.org/web-vision/deepltranslate-core/downloads.svg?style=for-the-badge)](https://packagist.org/packages/web-vision/deepltranslate-core)
+[![Monthly Downloads (deepltranslate_core) >= 5.x](https://poser.pugx.org/web-vision/deepltranslate-core/d/monthly?style=for-the-badge)](https://packagist.org/packages/web-vision/deepltranslate-core)
+[![Total Downloads (wv_deepltranslate) <= 4.x](https://poser.pugx.org/web-vision/wv_deepltranslate/downloads.svg?style=for-the-badge)](https://packagist.org/packages/web-vision/wv_deepltranslate)
+[![Monthly Downloads (wv_deepltranslate) <= 4.x](https://poser.pugx.org/web-vision/wv_deepltranslate/d/monthly?style=for-the-badge)](https://packagist.org/packages/web-vision/wv_deepltranslate)
 
 # TYPO3 extension `deepltranslate_core`
 
+
+|                  | URL                                                                 |
+|------------------|---------------------------------------------------------------------|
+| **Repository:**  | https://github.com/web-vision/deepltranslate-core                   |
+| **Read online:** | https://docs.typo3.org/p/web-vision/deepltranslate-core/main/en-us/ |
+| **TER:**         | https://extensions.typo3.org/extension/deepltranslate_core/         |
+| **ISSUES:**      | https://github.com/web-vision/deepltranslate-core/issues/           |
+| **RELEASES:**    | https://github.com/web-vision/deepltranslate-core/releases/         |
+
+## Description
+
 This extension provides automated translation of pages, content and records in TYPO3
 for languages supported by [DeepL](https://www.deepl.com/de/docs-api/).
+
+## Compatibility
+
+| Branch | State          | Composer Package Name          | TYPO3 Extension Key | Version       | TYPO3     | PHP                                               |
+|--------|----------------|--------------------------------|---------------------|---------------|-----------|---------------------------------------------------|
+| main   | development    | web-vision/deepltranslate-core | deepltranslate_core | 6.0.x-dev     | v13 + v14 | 8.2, 8.3, 8.4, 8.5 (depending on TYPO3)           |
+| 5      | active support | web-vision/deepltranslate-core | deepltranslate_core | ^5, 5.1.x-dev | v12 + v13 | 8.1, 8.2, 8.3, 8.4, 8.5 (depending on TYPO3)      |
+| 4      | end of live    | web-vision/wv_deepltranslate   | wv_deepltranslate   | -             | -         | -                                                 |
+| 3      | end of live    | web-vision/wv_deepltranslate   | wv_deepltranslate   | -             | -         | -                                                 |
+| 2      | end of live    | web-vision/wv_deepltranslate   | wv_deepltranslate   | -             | -         | -                                                 |
+| 1      | end of live    | web-vision/wv_deepltranslate   | wv_deepltranslate   | -             | -         | -                                                 |
 
 ## Features
 
@@ -38,23 +63,71 @@ Find out more: https://www.web-vision.de/en/deepl.html
 
 ## Installation
 
-Install with your favour:
+Install with your flavour:
 
-* [Composer](https://packagist.org/packages/web-vision/deepltranslate-core)
-* [TER / Extension Manager](https://extensions.typo3.org/extension/deepltranslate_core/)
-* [Git](https://github.com/web-vision/deepltranslate-core)
+* [TER](https://extensions.typo3.org/extension/deepltranslate_core/)
+* Extension Manager
+* composer
 
 We prefer composer installation:
+
 ```bash
-composer require web-vision/deepltranslate-core
+composer require 'web-vision/deepltranslate-core':'6.0.*@dev'
 ```
 
-The DeepL translation buttons are only displayed once you have set up the API
-and desired target languages. Read the documentation to find out how to do this.
+> [!IMPORTANT]
+> `6.0.0` is still in development and not released yet and add-ons,
+> public and private, are not touched yet and will be worked after
+> having `EXT:deepltranslate_core` in a first usable state.
 
-## Documentation
+**Testing 6.0.0-dev version in projects (composer mode)**
 
-Read online: https://docs.typo3.org/p/web-vision/deepltranslate-core/main/en-us/
+> [!IMPORTANT]
+> Currently none of the addons are touched yet and can be used with `6.0.0-dev`
+> for TYPO3 v13 or TYPO3 v14, which we will start working on the next time.
+> That means, that you need to remove them first before upgrading to `6.0.0-dev`.
+
+It is already possible to use and test the `6.0.0-dev` version in composer based
+instances, which is encouraged. We also encourage to give early feedback of issues
+not detected by us or contributors.
+
+Your project should configure `minimum-stabilty: dev` and `prefer-stable` to allow
+requiring each extension but still use stable versions over development versions:
+
+```bash
+composer config minimum-stability "dev" \
+&& composer config "prefer-stable" true
+```
+
+and remove possible addons:
+
+```bash
+composer require -W \
+  'web-vision/deepl-write' \
+  'web-vision/deepltranslate-glossary' \
+  'web-vision/deepltranslate-assets' \
+  'web-vision/deepltranslate-auto-renew' \
+  'web-vision/deepltranslate-mass'
+```
+
+and installed with:
+
+```bash
+composer require -W \
+  'web-vision/deepl-base':'2.0.*@dev' \
+  'web-vision/deepltranslate-core':'6.0.*@dev' \
+&& vendor/bin/typo3 extension:setup \
+&& vendor/bin/typo3 language:update \
+&& vendor/bin/typo3 cache:flush \
+&& vendor/bin/typo3 cache:warmup
+```
+
+> [!NOTE]
+> To avoid deprecation messages regarding deprecated `ext_emconf.php` you should
+> disable logging deprecations or you need to apply a couple of composer patches
+> against TYPO3 v14.2 (feature freeze).
+> TYPO3 v14.3 (LTS) development currently not supported and possible needs more
+> work and adoption depending what of the pending gerrit changes will be merged.
 
 ## Add-Ons
 
@@ -86,7 +159,7 @@ Prerequisites:
 ```shell
 echo '>> Prepare release pull-request' ; \
   RELEASE_BRANCH='main' ; \
-  RELEASE_VERSION='5.0.1' ; \
+  RELEASE_VERSION='6.0.0' ; \
   git checkout main && \
   git fetch --all && \
   git pull --rebase && \
@@ -96,6 +169,7 @@ echo '>> Prepare release pull-request' ; \
   composer require --dev "typo3/tailor" && \
   ./.Build/bin/tailor set-version ${RELEASE_VERSION} && \
   composer remove --dev "typo3/tailor" && \
+  composer config "extra"."typo3/cms"."version" "${RELEASE_VERSION}" && \
   git add . && \
   git commit -m "[TASK] Prepare release ${RELEASE_VERSION}" && \
   git push --set-upstream origin prepare-release-${RELEASE_VERSION} && \
@@ -114,7 +188,7 @@ Check pull-request and the pipeline run.
 
 ```shell
 RELEASE_BRANCH='main' ; \
-RELEASE_VERSION='5.0.1' ; \
+RELEASE_VERSION='6.0.0' ; \
 RELEASE_PR_NUMBER='123' ; \
   git checkout main && \
   git fetch --all && \
