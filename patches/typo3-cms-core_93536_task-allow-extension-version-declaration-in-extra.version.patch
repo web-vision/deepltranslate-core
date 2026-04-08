@@ -4,7 +4,7 @@
 @version ~14.2.0
 @after typo3-cms-core_93484_bugfix-strip-title-from-package-description-if-extracted.patch
 
-From 43bbe818f023a5eea08d3c016ce175ac9f6acc5a Mon Sep 17 00:00:00 2001
+From ccce176b8173fbb59d79312a0723b599e8838682 Mon Sep 17 00:00:00 2001
 From: Helmut Hummel <typo3@helhum.io>
 Date: Fri, 03 Apr 2026 12:08:32 +0200
 Subject: [PATCH] [TASK] Allow extension version declaration in extra.version
@@ -24,6 +24,14 @@ This field must still match the composer version that is tagged.
 Releases: main
 Resolves: #109482
 Change-Id: I96cbdb175dc46ff5b3b1f863663412395fd4469c
+Reviewed-on: https://review.typo3.org/c/Packages/TYPO3.CMS/+/93536
+Reviewed-by: Garvin Hicking <garvin@hick.ing>
+Reviewed-by: Georg Ringer <georg.ringer@gmail.com>
+Tested-by: Garvin Hicking <garvin@hick.ing>
+Reviewed-by: Stefan Bürk <stefan@buerk.tech>
+Tested-by: Georg Ringer <georg.ringer@gmail.com>
+Tested-by: core-ci <typo3@b13.com>
+Tested-by: Stefan Bürk <stefan@buerk.tech>
 ---
 
 diff --git a/Classes/Package/Package.php b/Classes/Package/Package.php
