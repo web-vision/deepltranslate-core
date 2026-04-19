@@ -16,6 +16,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Site\Entity\Site;
@@ -34,8 +35,6 @@ use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
  * supporting only translate operations for the translate mode.
  *
  * @internal and not part of public API.
- * @todo Needs possible adoption for TYPO3 14.3 (LTS) due to pending interface/signature change,
- *       and the main reason why current branch and extension version is limited to `~14.2.0`.
  */
 final readonly class DeeplTranslateLocalizationHandler implements LocalizationHandlerInterface
 {
@@ -76,12 +75,7 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
      */
     public function getIconIdentifier(): string
     {
-        return 'actions-localize-deepl-13';
-        // @todo Albeit being a simple copy of the TYPO3 v13 icon file
-        //       and properly registered in `Configuration/Icons.php`
-        //       the icon was not shown in the `deepl-instance-v14`,
-        //       but as the v13 works pretty fine we simply use that.
-        // return 'actions-localize-deepl-14';
+        return sprintf('actions-localize-deepl-%s', ((new Typo3Version())->getMajorVersion()));
     }
 
     public function isAvailable(LocalizationInstructions $instructions): bool

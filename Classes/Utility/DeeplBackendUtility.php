@@ -11,6 +11,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -104,7 +105,7 @@ final class DeeplBackendUtility
         } else {
             $localizeIconMarkup = GeneralUtility::makeInstance(IconFactory::class)
                 ->getIcon(
-                    'actions-localize-deepl',
+                    sprintf('actions-localize-deepl-%s', ((new Typo3Version())->getMajorVersion())),
                     IconSize::SMALL,
                 )->render();
         }
