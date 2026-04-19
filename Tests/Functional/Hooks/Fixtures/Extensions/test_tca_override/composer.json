@@ -13,5 +13,6 @@
 		"typo3/cms": {
 			"extension-key": "test_tca_override"
 		}
-	}
+	},
+	"version": "1.0.0-dev"
 }

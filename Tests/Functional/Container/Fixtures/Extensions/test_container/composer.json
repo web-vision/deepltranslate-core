@@ -14,5 +14,6 @@
 		"typo3/cms": {
 			"extension-key": "test_container"
 		}
-	}
+	},
+	"version": "1.0.0-dev"
 }
