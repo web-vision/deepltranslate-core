@@ -7,6 +7,7 @@ namespace WebVision\Deepltranslate\Core\Event\Listener;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Backend\Event\SystemInformationToolbarCollectorEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 use WebVision\Deepltranslate\Core\Service\UsageService;
@@ -46,7 +47,7 @@ final readonly class UsageToolBarEventListener
                 $this->usageService->formatNumber($usage->character->count),
                 $this->usageService->formatNumber($usage->character->limit)
             ),
-            'actions-localize-deepl',
+            sprintf('actions-localize-deepl-%s', ((new Typo3Version())->getMajorVersion())),
             $this->usageService->determineSeverityForSystemInformation($usage->character->count, $usage->character->limit),
         );
     }
