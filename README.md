@@ -179,7 +179,9 @@ echo '>> Create release based on configuration' ; \
   git commit -m "[RELEASE] ${RELEASE_VERSION}" && \
   git push --set-upstream origin release-${RELEASE_VERSION} && \
   gh pr create --fill --base ${RELEASE_BRANCH} --title "[RELEASE] ${RELEASE_VERSION}" && \
+  sleep 10 && \
   gh pr checks --watch --interval 2 && \
+  sleep 10 && \
   gh pr merge -rd --admin && \
   git remote prune origin && \
   git tag ${RELEASE_VERSION} \
@@ -193,6 +195,9 @@ echo '>> Create release based on configuration' ; \
   git add . && \
   git commit -m "[TASK] Set dev version ${DEV_VERSION}" && \
   gh pr create --fill --base ${RELEASE_BRANCH} --title "[RELEASE] ${RELEASE_VERSION}" && \
+  sleep 10 && \
   gh pr checks --watch --interval 2 && \
-  gh pr merge -rd --admin
+  sleep 10 && \
+  gh pr merge -rd --admin && \
+  git remote prune origin
 ```
