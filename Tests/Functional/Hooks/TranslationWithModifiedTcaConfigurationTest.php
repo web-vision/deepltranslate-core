@@ -70,7 +70,7 @@ final class TranslationWithModifiedTcaConfigurationTest extends AbstractDeepLTes
         'web-vision/deeplcom-deepl-php',
         'web-vision/deepltranslate-core',
         __DIR__ . '/../Fixtures/Extensions/test_services_override',
-        __DIR__ . '/Fixtures/Extensions/test_tca_override',
+        __DIR__ . '/../Fixtures/Extensions/test_tca_override',
     ];
 
     protected function setUp(): void

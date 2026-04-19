@@ -12,7 +12,10 @@
 	},
 	"extra":{
 		"typo3/cms": {
-			"extension-key": "test_container"
+			"extension-key": "test_container",
+			"Package": {
+				"providesPackages": []
+			}
 		}
 	},
 	"version": "1.0.0-dev"

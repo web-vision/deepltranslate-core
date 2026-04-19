@@ -72,7 +72,7 @@ final class ContentElementsInContainerTest extends AbstractDeepLTestCase
         'web-vision/deeplcom-deepl-php',
         'web-vision/deepltranslate-core',
         __DIR__ . '/../Fixtures/Extensions/test_services_override',
-        __DIR__ . '/Fixtures/Extensions/test_container',
+        __DIR__ . '/../Fixtures/Extensions/test_container',
     ];
 
     protected function setUp(): void
