@@ -6,7 +6,7 @@ services:
 
   WebVision\Deepltranslate\Core\:
     resource: '../Classes/*'
-    exclude: '../Classes/{Domain/Model,Override/Core12}'
+    exclude: '../Classes/{Domain/Model}'
 
   cache.deepltranslateCore:
     class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface

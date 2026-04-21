@@ -18,7 +18,7 @@ final class Usage extends AbstractClient implements UsageInterface
 {
     public function __construct(
         protected LoggerInterface $logger,
-        protected DeepLClientInterface $client
+        protected DeepLClientInterface $client,
     ) {}
 
     public function getUsage(): ?DeepLUsage

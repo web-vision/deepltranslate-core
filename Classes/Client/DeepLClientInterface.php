@@ -19,23 +19,27 @@ use DeepL\StyleRuleInfo;
 use DeepL\TextResult;
 use DeepL\TranslatorOptions;
 use DeepL\Usage;
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Interface mirroring the public API of DeepL\DeepLClient (deeplcom/deepl-php)
  * to be used for development and dependency inversion.
+ * #[AutoconfigureTag(name: 'deepl.client')]
  */
-#[AutoconfigureTag(name: 'deepl.client')]
 interface DeepLClientInterface
 {
     /**
      * @param array<TranslatorOptions::*|string, mixed> $options
+     *
+     * **Be aware** that interfaces should not define class constructor. This prevents class composition in case
+     * two interfaces declares constructors in the interface. This interface surfes the purpose to detect if upstream
+     * deepl php client changes the constructor on package updates and is therefore defined here as a maintenance
+     * safe-guard.
      */
     public function __construct(
-        #[Autowire(expression: 'service("WebVision\\\\Deepltranslate\\\\Core\\\\ConfigurationInterface").getApiKey()')]
+        #[Autowire(expression: 'service("deepl-core.configuration").getApiKey()')]
         string $apiKey,
-        #[Autowire(expression: 'service("WebVision\\\\Deepltranslate\\\\Core\\\\ConfigurationInterface").getConfigurationForDeepLClient()')]
+        #[Autowire(expression: 'service("deepl-core.configuration").getConfigurationForDeepLClient()')]
         array $options = []
     );
 

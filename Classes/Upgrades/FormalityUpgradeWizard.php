@@ -5,22 +5,27 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Upgrades;
 
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
-use TYPO3\CMS\Core\Configuration\SiteConfiguration;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Install\Attribute\UpgradeWizard;
 use TYPO3\CMS\Install\Updates\ChattyInterface;
 use TYPO3\CMS\Install\Updates\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Install\Updates\UpgradeWizardInterface;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 
-#[UpgradeWizard('wvDeepltranslate_formalityUpgrade')]
+#[UpgradeWizard(identifier: 'wvDeepltranslate_formalityUpgrade')]
+#[Autoconfigure(public: true)]
 class FormalityUpgradeWizard implements UpgradeWizardInterface, ChattyInterface
 {
     protected OutputInterface $output;
+
+    public function __construct(
+        private DeeplService $deeplService,
+        private SiteWriter $siteWriter,
+    ) {}
 
     public function setOutput(OutputInterface $output): void
     {
@@ -49,13 +54,7 @@ class FormalityUpgradeWizard implements UpgradeWizardInterface, ChattyInterface
 
     public function executeUpdate(): bool
     {
-        $siteConfiguration = (class_exists(SiteWriter::class))
-            ? GeneralUtility::makeInstance(SiteWriter::class)
-            : GeneralUtility::makeInstance(SiteConfiguration::class);
-        $deeplService = GeneralUtility::makeInstance(DeeplService::class);
-
         $globalFormality = 'default';
-        // @todo Reevaluate with old extension key 4.x and how to handle this.
         if (isset($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['deepltranslate_core']['deeplFormality'])) {
             $globalFormality = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['deepltranslate_core']['deeplFormality'];
         }
@@ -84,7 +83,7 @@ class FormalityUpgradeWizard implements UpgradeWizardInterface, ChattyInterface
 
                     if (isset($language['deeplTargetLanguage'])
                         && $language['deeplTargetLanguage'] !== ''
-                        && $deeplService->hasLanguageFormalitySupport($language['deeplTargetLanguage'])
+                        && $this->deeplService->hasLanguageFormalitySupport($language['deeplTargetLanguage'])
                     ) {
                         $language['deeplFormality'] = $globalFormality;
                     }
@@ -92,11 +91,7 @@ class FormalityUpgradeWizard implements UpgradeWizardInterface, ChattyInterface
 
                 $explodedSiteConfigPath = explode(DIRECTORY_SEPARATOR, $file->getPath());
                 $siteIdentifier = array_pop($explodedSiteConfigPath);
-                if (method_exists($siteConfiguration, 'write')) {
-                    $siteConfiguration->write($siteIdentifier, $loadedSiteConfiguration);
-                } else {
-                    throw new \RuntimeException(__CLASS__ . ' does not implement write().', 1734624531);
-                }
+                $this->siteWriter->write($siteIdentifier, $loadedSiteConfiguration);
             }
 
             return true;

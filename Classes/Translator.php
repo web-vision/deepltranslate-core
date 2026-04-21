@@ -14,7 +14,7 @@ final class Translator extends AbstractClient implements TranslatorInterface
 {
     public function __construct(
         protected LoggerInterface $logger,
-        protected DeepLClientInterface $client
+        protected DeepLClientInterface $client,
     ) {}
 
     /**
@@ -25,7 +25,7 @@ final class Translator extends AbstractClient implements TranslatorInterface
         ?string $sourceLang,
         string $targetLang,
         string $glossary = '',
-        string $formality = ''
+        string $formality = '',
     ): array|null|TextResult {
         $options = [
             // @todo Make this configurable, either as global setting or dependency injection (factory?) / event

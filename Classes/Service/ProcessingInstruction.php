@@ -16,14 +16,11 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 final class ProcessingInstruction
 {
     private const PROCESSING_CACHE_IDENTIFIER = 'deepl-processing-cache';
-    private FrontendInterface $runtimeCache;
 
     public function __construct(
         #[Autowire(service: 'cache.runtime')]
-        FrontendInterface $runtimeCache
-    ) {
-        $this->runtimeCache = $runtimeCache;
-    }
+        private FrontendInterface $runtimeCache,
+    ) {}
 
     /**
      * @param int|string|null $id
@@ -37,7 +34,7 @@ final class ProcessingInstruction
             'id' => $id,
             'deeplMode' => $deeplMode,
         ];
-        // if processing instructions are already set, detect the current DeepL mode.
+        // If processing instructions are already set, detect the current DeepL mode.
         // this is needed for sub instances of DataHandler, mostly
         // when translating inline elements via command and the DataMapProcessor
         // manually triggers an inline translation

@@ -21,8 +21,8 @@ use WebVision\Deepltranslate\Core\UsageInterface;
 final readonly class UsageService implements UsageServiceInterface
 {
     public function __construct(
-        private readonly UsageInterface $client,
-        private readonly Locales $locales,
+        private UsageInterface $client,
+        private Locales $locales,
     ) {}
 
     public function getCurrentUsage(): ?Usage

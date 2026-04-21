@@ -17,18 +17,12 @@ use DeepL\StyleRuleInfo;
 interface ConfigurationInterface
 {
     public function getApiKey(): string;
-
     public function getModelType(): string;
-
     public function getSplitSentences(): string;
     public function isPreserveFormattingEnabled(): bool;
-
     public function getIgnoreTags(): string;
-
     public function getNonSplittingTags(): string;
-
     public function getSplittingTags(): string;
-
     public function isOutlineDetectionEnabled(): bool;
 
     /**

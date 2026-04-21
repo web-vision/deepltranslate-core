@@ -15,8 +15,10 @@ use WebVision\Deepltranslate\Core\Client\DeepLClientInterface;
  */
 interface ClientInterface
 {
+    // @todo Interfaces should not define class constructor. This prevents class composition in case two interfaces
+    //       declares constructors in the interface.
     public function __construct(
         LoggerInterface $logger,
-        DeepLClientInterface $client
+        DeepLClientInterface $client,
     );
 }

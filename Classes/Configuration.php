@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Http\Client\GuzzleClientFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 #[AsAlias(id: ConfigurationInterface::class, public: true)]
+#[AsAlias(id: 'deepl-core.configuration', public: true)]
 final class Configuration implements ConfigurationInterface
 {
     private string $apiKey;
@@ -53,6 +54,9 @@ final class Configuration implements ConfigurationInterface
      */
     public function __construct()
     {
+        // @todo Consider to move this into a dedicated factory and let the values directly passed and set as CPP,
+        //       at best using native PHP enums.
+        // @todo That is a service AND should be injected and not created (if still needed in the future)
         $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('deepltranslate_core');
 
         $this->apiKey = (string)($extensionConfiguration['apiKey'] ?? '');
@@ -63,8 +67,11 @@ final class Configuration implements ConfigurationInterface
         $this->nonSplittingTags = GeneralUtility::trimExplode(',', ($extensionConfiguration['nonSplittingTags'] ?? ''), true);
         $this->splittingTags = GeneralUtility::trimExplode(',', ($extensionConfiguration['splittingTags'] ?? ''), true);
         $this->outlineDetection = (bool)($extensionConfiguration['outlineDetection'] ?? true);
+        // @todo Should this really be a UI extension configuration ?
         $this->serverUrl = (string)($extensionConfiguration['serverUrl'] ?? '');
+        // @todo Should this really be a UI extension configuraiton ?
         $this->headers = (array)($extensionConfiguration['headers'] ?? []);
+        // @todo That is a service AND should be injected and not created.
         $this->httpClient = GeneralUtility::makeInstance(GuzzleClientFactory::class)->getClient();
     }
 

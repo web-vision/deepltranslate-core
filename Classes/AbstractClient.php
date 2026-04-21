@@ -16,6 +16,7 @@ abstract class AbstractClient implements ClientInterface
 {
     protected LoggerInterface $logger;
     protected DeepLClientInterface $client;
+
     /**
      * @return Language[]
      */
