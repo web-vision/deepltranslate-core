@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Hooks;
 
+use Symfony\Contracts\Service\Attribute\Required;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -22,22 +23,40 @@ use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
 
 abstract class AbstractTranslateHook
 {
-    protected DeeplService $deeplService;
+    /** @phpstan-ignore property.uninitializedReadonly */
+    protected readonly DeeplService $deeplService;
+    /** @phpstan-ignore property.uninitializedReadonly */
+    protected readonly PageRepository $pageRepository;
+    /** @phpstan-ignore property.uninitializedReadonly */
+    protected readonly LanguageService $languageService;
+    /** @phpstan-ignore property.uninitializedReadonly */
+    protected readonly ProcessingInstruction $processingInstruction;
 
-    protected PageRepository $pageRepository;
-
-    protected LanguageService $languageService;
-    protected ProcessingInstruction $processingInstruction;
-
-    public function __construct(
-        PageRepository $pageRepository,
-        DeeplService $deeplService,
-        LanguageService $languageService,
-        ProcessingInstruction $processingInstruction
-    ) {
-        $this->deeplService = $deeplService;
+    #[Required]
+    final public function injectPageRepository(PageRepository $pageRepository): void
+    {
+        /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
         $this->pageRepository = $pageRepository;
+    }
+
+    #[Required]
+    final public function injectDeeplService(DeeplService $deeplService): void
+    {
+        /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
+        $this->deeplService = $deeplService;
+    }
+
+    #[Required]
+    final public function injectLanguageService(LanguageService $languageService): void
+    {
+        /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
         $this->languageService = $languageService;
+    }
+
+    #[Required]
+    final public function injectProcessingInstruction(ProcessingInstruction $processingInstruction): void
+    {
+        /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
         $this->processingInstruction = $processingInstruction;
     }
 

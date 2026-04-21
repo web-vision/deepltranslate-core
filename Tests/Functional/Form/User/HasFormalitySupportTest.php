@@ -13,16 +13,6 @@ use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
 #[CoversClass(HasFormalitySupport::class)]
 class HasFormalitySupportTest extends AbstractDeepLTestCase
 {
-    protected function setUp(): void
-    {
-        $this->configurationToUseInTestInstance = array_merge(
-            $this->configurationToUseInTestInstance,
-            require __DIR__ . '/../../Fixtures/ExtensionConfig.php'
-        );
-
-        parent::setUp();
-    }
-
     #[Test]
     public function hasFormalitySupportIsSupported(): void
     {

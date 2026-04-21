@@ -5,9 +5,13 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\DependencyInjection\PublicServicePass;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Dashboard\WidgetRegistry;
+use WebVision\Deepltranslate\Core\Client\DeepLClientInterface;
 use WebVision\Deepltranslate\Core\Service\UsageService;
+use WebVision\Deepltranslate\Core\TranslatorInterface;
+use WebVision\Deepltranslate\Core\UsageInterface;
 use WebVision\Deepltranslate\Core\Widgets\UsageWidget;
 
 return function (ContainerConfigurator $containerConfigurator, ContainerBuilder $containerBuilder) {
@@ -56,4 +60,16 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
                 'width' => 'small',
             ]);
     }
+
+    // Make all `DeepLClientInterface::class` implementation public: true.
+    $containerBuilder->registerForAutoconfiguration(DeepLClientInterface::class)->addTag(DeepLClientInterface::class);
+    $containerBuilder->addCompilerPass(new PublicServicePass(DeepLClientInterface::class));
+
+    // Make all `UsageInterface::class` implementation public: true
+    $containerBuilder->registerForAutoconfiguration(UsageInterface::class)->addTag(UsageInterface::class);
+    $containerBuilder->addCompilerPass(new PublicServicePass(UsageInterface::class));
+
+    // Make all `TranslatorInterface::class` implementation public: true
+    $containerBuilder->registerForAutoconfiguration(TranslatorInterface::class)->addTag(TranslatorInterface::class);
+    $containerBuilder->addCompilerPass(new PublicServicePass(TranslatorInterface::class));
 };
