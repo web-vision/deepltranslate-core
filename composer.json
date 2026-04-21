@@ -90,7 +90,7 @@
         "typo3/cms-install": "~13.4.28@dev || ~14.3.0@dev",
         "typo3/cms-setup": "~13.4.28@dev || ~14.3.0@dev",
         "web-vision/deepl-base": "2.0.*@dev",
-        "web-vision/deeplcom-deepl-php": "~1.17.1"
+        "web-vision/deeplcom-deepl-php": "~1.18.0@dev"
     },
     "require-dev": {
         "b13/container": "^3.2.2",
