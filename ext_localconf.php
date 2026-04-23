@@ -61,7 +61,4 @@ defined('TYPO3') or die();
         ??= [];
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['deepltranslate_core']['backend']
         ??= \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class;
-
-    $accessRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\WebVision\Deepltranslate\Core\Access\AccessRegistry::class);
-    $accessRegistry->addAccess((new \WebVision\Deepltranslate\Core\Access\AllowedTranslateAccess()));
 })();

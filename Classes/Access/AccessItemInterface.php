@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Access;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag(name: AccessItemInterface::class)]
 interface AccessItemInterface
 {
     /**

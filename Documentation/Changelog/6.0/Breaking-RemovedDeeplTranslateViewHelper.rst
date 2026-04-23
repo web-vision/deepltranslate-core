@@ -1,6 +1,6 @@
 ..  include:: /Includes.rst.txt
 
-..  _breaking-1775413934:
+..  _breaking-removed-deepltranslateviewhelper-1775413934:
 
 ============================================
 Breaking: Removed `DeeplTranslateViewHelper`

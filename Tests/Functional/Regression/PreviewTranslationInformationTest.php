@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Tests\Functional\Regression;
 
+use PHPUnit\Framework\Attributes\Test;
 use SBUERK\TYPO3\Testing\SiteHandling\SiteBasedTestTrait;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -99,9 +100,7 @@ final class PreviewTranslationInformationTest extends AbstractDeepLTestCase
             ->createFromUserPreferences($GLOBALS['BE_USER']);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function previewTranslationInformationIsRenderedForTranslatedPage(): void
     {
         $styles = [];

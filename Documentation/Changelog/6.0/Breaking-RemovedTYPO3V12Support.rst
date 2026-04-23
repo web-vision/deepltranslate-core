@@ -1,6 +1,6 @@
 ..  include:: /Includes.rst.txt
 
-..  _breaking-1773683717:
+..  _breaking-removed-typo3v12-support-1773683717:
 
 ===================================
 Breaking: Removed TYPO3 v12 support
