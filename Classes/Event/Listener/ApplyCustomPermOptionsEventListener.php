@@ -23,7 +23,7 @@ final class ApplyCustomPermOptionsEventListener
     {
         $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['deepltranslate'] ??= [];
         $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['deepltranslate']['header'] = 'Deepl Translate Access';
-        foreach ($this->accessRegistry->getAllAccess() as $access) {
+        foreach ($this->accessRegistry->getItems() as $access) {
             $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['deepltranslate']['items'][$access->getIdentifier()] = [
                 $access->getTitle(),
                 $access->getIconIdentifier(),
