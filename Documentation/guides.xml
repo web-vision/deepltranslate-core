@@ -12,7 +12,8 @@
                edit-on-github="web-vision/deepltranslate-core"
                edit-on-github-branch="main"
                edit-on-github-directory="Documentation"
-               typo3-core-preferred="stable"
+               typo3-core-preferred="13.4"
+               interlink-shortcode="web-vision/deepltranslate-core"
     />
     <project title="DeepL Translate (CORE)"
              release="main (development 6.0.0-dev)"
@@ -23,4 +24,5 @@
     <inventory id="t3install" url="https://docs.typo3.org/m/typo3/guide-installation/main/en-us/"/>
     <inventory id="t3sitepackage" url="https://docs.typo3.org/m/typo3/tutorial-sitepackage/main/en-us/"/>
     <inventory id="t3viewhelper" url="https://docs.typo3.org/other/typo3/view-helper-reference/main/en-us/"/>
+    <inventory id="t3extbasebook" url="https://docs.typo3.org/m/typo3/book-extbasefluid/main/en-us/"/>
 </guides>

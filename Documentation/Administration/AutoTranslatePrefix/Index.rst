@@ -1,5 +1,3 @@
-..  include:: /Includes.rst.txt
-
 ..  _administration-autotranslateprefix:
 
 Auto-translate-prefix

@@ -1,6 +1,4 @@
-﻿..  include:: /Includes.rst.txt
-
-..  _faq:
+﻿..  _faq:
 
 FAQ
 ===
@@ -14,10 +12,16 @@ Normally no cache files should be created when no API key is provided.
 
 If this step does not work, delete the cached files manually. The location is as follows:
 
-* composer based installation
-    `var/cache/data/wvdeepltranslate`
-* legacy installation
-    `typo3temp/var/cache/data/wvdeepltranslate`
+
+..  tabs::
+
+    ..  group-tab:: composer mode installation
+
+        `var/cache/data/deepltranslate_core`
+
+    ..  group-tab:: classic mode installation
+
+        `typo3temp/var/cache/data/deepltranslate_core`
 
 After deleting the files in this directory and going to Site Configuration, the
 extension will reload the cache and the dropdown should have all the translatable
