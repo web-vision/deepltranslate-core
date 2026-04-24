@@ -1,5 +1,3 @@
-..  include:: /Includes.rst.txt
-
 ..  _breaking-removed-deepltranslateviewhelper-1775413934:
 
 ============================================

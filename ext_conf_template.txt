@@ -12,5 +12,5 @@ ignoreTags=
 nonSplittingTags=
 #cat=Api//6; type=string; label=Split inside these tags: Comma separated, Defines tags, which should be splitted (p, div)
 splittingTags=
-# cat=Api//7; type=boolean; Enable automatic detection of document structure in XML/HTML
+# cat=Api//7; type=boolean; label=Enable automatic detection of document structure in XML/HTML
 outlineDetection=1

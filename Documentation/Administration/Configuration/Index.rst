@@ -1,39 +1,57 @@
-..  include:: /Includes.rst.txt
-
-..  _configuration:
+..  _administrationConfiguration:
 
 Configuration
 =============
 
-Set up API
-------------------------
 
-.. attention::
+..  _adminConfigurationSetUpApi:
+
+Set up API
+----------
+
+..  attention::
     Before using the DeepL API, you need to get an API key from your `DeepL Profile`_.
 
-Go to the :ref:`extension configuration <extensionConfiguration>`
-in :guilabel:`Admin Tools > Settings > Extension Configuration`.
+..  rst-class:: bignums-tip
 
-Open the settings for :guilabel:`deepltranslate_core` and add your API key.
+#.  Go to the :ref:`extension configuration <extensionConfiguration>`
+    in :guilabel:`System > Settings > Extension Configuration`.
 
-.. figure:: /Images/Reference/configuration.png
-    :alt: The Extension configuration settings showing two input fields for DeepL API key
+    ..  note::
 
-The correct DeepL API endpoint for free or pro plans is auto-detected
-by the extension and the given API key format.
+        In TYPO3 v13 the path is :guilabel:`AdminTools > Settings > Extension Configuration`.
 
-.. _sitesetup:
+#.  Open the settings for :guilabel:`deepltranslate_core > Settings` and add your API key.
+
+    ..  figure:: /Images/Reference/configuration-settings-deeplapikey.png
+        :alt: The Extension configuration settings showing the input field for DeepL API key
+
+    The correct DeepL API endpoint for free or pro plans is auto-detected the given
+    API key format.
+
+..  note::
+
+    Extension configuration provides additional API settings, currently unused
+    and prepared for upcoming integration.
+
+**Further Readings**
+
+* :ref:`Global extension configuration <extensionConfiguration>`
+
+..  _sitesetup:
 
 Set up translation language
 ---------------------------
 
-#. Go to :guilabel:`Site Management > Sites` and edit your site configuration
-#. Switch to tab `Languages` and open your target
+..  rst-class:: bignums-tip
 
-    .. figure:: /Images/Administration/site-config-deepl-settings-empty.png
+#.  Go to :guilabel:`Site Management > Sites` and edit your site configuration
+#.  Switch to tab `Languages` and open your target
+
+    ..  figure:: /Images/Administration/site-config-deepl-settings-empty.png
         :alt: Site settings for a TYPO3 language showing empty DeepL Target Language dropdown
 
-#. Go to :guilabel:`DeepL Settings` and set up your `Target Language (ISO Code)`
+#.  Go to :guilabel:`DeepL Settings` and set up your `Target Language (ISO Code)`
 
     .. figure:: /Images/Administration/site-config-selected-target.png
         :alt: Selected target now set to German
@@ -108,4 +126,4 @@ is disabled for usage within DeepL. Translation buttons and dropdowns
 respect this setting.
 
 ..  _DeepL conform language key: https://developers.deepl.com/docs/api-reference/languages
-.. _DeepL Profile: https://www.deepl.com/en/your-account/keys
+..  _DeepL Profile: https://www.deepl.com/en/your-account/keys

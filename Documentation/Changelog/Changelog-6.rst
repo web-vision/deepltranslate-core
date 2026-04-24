@@ -1,17 +1,13 @@
-.. include:: /Includes.rst.txt
-
 ..  _changelog-v6:
 
-============
-ChangeLog v6
-============
+===========
+6.x Changes
+===========
 
-Every change to the Academic Base extension is documented here.
+..  toctree::
+    :titlesonly:
 
-.. toctree::
-   :titlesonly:
-
-   6.0/Index
+    6.0/Index
 
 
 Also available

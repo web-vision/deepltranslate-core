@@ -1,5 +1,3 @@
-..  include:: /Includes.rst.txt
-
 ..  _feature-automatic-registration-of-accessiteminterface-1777020217:
 
 ========================================================
