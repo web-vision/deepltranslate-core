@@ -1,5 +1,3 @@
-..  include:: /Includes.rst.txt
-
 ..  _deprecation-accessregistry-methods-1777019642:
 
 =====================================

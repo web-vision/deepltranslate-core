@@ -1,13 +1,11 @@
-.. include:: /Includes.rst.txt
-
 ..  _changelog-v6-byType:
 
 ===================
 6.x Changes by type
 ===================
 
-This lists all changes to the Academic Base extension of minor versions
-grouped by their type.
+This lists all changes to the :guilabel:`web-vision/deepltranslate-core`
+extension of minor versions grouped by their type.
 
 ..  contents:: Table of contents
 ..  _changelog-v6-bc:

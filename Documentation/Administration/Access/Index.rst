@@ -1,9 +1,8 @@
-..  include:: /Includes.rst.txt
-
 ..  _administration-access:
 
+====================
 Access Configuration
-====================================
+====================
 
 Access to the automatic translation functions with Deepl-Translate in the TYPO3 backend
 can be defined via the following options in the user group settings.

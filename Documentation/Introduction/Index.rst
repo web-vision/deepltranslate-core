@@ -3,7 +3,8 @@
 Introduction
 ============
 
-This chapter gives you a basic introduction about the TYPO3 CMS extension "*deepltranslate_core*".
+This chapter gives you a basic introduction about the TYPO3 CMS extension
+:guilabel:`deepltranslate_core`.
 
 ..  toctree::
     :maxdepth: 5

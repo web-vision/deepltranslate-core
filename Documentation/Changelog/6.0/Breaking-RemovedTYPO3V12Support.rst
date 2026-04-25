@@ -1,5 +1,3 @@
-..  include:: /Includes.rst.txt
-
 ..  _breaking-removed-typo3v12-support-1773683717:
 
 ===================================

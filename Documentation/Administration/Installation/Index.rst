@@ -1,5 +1,3 @@
-..  include:: /Includes.rst.txt
-
 ..  _installation:
 
 Installation
@@ -8,44 +6,82 @@ Installation
 The extension has to be installed like any other TYPO3 CMS extension.
 You can download the extension using one of the following methods:
 
-#.  **Use composer**:
-    Run
+..  tabs::
 
-    ..  code-block:: bash
+    ..  group-tab:: composer
 
-        composer require 'web-vision/deepltranslate-core':'6.0.*@dev'
+        ..  code-block:: bash
+            :caption: only the extension itself
 
-    in your TYPO3 installation.
+            composer require -W \
+               'web-vision/deepltranslate-core':'~6.0.0@dev'
 
-#.  **Get it from the Extension Manager**:
-    Switch to the module :guilabel:`Admin Tools > Extensions`.
-    Switch to :guilabel:`Get Extensions` and search for the extension key
-    *deepltranslate_core* and import the extension from the repository.
+        ..  code-block:: bash
+            :caption: requiring depending TYPO3 extensions along the way
 
-#.  **Get it from typo3.org**:
-    You can always get current version from `TER`_ by downloading the zip
-    version. Upload the file afterwards in the Extension Manager.
+            composer require \
+                'web-vision/deeplcom-deepl-php':'~1.18.0@dev' \
+                'web-vision/deepl-base':'~2.0.0@dev' \
+                'web-vision/deepltranslate-core':'~6.0.0@dev'
 
-..  note::
+        ..  tip::
 
-    No release yet and you possible need to allow the installation of
-    development versions:
+            :guilabel:`~6.0.0@dev` is the recommended version constraint to use, which
+            locks the installable version down on :guilabel:`minor level (6.0)` having
+            :guilabel:`6.0.0` as lowest patchlevel version. :guilabel:`@dev` in general
+            would allow to install a possible development version and automatically
+            switch to the stable release in case :guilabel:`minimum-stability: "dev"`
+            and :guilabel:`prefer-stable: true` is configured in the root
+            :guilabel:`composer.json` file.
 
-    * :shell:`composer config minimum-stability "dev"`
-    * :shell:`composer config "prefer-stable" true`
+            :guilabel:`-W` automatically installs required transient dependencies, for
+            example:
 
-    Currently you need to uninstall any of the addons, private and public,
-    because they are not compatible with `6.0.0-dev` or `TYPO3 v14` yet.
+            *   :guilabel:`web-vision/deepl-base` and
+            *   :guilabel:`web-vision/deeplcom-deepl-php`
 
-The extension then needs to be :ref:`configured <configuration>`
-in order to display translation buttons in the desired languages.
+        ..  note::
+
+            **Be aware** that aforementioned version constraints may be outdated, look up
+            actual version by checking the `packagist.org <https://packagist.org/>`_
+            meta-data repository.
+
+            * `packagist.org - web-vision/deepltranslate-core<https://packagist.org/packages/web-vision/deepltranslate-core>`_
+            * `packagist.org - web-vision/deepl-base <https://packagist.org/packages/web-vision/deepl-base>`_
+            * `packagist.org - web-vision/deeplcom-deepl-php<https://packagist.org/packages/web-vision/deeplcom-deepl-php>`_
+
+    ..  group-tab:: Extension Manager
+
+        #.  Switch to the module :guilabel:`System > Extensions`.
+        #.  Switch to :guilabel:`Get Extensions`
+        #.  Search for the extension key :guilabel:`deepltranslate_core`
+        #.  Import the extension from the repository.
+
+        ..  note::
+
+            For TYPO3 v13 navigate :guilabel:`AdminTools > Extensions` to
+            find the **Extension Manager**.
+
+    ..  group-tab:: Upload ZIP (TER)
+
+        #.  Get current version from `TER`_ by downloading the zip version.
+            Alternatively, get the zip from the `Github Releases`_ page.
+        #.  Switch to the module :guilabel:`System > Extensions`.
+        #.  Enable upload :guilabel:`Upload Extension`
+        #.  Select or drag extension ZIP archive and upload the file
+
+..  attention::
+
+    The extension then needs to be :ref:`configured <configuration>`
+    in order to display translation buttons in the desired languages.
 
 ..  _TER: https://extensions.typo3.org/extension/deepltranslate_core
+..  _Github Releases: https://github.com/web-vision/deepltranslate-core/releases
 
 Compatibility
 -------------
 
-DeepL Translate supports:
+DeepL Translate (CORE) supports:
 
 ..  csv-table:: Changes
     :header: "DeepL Translate version","TYPO3 Version","PHP version","Supported","Composer","TER"
