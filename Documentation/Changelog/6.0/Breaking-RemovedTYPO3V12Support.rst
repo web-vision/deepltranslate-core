@@ -26,7 +26,8 @@ Extension cannot be installed in that version but does not break otherwise.
 Affected installations
 ======================
 
-TYPO3 v12 or older instances with `EXT:deepltranslate_core` version `5.x`.
+TYPO3 v12 or older instances with :guilabel:`web-vision/deepltranslate-core`
+version `5.x`.
 
 
 Migration
