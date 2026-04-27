@@ -46,12 +46,20 @@ Implement custom access class:
 
         public function getTitle(): string
         {
-            return 'LLL:EXT:my_ext/Resources/Private/Language/locallang.xlf:be_groups.deepltranslate_access.items.customAccess.title';
+            return sprintf(
+                '%s:%s',
+                'LLL:EXT:my_ext/Resources/Private/Language/locallang.xlf',
+                'be_groups.deepltranslate_access.items.customAccess.title',
+            );
         }
 
         public function getDescription(): string
         {
-            return 'LLL:EXT:my_ext/Resources/Private/Language/locallang.xlf:be_groups.deepltranslate_access.items.customAccess.description';
+            return sprintf(
+                '%s:%s',
+                'LLL:EXT:my_ext/Resources/Private/Language/locallang.xlf',
+                'be_groups.deepltranslate_access.items.customAccess.description',
+            );
         }
 
         public function getIconIdentifier(): string
