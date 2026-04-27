@@ -1,0 +1,99 @@
+name: documentation
+
+on:
+  pull_request:
+
+jobs:
+
+  documentation:
+    name: "render documentation"
+    runs-on: ubuntu-22.04
+    outputs:
+      comment_id: ${{ steps.find-comment.outputs.comment-id }}
+      documentation_url: ${{ steps.documentation-artifact.outputs.artifact-url }}
+    strategy:
+      fail-fast: false
+    permissions:
+      contents: write
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v4
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+
+      - name: "Render documentation"
+        run: "Build/Scripts/runTests.sh -b podman -s renderDocumentation"
+
+      - uses: actions/upload-artifact@v6
+        id: documentation-artifact
+        with:
+          name: documentation-${{ github.event.pull_request.number }}-${{ github.run_id }}
+          path: Documentation-GENERATED-temp/
+          compression-level: 9
+          if-no-files-found: error
+          retention-days: 5
+          include-hidden-files: true
+          overwrite: true
+
+
+  documentation-report:
+    name: "report rendered documentation"
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+    needs: [ documentation ]
+    steps:
+
+      - name: Display information
+        run: |
+          echo "PR_ID.......: ${{ github.event.pull_request.number }}"
+          echo "COMMENT_ID..: ${{ needs.documentation.outputs.comment-id }}"
+          echo "ARTIFCAT_URL: ${{ needs.documentation.outputs.documentation_url }}"
+
+      - name: Create Comment
+        uses: peter-evans/create-or-update-comment@v5
+        if: needs.documentation.outputs.comment_id == ''
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          edit-mode: replace
+          body: |-
+            ## Documentation rendering
+
+            You can find files attached to the below linked Workflow Run URL (Logs).
+
+            Please note that files only stay for around 5 days!
+
+            | Name          | Link                                                                                |
+            |---------------|-------------------------------------------------------------------------------------|
+            | Commit        | ${{ github.event.pull_request.head.sha }}                                           |
+            | Logs          | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} |
+            | Documentation | ${{ needs.documentation.outputs.documentation_url }}                                |
+
+            [badge]: https://img.shields.io/badge/Build-Success!-3fb950?logo=github&style=for-the-badge
+
+      - name: Update Comment
+        if: needs.documentation.outputs.comment_id != ''
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ needs.documentation.outputs.comment_id }}
+          edit-mode: replace
+          body: |-
+            ## Documentation rendering
+
+            You can find files attached to the below linked Workflow Run URL (Logs).
+
+            Please note that files only stay for around 5 days!
+
+            | Name          | Link                                                                                |
+            |---------------|-------------------------------------------------------------------------------------|
+            | Commit        | ${{ github.event.pull_request.head.sha }}                                           |
+            | Logs          | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} |
+            | Documentation | ${{ needs.documentation.outputs.documentation_url }}                                |
+
+            [badge]: https://img.shields.io/badge/Build-Failure!-f85149?logo=github&style=for-the-badge
+
