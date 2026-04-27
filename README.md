@@ -187,7 +187,7 @@ echo '>> Create release based on configuration' ; \
   git tag ${RELEASE_VERSION} && \
   git push origin ${RELEASE_VERSION} && \
   echo ">> Post-release - set dev version: ${DEV_VRESION}-dev" && \
-  git checkout -b set-version-${DEV_VERSION} && \
+  git checkout -b set-dev-version-${DEV_VERSION} && \
   sed -i "s/^COMPOSER_ROOT_VERSION.*/COMPOSER_ROOT_VERSION=\"${DEV_VERSION}-dev\"/" Build/Scripts/runTests.sh && \
   tailor set-version ${DEV_VERSION} && \
   composer config "extra"."typo3/cms"."version" "${DEV_VERSION}-dev" && \
