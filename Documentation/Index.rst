@@ -34,6 +34,9 @@ DeepL Translate (CORE)
 This extension provides translation of pages, content and records in TYPO3
 for languages supported by `DeepL <https://www.deepl.com/de/docs-api/>`_.
 
+..  figure:: /Images/Editor/page-translation-wizard-select-translate-localization-handler.png
+    :alt: Select `Translate with DeepL` localization handler
+
 ----
 
 ..  card-grid::
