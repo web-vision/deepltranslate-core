@@ -108,4 +108,3 @@ for languages supported by `DeepL <https://www.deepl.com/de/docs-api/>`_.
     :hidden:
 
     Sitemap
-    genindex
