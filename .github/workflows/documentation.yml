@@ -57,7 +57,9 @@ jobs:
 
       - name: Create Comment
         uses: peter-evans/create-or-update-comment@v5
-        if: needs.documentation.outputs.comment_id == ''
+        # Skip if PR from fork (https://github.com/peter-evans/create-or-update-comment/issues/444)
+        # or comment-id not empty
+        if: github.repository == github.event.pull_request.head.repo.full_name && needs.documentation.outputs.comment_id == ''
         with:
           issue-number: ${{ github.event.pull_request.number }}
           edit-mode: replace
@@ -77,7 +79,9 @@ jobs:
             [badge]: https://img.shields.io/badge/Build-Success!-3fb950?logo=github&style=for-the-badge
 
       - name: Update Comment
-        if: needs.documentation.outputs.comment_id != ''
+        # Skip if PR from fork (https://github.com/peter-evans/create-or-update-comment/issues/444)
+        # or comment-id empty
+        if: github.repository == github.event.pull_request.head.repo.full_name && needs.documentation.outputs.comment_id != ''
         uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ needs.documentation.outputs.comment_id }}
