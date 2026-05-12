@@ -91,6 +91,9 @@ final class UsageService implements UsageServiceInterface
      */
     public function determineSeverity(int $characterCount, int $characterLimit): ContextualFeedbackSeverity
     {
+        if ($characterLimit === 0) {
+            return ContextualFeedbackSeverity::NOTICE;
+        }
         $quotaUtilization = ($characterCount / $characterLimit) * 100;
         if ($quotaUtilization >= 100) {
             return ContextualFeedbackSeverity::ERROR;
@@ -111,6 +114,9 @@ final class UsageService implements UsageServiceInterface
      */
     public function determineSeverityForSystemInformation(int $characterCount, int $characterLimit): string
     {
+        if ($characterLimit === 0) {
+            return InformationStatus::STATUS_NOTICE;
+        }
         $quotaUtilization = ($characterCount / $characterLimit) * 100;
         if ($quotaUtilization >= 100) {
             return InformationStatus::STATUS_ERROR;
