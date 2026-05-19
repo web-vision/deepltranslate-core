@@ -158,7 +158,7 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         $cmd = [
             $type => [
                 $uid => [
-                    $mode->getDataHandlerCommand() => $targetLanguage,
+                    'deepltranslate' => $targetLanguage,
                 ],
             ],
         ];
