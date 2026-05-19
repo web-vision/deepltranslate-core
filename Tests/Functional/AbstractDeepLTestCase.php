@@ -102,7 +102,6 @@ abstract class AbstractDeepLTestCase extends FunctionalTestCase
      * @var non-empty-string[]
      */
     protected array $coreExtensionsToLoad = [
-        'typo3/cms-setup',
         'typo3/cms-install',
     ];
 
