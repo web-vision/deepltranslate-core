@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Access\AllowedTranslateAccess;
+use WebVision\Deepltranslate\Core\Core14\Backend\Localization\Event\DetermineRecordPidZeroSiteConfiguration;
 use WebVision\Deepltranslate\Core\Event\DisallowTableFromDeeplTranslateEvent;
 use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException as DeeplTranslateCoreInvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
@@ -335,14 +336,24 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         }
         $recordPid = (int)($record['pid'] ?? 0);
         if ($recordPid === 0) {
-            // @todo How to handle PID=0 records ? Return as invalid for now.
-            // @todo This would automatically rule out `sys_file` and `sys_file_metadata` (FAL) for now,
-            //       and needs to be implemented to get `EXT:deepltranslate_assets` working for TYPO3v14.
-            return [
-                'site' => null,
-                'sourceLanguage' => null,
-                'targetLanguage' => null,
-            ];
+            try {
+                $event = new DetermineRecordPidZeroSiteConfiguration(
+                    mainRecordType: $instructions->mainRecordType,
+                    record: $record,
+                    sourceLanguageId: $instructions->sourceLanguageId,
+                    targetLanguageId: $instructions->targetLanguageId,
+                    site: null,
+                );
+                /** @var DetermineRecordPidZeroSiteConfiguration $event */
+                $event = $this->eventDispatcher->dispatch($event);
+                return $event->getResult();
+            } catch (\Throwable) {
+                return [
+                    'site' => null,
+                    'sourceLanguage' => null,
+                    'targetLanguage' => null,
+                ];
+            }
         }
         return $this->determineSiteInformation(
             $recordPid,
