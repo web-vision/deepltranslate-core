@@ -51,3 +51,9 @@ services:
         identifier: 'deepltranslate-core/translation-dropdown'
         event: WebVision\Deepl\Base\Event\ViewHelpers\ModifyInjectVariablesViewHelperEvent
         after: 'deepl-base/default-translation'
+
+  WebVision\Deepltranslate\Core\Event\Listener\BlindConfigurationOptionsEventListener:
+    tags:
+      - name: 'event.listener'
+        identifier: 'deepltranslate-core/blind-configuration-options'
+        event: TYPO3\CMS\Lowlevel\Event\ModifyBlindedConfigurationOptionsEvent
