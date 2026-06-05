@@ -65,7 +65,8 @@
 			"extension-key": "deepltranslate_core",
 			"ignore-as-root": false,
 			"web-dir": ".Build/Web",
-			"app-dir": ".Build"
+			"app-dir": ".Build",
+			"version": "5.1.6"
 		},
 		"branch-alias": {
 			"dev-main": "5.x.x-dev"
