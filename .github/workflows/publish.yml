@@ -41,7 +41,7 @@ jobs:
           fi
           {
             echo 'terReleaseNotes<<EOF'
-            echo "https://github.com/fgtclb/academic-persons/releases/tag/${{ env.version }}"
+            echo "https://github.com/web-vision/deepltranslate-core/releases/tag/${{ env.version }}"
             echo EOF
           } >> "$GITHUB_ENV"
           echo "DETECTED_EXTENSION_KEY=$(cat composer.json | jq -r '.extra."typo3/cms"."extension-key"' )" >> "$GITHUB_ENV"
