@@ -86,8 +86,8 @@ Prerequisites:
 ```bash
 echo '>> Create release based on configuration' ; \
   RELEASE_BRANCH='5' ; \
-  RELEASE_VERSION='5.1.5' ; \
-  DEV_VERSION='5.1.6' ; \
+  RELEASE_VERSION='5.1.6' ; \
+  DEV_VERSION='5.1.7' ; \
   echo ">> Checkout branches" && \
   git checkout main && \
   git fetch --all && \
