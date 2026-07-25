@@ -4,19 +4,23 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Hooks;
 
+use Symfony\Contracts\Service\Attribute\Required;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentReference;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Domain\Repository\PageRepository;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
+use WebVision\Deepltranslate\Core\Service\InlineRelationResolver;
 use WebVision\Deepltranslate\Core\Service\LanguageService;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
 
@@ -29,6 +33,8 @@ abstract class AbstractTranslateHook
     protected LanguageService $languageService;
     protected ProcessingInstruction $processingInstruction;
 
+    protected InlineRelationResolver $inlineRelationResolver;
+
     public function __construct(
         PageRepository $pageRepository,
         DeeplService $deeplService,
@@ -39,6 +45,15 @@ abstract class AbstractTranslateHook
         $this->pageRepository = $pageRepository;
         $this->languageService = $languageService;
         $this->processingInstruction = $processingInstruction;
+    }
+
+    /**
+     * Setter injection to avoid changing the constructor signature within a maintenance branch.
+     */
+    #[Required]
+    final public function injectInlineRelationResolver(InlineRelationResolver $inlineRelationResolver): void
+    {
+        $this->inlineRelationResolver = $inlineRelationResolver;
     }
 
     /**
@@ -169,6 +184,17 @@ abstract class AbstractTranslateHook
         }
         $this->processingInstruction->setProcessingInstruction($table, $id, true);
 
+        // Inline (IRRE) children in connected mode must not be localized on their own: `DataHandler::localize()`
+        // does not write the `foreign_field` pointer to the translated parent, which would create a translation
+        // not attached to anything. Hand these over to the DataHandler command dealing with inline children.
+        // @see https://github.com/web-vision/deepltranslate-core/issues/503
+        $inlineParentReference = $this->inlineRelationResolver->resolveParentReference($table, (int)$id);
+        if ($inlineParentReference !== null) {
+            $this->localizeInlineChildRecord($inlineParentReference, (int)$value, $dataHandler);
+            $commandIsProcessed = true;
+            return;
+        }
+
         // Following lines are copied from `DataHandler::process_cmdmap()` from 'localize' command switch. Property
         // is protected and the reason we need to use PHP powerfull reflection API to set the wanted value.
         $dataHandlerPropertyReflection = (new \ReflectionProperty($dataHandler, 'useTransOrigPointerField'));
@@ -178,5 +204,68 @@ abstract class AbstractTranslateHook
         $dataHandlerPropertyReflection->setValue($dataHandler, $backupUseTransOrigPointerField);
 
         $commandIsProcessed = true;
+    }
+
+    /**
+     * Localizes an inline child record through its parent record, so TYPO3 writes the `foreign_field`
+     * pointer, the `pid` and the sorting of the created translation.
+     *
+     * Without a translated parent record the child translation cannot be attached to anything. In that
+     * case nothing is created at all, mirroring `DataHandler::inlineLocalizeSynchronize()`, which refuses
+     * to work on a parent record without localization, too.
+     */
+    private function localizeInlineChildRecord(
+        InlineParentReference $reference,
+        int $languageId,
+        DataHandler $dataHandler
+    ): void {
+        $translatedParentRecords = BackendUtility::getRecordLocalization(
+            $reference->parentTable,
+            $reference->parentUid,
+            $languageId
+        );
+        if (!is_array($translatedParentRecords) || $translatedParentRecords === []) {
+            $message = 'DeepL translation of inline child record "{table}:{uid}" has been skipped, because parent'
+                . ' record "{parentTable}:{parentUid}" has no translation for language "{language}" yet. Translate'
+                . ' the parent record first.';
+            $messageData = [
+                'table' => $reference->childTable,
+                'uid' => $reference->childUid,
+                'parentTable' => $reference->parentTable,
+                'parentUid' => $reference->parentUid,
+                'language' => $languageId,
+            ];
+            // `DataHandler::log()` has incompatible signatures in TYPO3 v12 and v13, therefore the
+            // extension logger is used here instead of writing a `sys_log` entry.
+            GeneralUtility::makeInstance(LogManager::class)
+                ->getLogger(__CLASS__)
+                ->info($message, $messageData);
+            $this->flashMessages(
+                str_replace(
+                    array_map(static fn (string $key): string => '{' . $key . '}', array_keys($messageData)),
+                    array_map(static fn ($value): string => (string)$value, array_values($messageData)),
+                    $message
+                ),
+                '',
+                ContextualFeedbackSeverity::WARNING
+            );
+            return;
+        }
+
+        $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $inlineDataHandler->start([], [
+            $reference->parentTable => [
+                $reference->parentUid => [
+                    'inlineLocalizeSynchronize' => [
+                        'field' => $reference->parentField,
+                        'language' => $languageId,
+                        'action' => 'localize',
+                        'ids' => [$reference->childUid],
+                    ],
+                ],
+            ],
+        ]);
+        $inlineDataHandler->process_cmdmap();
+        $dataHandler->errorLog = array_merge($dataHandler->errorLog, $inlineDataHandler->errorLog);
     }
 }
