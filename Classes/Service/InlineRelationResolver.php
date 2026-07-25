@@ -28,6 +28,26 @@ final class InlineRelationResolver
     ) {}
 
     /**
+     * Whether any TCA field can own records of the given table through a `foreign_field` pointer
+     * column, meaning records of that table can be inline children in connected mode.
+     *
+     * In contrast to {@see self::resolveParentReference()} this does not need a record and can
+     * therefore be used at points where the pointer column of a newly created child record has not
+     * been written yet - which is the case for most of the DataHandler processing.
+     */
+    public function isPossibleInlineChildTable(string $childTable): bool
+    {
+        if (!$this->tcaSchemaFactory->has($childTable)) {
+            return false;
+        }
+        foreach ($this->getInlineParentCandidates($childTable) as $ignored) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Returns the connected mode inline parent of the given record, or null if the record is not an
      * inline child in connected mode, if the relation cannot be resolved unambiguously or if the
      * parent record does not exist.
@@ -43,21 +63,10 @@ final class InlineRelationResolver
         }
 
         $references = [];
-        foreach ($this->tcaSchemaFactory->get($childTable)->getPassiveRelations() as $passiveRelation) {
-            $parentTable = $passiveRelation->fromTable();
-            $parentField = $passiveRelation->fromField();
-            if ($parentField === null
-                || $parentTable === ''
-                || !$this->tcaSchemaFactory->has($parentTable)
-            ) {
-                continue;
-            }
-            $parentSchema = $this->tcaSchemaFactory->get($parentTable);
-            if (!$parentSchema->hasField($parentField)) {
-                continue;
-            }
-            $configuration = $parentSchema->getField($parentField)->getConfiguration();
-            $parentUid = $this->determineParentUid($childTable, $childRecord, $parentTable, $configuration);
+        foreach ($this->getInlineParentCandidates($childTable) as $candidate) {
+            $parentTable = $candidate['parentTable'];
+            $configuration = $candidate['configuration'];
+            $parentUid = $this->determineParentUid($childRecord, $parentTable, $configuration);
             if ($parentUid === null) {
                 continue;
             }
@@ -65,7 +74,7 @@ final class InlineRelationResolver
                 childTable: $childTable,
                 childUid: $childUid,
                 parentTable: $parentTable,
-                parentField: $parentField,
+                parentField: $candidate['parentField'],
                 parentUid: $parentUid,
                 foreignField: (string)$configuration['foreign_field'],
             );
@@ -82,24 +91,56 @@ final class InlineRelationResolver
     }
 
     /**
+     * All TCA fields owning records of the given table through a `foreign_field` pointer column.
+     *
+     * @return iterable<array{parentTable: non-empty-string, parentField: non-empty-string, configuration: array<string, mixed>}>
+     */
+    private function getInlineParentCandidates(string $childTable): iterable
+    {
+        foreach ($this->tcaSchemaFactory->get($childTable)->getPassiveRelations() as $passiveRelation) {
+            $parentTable = $passiveRelation->fromTable();
+            $parentField = $passiveRelation->fromField();
+            if ($parentField === null
+                || $parentField === ''
+                || $parentTable === ''
+                || !$this->tcaSchemaFactory->has($parentTable)
+            ) {
+                continue;
+            }
+            $parentSchema = $this->tcaSchemaFactory->get($parentTable);
+            if (!$parentSchema->hasField($parentField)) {
+                continue;
+            }
+            $configuration = $parentSchema->getField($parentField)->getConfiguration();
+            if (($configuration['foreign_table'] ?? '') !== $childTable) {
+                continue;
+            }
+            if (!empty($configuration['MM'])) {
+                // Relations using an intermediate table do not have a pointer field on the child side.
+                continue;
+            }
+            if ((string)($configuration['foreign_field'] ?? '') === '') {
+                continue;
+            }
+            yield [
+                'parentTable' => $parentTable,
+                'parentField' => $parentField,
+                'configuration' => $configuration,
+            ];
+        }
+    }
+
+    /**
      * @param array<string, mixed> $childRecord
      * @param array<string, mixed> $configuration
      */
     private function determineParentUid(
-        string $childTable,
         array $childRecord,
         string $parentTable,
         array $configuration
     ): ?int {
-        if (($configuration['foreign_table'] ?? '') !== $childTable) {
-            return null;
-        }
-        if (!empty($configuration['MM'])) {
-            // Relations using an intermediate table do not have a pointer field on the child side.
-            return null;
-        }
-        $foreignField = (string)($configuration['foreign_field'] ?? '');
-        if ($foreignField === '' || !array_key_exists($foreignField, $childRecord)) {
+        $foreignField = (string)$configuration['foreign_field'];
+        if (!array_key_exists($foreignField, $childRecord)) {
             return null;
         }
         // Child tables shared by multiple parent tables carry the parent table name in a dedicated column.

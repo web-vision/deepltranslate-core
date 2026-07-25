@@ -45,6 +45,17 @@ the parent record does not exist or if the relation cannot be resolved
 unambiguously, for example when multiple parent tables point to the same child
 table without using `foreign_table_field`.
 
+Resolving the parent requires the `foreign_field` pointer column of the child
+record to be written already, which is not the case during most of the
+DataHandler processing of newly created child records. For those cases the
+service additionally answers the record independent question whether a table can
+be used as inline child at all:
+
+..  code-block:: php
+
+    $this->inlineRelationResolver->isPossibleInlineChildTable('sys_file_reference');
+    // true - for example `tt_content.image` owns records of that table
+
 Impact
 ======
 
