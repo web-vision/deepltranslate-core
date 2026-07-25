@@ -1,0 +1,7 @@
+tx_testinlinerelations_parent
+,"uid","pid","sys_language_uid","l10n_parent","title"
+,1,1,0,0,"proton beam"
+tx_testinlinerelations_child_declared
+,"uid","pid","sys_language_uid","l10n_parent","parentid","title"
+,1,1,0,0,1,"proton beam"
+,2,1,0,0,1,"proton beam"
