@@ -16,6 +16,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentReference;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
+use WebVision\Deepltranslate\Core\Domain\Enum\InlineParentState;
 use WebVision\Deepltranslate\Core\Domain\Repository\PageRepository;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
@@ -187,10 +188,23 @@ abstract class AbstractTranslateHook
         // Inline (IRRE) children in connected mode must not be localized on their own: `DataHandler::localize()`
         // does not write the `foreign_field` pointer to the translated parent, which would create a translation
         // not attached to anything. Hand these over to the DataHandler command dealing with inline children.
+        //
+        // A record whose table is used for inline children but which is not one itself - most prominently a
+        // `tt_content` element placed directly on a page - resolves to `NotInlineChild` and is localized
+        // normally below. A broken relation configuration (`Ambiguous`, `ParentMissing`) is skipped and
+        // reported to the editor instead of silently producing a mis-attached translation.
         // @see https://github.com/web-vision/deepltranslate-core/issues/503
-        $inlineParentReference = $this->inlineRelationResolver->resolveParentReference($table, (int)$id);
+        $inlineParentResolution = $this->inlineRelationResolver->resolveParentReference($table, (int)$id);
+        $inlineParentReference = $inlineParentResolution->reference;
         if ($inlineParentReference !== null) {
             $this->localizeInlineChildRecord($inlineParentReference, (int)$value, $dataHandler);
+            $commandIsProcessed = true;
+            return;
+        }
+        if ($inlineParentResolution->state === InlineParentState::Ambiguous
+            || $inlineParentResolution->state === InlineParentState::ParentMissing
+        ) {
+            $this->logBrokenInlineRelation($inlineParentResolution->state, $table, (int)$id);
             $commandIsProcessed = true;
             return;
         }
@@ -289,5 +303,39 @@ abstract class AbstractTranslateHook
         ]);
         $inlineDataHandler->process_cmdmap();
         $dataHandler->errorLog = array_merge($dataHandler->errorLog, $inlineDataHandler->errorLog);
+    }
+
+    /**
+     * Reports a record whose inline relation could not be resolved reliably - an ambiguous relation
+     * configuration or a missing parent record. Such a record is skipped instead of being localized
+     * on its own, which would attach the translation to the wrong parent or to nothing at all. A
+     * broken TCA or broken data is the likely cause, so the editor is informed.
+     */
+    private function logBrokenInlineRelation(InlineParentState $state, string $table, int $uid): void
+    {
+        $message = $state === InlineParentState::Ambiguous
+            ? 'DeepL translation of record "{table}:{uid}" has been skipped, because it matches more than one'
+                . ' inline parent relation and cannot be attached reliably. Check the inline relation'
+                . ' configuration (TCA) of this table.'
+            : 'DeepL translation of inline child record "{table}:{uid}" has been skipped, because the parent'
+                . ' record it points to does not exist. Check the record\'s inline relation.';
+        $messageData = [
+            'table' => $table,
+            'uid' => $uid,
+        ];
+        // `DataHandler::log()` has incompatible signatures in TYPO3 v12 and v13, therefore the
+        // extension logger is used here instead of writing a `sys_log` entry.
+        GeneralUtility::makeInstance(LogManager::class)
+            ->getLogger(__CLASS__)
+            ->info($message, $messageData);
+        $this->flashMessages(
+            str_replace(
+                array_map(static fn (string $key): string => '{' . $key . '}', array_keys($messageData)),
+                array_map(static fn ($value): string => (string)$value, array_values($messageData)),
+                $message
+            ),
+            '',
+            ContextualFeedbackSeverity::WARNING
+        );
     }
 }
