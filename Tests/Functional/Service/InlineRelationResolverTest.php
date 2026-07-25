@@ -31,6 +31,31 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
     /**
      * @test
      */
+    public function tablesUsableAsInlineChildAreDetectedWithoutARecord(): void
+    {
+        $resolver = $this->get(InlineRelationResolver::class);
+
+        static::assertTrue($resolver->isPossibleInlineChildTable('tx_testinlinerelations_child_declared'));
+        static::assertTrue($resolver->isPossibleInlineChildTable('tx_testinlinerelations_child_undeclared'));
+        // Shipped by TYPO3 itself, for example through `tt_content.image`
+        static::assertTrue($resolver->isPossibleInlineChildTable('sys_file_reference'));
+    }
+
+    /**
+     * @test
+     */
+    public function tablesNotUsableAsInlineChildAreNotDetected(): void
+    {
+        $resolver = $this->get(InlineRelationResolver::class);
+
+        static::assertFalse($resolver->isPossibleInlineChildTable('tx_testinlinerelations_parent'));
+        static::assertFalse($resolver->isPossibleInlineChildTable('pages'));
+        static::assertFalse($resolver->isPossibleInlineChildTable('table_which_does_not_exist'));
+    }
+
+    /**
+     * @test
+     */
     public function inlineChildWithTcaConfiguredPointerFieldIsResolved(): void
     {
         $reference = $this->get(InlineRelationResolver::class)
