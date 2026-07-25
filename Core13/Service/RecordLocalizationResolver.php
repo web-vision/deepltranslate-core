@@ -20,6 +20,11 @@ final class RecordLocalizationResolver implements RecordLocalizationResolverInte
 {
     public function hasTranslation(string $table, int $uid, int $languageId): bool
     {
+        // Note: a translation with an empty `l10n_source` is not found by this lookup, because it
+        // matches `ctrl.translationSource` and only falls back to `ctrl.transOrigPointerField` for
+        // tables without a translation source field. Such records are created by TYPO3 itself.
+        // Fixed in TYPO3 with https://forge.typo3.org/issues/110281
+        // (13.4: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915), still unreleased.
         $localizedRecords = BackendUtility::getRecordLocalization($table, $uid, $languageId);
 
         return is_array($localizedRecords) && $localizedRecords !== [];

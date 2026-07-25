@@ -246,6 +246,23 @@ abstract class AbstractTranslateHook
         int $languageId,
         DataHandler $dataHandler
     ): void {
+        // Note: the underlying TYPO3 lookup matches `ctrl.translationSource` (`l10n_source`) and only
+        // falls back to `ctrl.transOrigPointerField` (`l10n_parent`) for tables without a translation
+        // source field, so a translation with an empty `l10n_source` - created by TYPO3 itself, for
+        // example through a plain DataHandler datamap - is not found. An existing parent translation
+        // is then missed and the child translation is skipped.
+        //
+        // The behaviour cannot be repaired from within the extension: `DataHandler::inlineLocalizeSynchronize()`,
+        // which the localization is handed over to below, resolves the parent localization with the
+        // same lookup, and further DataHandler code paths do so as well. Only the upstream fix helps:
+        //
+        // - https://forge.typo3.org/issues/110281
+        // - main: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94914
+        // - 14.3: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94916
+        // - 13.4: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915
+        //
+        // @todo Raise the minimum TYPO3 core version constraint to the releases containing the fix
+        //       above, once they are merged and released, and drop this note.
         $parentHasTranslation = $this->recordLocalizationResolver->hasTranslation(
             $reference->parentTable,
             $reference->parentUid,

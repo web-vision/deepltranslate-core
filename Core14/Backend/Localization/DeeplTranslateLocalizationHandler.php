@@ -148,6 +148,12 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         }
 
         // Check if translation already exists
+        // Note: a translation with an empty `l10n_source` is not found by this lookup, because it
+        // matches `ctrl.translationSource` and only falls back to `ctrl.transOrigPointerField` for
+        // tables without a translation source field. Such records are created by TYPO3 itself, so an
+        // already translated record can be missed here and translated a second time.
+        // Fixed in TYPO3 with https://forge.typo3.org/issues/110281
+        // (14.3: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94916), still unreleased.
         $existingTranslation = $this->localizationRepository->getRecordTranslation($type, $uid, $targetLanguage);
         if ($existingTranslation !== null) {
             // Translation already exists, return success with no-op finisher
@@ -176,6 +182,9 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         $newUid = $dataHandler->copyMappingArray_merged[$type][$uid] ?? null;
 
         // If no UID was found in copy mapping, try to find the translated record
+        // Note: see above - a translation with an empty `l10n_source` is not found by this lookup,
+        // which only degrades the redirect to a reload here.
+        // https://forge.typo3.org/issues/110281
         if ($newUid === null) {
             $translation = $this->localizationRepository->getRecordTranslation($type, $uid, $targetLanguage);
             $newUid = $translation?->getUid();
@@ -208,6 +217,8 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         $cmd = [];
 
         // Step 1: Check if page translation already exists
+        // Unaffected by https://forge.typo3.org/issues/110281 - `getPageTranslations()` matches
+        // `ctrl.transOrigPointerField` and not `ctrl.translationSource`.
         $pageTranslation = $this->localizationRepository->getPageTranslations($pageUid, [$targetLanguage], $this->getBackendUser()->workspace);
         if ($pageTranslation === []) {
             // Page translation doesn't exist - create it

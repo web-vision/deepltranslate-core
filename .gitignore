@@ -22,3 +22,4 @@ vendor
 tailor-version-artefact/
 tailor-version-upload/
 /packages/deepl-base
+/packages/autoload-tests/
