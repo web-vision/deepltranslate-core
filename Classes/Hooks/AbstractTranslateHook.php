@@ -219,6 +219,28 @@ abstract class AbstractTranslateHook
         int $languageId,
         DataHandler $dataHandler
     ): void {
+        // Note: a translation with an empty `l10n_source` is not found by this lookup, because it
+        // matches `ctrl.translationSource` and only falls back to `ctrl.transOrigPointerField` for
+        // tables without a translation source field. Such records are created by TYPO3 itself, for
+        // example through a plain DataHandler datamap, so an existing parent translation can be
+        // missed here and the child translation is skipped.
+        //
+        // This cannot be worked around inside the extension: `DataHandler::inlineLocalizeSynchronize()`,
+        // which the localization is handed over to, resolves the parent localization with the very
+        // same call, and further DataHandler code paths do so as well. Only the upstream fix repairs
+        // the behaviour:
+        //
+        // - https://forge.typo3.org/issues/110281
+        // - main: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94914
+        // - 14.3: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94916
+        // - 13.4: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915
+        //
+        // TYPO3 v12.4 has reached ELTS and no longer receives fixes from the public community, so it
+        // will never contain the change. Instances on v12.4 need a composer patch, for which this
+        // extension already ships the tooling (`vaimo/composer-patches` and the `patches/` directory).
+        //
+        // @todo Raise the minimum TYPO3 core version constraint to the releases containing the fix
+        //       above, once they are merged and released, and drop this note.
         $translatedParentRecords = BackendUtility::getRecordLocalization(
             $reference->parentTable,
             $reference->parentUid,
