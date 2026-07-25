@@ -74,10 +74,26 @@ return [
                 ],
             ],
         ],
+        // Second field owning the same child table through a different pointer column, so a child
+        // record carrying both pointers is claimed by two parent relations at once - an ambiguous,
+        // broken configuration the resolver must refuse rather than guess.
+        'children_declared_ambiguous' => [
+            'exclude' => true,
+            'label' => 'Children (ambiguous second relation to the declared child table)',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_testinlinerelations_child_declared',
+                'foreign_field' => 'parentid_ambiguous',
+                'foreign_sortby' => 'sorting',
+                'appearance' => [
+                    'expandSingle' => true,
+                ],
+            ],
+        ],
     ],
     'types' => [
         '0' => [
-            'showitem' => 'title, children_declared, children_undeclared, --div--;meta, hidden, sys_language_uid, l10n_parent',
+            'showitem' => 'title, children_declared, children_undeclared, children_declared_ambiguous, --div--;meta, hidden, sys_language_uid, l10n_parent',
         ],
     ],
 ];

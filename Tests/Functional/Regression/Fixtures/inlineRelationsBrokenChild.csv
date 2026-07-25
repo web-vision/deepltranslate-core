@@ -1,0 +1,11 @@
+pages
+,"uid","pid","title","sys_language_uid","slug"
+,1,0,"Deepl-Functional-Test",0,"/"
+tx_testinlinerelations_parent
+,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","title","children_declared","children_undeclared"
+,1,1,256,0,0,0,"proton beam",1,0
+,2,1,256,1,1,1,"Protonenstrahl",0,0
+tx_testinlinerelations_child_declared
+,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","parentid","parentid_ambiguous","title"
+,5,1,256,0,0,0,1,1,"proton beam"
+,6,1,512,0,0,0,99,0,"proton beam"

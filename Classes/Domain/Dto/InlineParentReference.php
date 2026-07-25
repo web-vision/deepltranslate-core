@@ -8,15 +8,15 @@ namespace WebVision\Deepltranslate\Core\Domain\Dto;
  * Describes the connected mode inline (IRRE) relation between a child record and the record owning
  * it, resolved by {@see \WebVision\Deepltranslate\Core\Service\InlineRelationResolver}.
  */
-final class InlineParentReference
+final readonly class InlineParentReference
 {
     public function __construct(
-        public readonly string $childTable,
-        public readonly int $childUid,
-        public readonly string $parentTable,
-        public readonly string $parentField,
-        public readonly int $parentUid,
-        public readonly string $foreignField,
+        public string $childTable,
+        public int $childUid,
+        public string $parentTable,
+        public string $parentField,
+        public int $parentUid,
+        public string $foreignField,
     ) {}
 
     /**

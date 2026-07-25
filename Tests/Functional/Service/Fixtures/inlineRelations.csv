@@ -4,11 +4,19 @@ pages
 tx_testinlinerelations_parent
 ,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","title","children_declared","children_undeclared"
 ,1,1,256,0,0,0,"proton beam",1,1
+tx_testinlinerelations_contentparent
+,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","title","content_elements"
+,1,1,256,0,0,0,"proton beam",1
 tx_testinlinerelations_child_declared
-,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","parentid","title"
-,1,1,256,0,0,0,1,"proton beam"
-,2,1,512,0,0,0,0,"orphaned child"
-,3,1,768,0,0,0,99,"child of a non existing parent"
+,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","parentid","parentid_ambiguous","title"
+,1,1,256,0,0,0,1,0,"proton beam"
+,2,1,512,0,0,0,0,0,"orphaned child"
+,3,1,768,0,0,0,99,0,"child of a non existing parent"
+,4,1,1024,0,0,0,1,1,"child claimed by two parent relations"
 tx_testinlinerelations_child_undeclared
 ,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","parentid","title"
 ,1,1,256,0,0,0,1,"proton beam"
+tt_content
+,"uid","pid","sorting","sys_language_uid","l18n_parent","l10n_source","CType","colPos","header","tx_testinlinerelations_related"
+,10,1,256,0,0,0,"textmedia",0,"proton beam",1
+,20,1,512,0,0,0,"textmedia",0,"proton beam",0

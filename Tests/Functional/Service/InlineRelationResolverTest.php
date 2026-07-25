@@ -7,11 +7,14 @@ namespace WebVision\Deepltranslate\Core\Tests\Functional\Service;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentReference;
+use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentResolution;
+use WebVision\Deepltranslate\Core\Domain\Enum\InlineParentState;
 use WebVision\Deepltranslate\Core\Service\InlineRelationResolver;
 use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
 
 #[CoversClass(InlineRelationResolver::class)]
 #[CoversClass(InlineParentReference::class)]
+#[CoversClass(InlineParentResolution::class)]
 final class InlineRelationResolverTest extends AbstractDeepLTestCase
 {
     protected function setUp(): void
@@ -30,6 +33,10 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
 
         $this->assertTrue($resolver->isPossibleInlineChildTable('tx_testinlinerelations_child_declared'));
         $this->assertTrue($resolver->isPossibleInlineChildTable('tx_testinlinerelations_child_undeclared'));
+        // Shared table: `tt_content` is a normal content element on a page, but is also usable as an
+        // inline child - here through `tx_testinlinerelations_contentparent.content_elements`, the
+        // same shape EXT:news uses for `tx_news_domain_model_news.content_elements`.
+        $this->assertTrue($resolver->isPossibleInlineChildTable('tt_content'));
         // Shipped by TYPO3 itself, for example through `tt_content.image`
         $this->assertTrue($resolver->isPossibleInlineChildTable('sys_file_reference'));
     }
@@ -40,6 +47,7 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
         $resolver = $this->get(InlineRelationResolver::class);
 
         $this->assertFalse($resolver->isPossibleInlineChildTable('tx_testinlinerelations_parent'));
+        $this->assertFalse($resolver->isPossibleInlineChildTable('tx_testinlinerelations_contentparent'));
         $this->assertFalse($resolver->isPossibleInlineChildTable('pages'));
         $this->assertFalse($resolver->isPossibleInlineChildTable('table_which_does_not_exist'));
     }
@@ -47,9 +55,11 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
     #[Test]
     public function inlineChildWithTcaConfiguredPointerFieldIsResolved(): void
     {
-        $reference = $this->get(InlineRelationResolver::class)
+        $resolution = $this->get(InlineRelationResolver::class)
             ->resolveParentReference('tx_testinlinerelations_child_declared', 1);
 
+        $this->assertSame(InlineParentState::Resolved, $resolution->state);
+        $reference = $resolution->reference;
         $this->assertInstanceOf(InlineParentReference::class, $reference);
         $this->assertSame('tx_testinlinerelations_child_declared', $reference->childTable);
         $this->assertSame(1, $reference->childUid);
@@ -62,49 +72,112 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
     #[Test]
     public function inlineChildWithoutTcaConfiguredPointerFieldIsResolved(): void
     {
-        $reference = $this->get(InlineRelationResolver::class)
+        $resolution = $this->get(InlineRelationResolver::class)
             ->resolveParentReference('tx_testinlinerelations_child_undeclared', 1);
 
+        $this->assertSame(InlineParentState::Resolved, $resolution->state);
+        $reference = $resolution->reference;
         $this->assertInstanceOf(InlineParentReference::class, $reference);
         $this->assertSame('tx_testinlinerelations_parent', $reference->parentTable);
         $this->assertSame('children_undeclared', $reference->parentField);
         $this->assertSame(1, $reference->parentUid);
     }
 
+    /**
+     * The real-world case behind issue #503: `tt_content` used as an inline child (like EXT:news
+     * `content_elements`) must resolve to its owning record.
+     */
     #[Test]
-    public function recordWhichIsNoInlineChildIsNotResolved(): void
+    public function sharedTableRecordUsedAsInlineChildIsResolved(): void
     {
-        $resolver = $this->get(InlineRelationResolver::class);
+        $resolution = $this->get(InlineRelationResolver::class)
+            ->resolveParentReference('tt_content', 10);
 
-        $this->assertNull($resolver->resolveParentReference('tx_testinlinerelations_parent', 1));
-        $this->assertNull($resolver->resolveParentReference('pages', 1));
+        $this->assertSame(InlineParentState::Resolved, $resolution->state);
+        $reference = $resolution->reference;
+        $this->assertInstanceOf(InlineParentReference::class, $reference);
+        $this->assertSame('tt_content', $reference->childTable);
+        $this->assertSame('tx_testinlinerelations_contentparent', $reference->parentTable);
+        $this->assertSame('content_elements', $reference->parentField);
+        $this->assertSame(1, $reference->parentUid);
+        $this->assertSame('tx_testinlinerelations_related', $reference->foreignField);
+    }
+
+    /**
+     * The counterpart: a `tt_content` element placed directly on a page shares its table with inline
+     * children but is not one, and must be treated as a normal record - not routed through a parent.
+     */
+    #[Test]
+    public function sharedTableRecordNotUsedAsInlineChildIsNotInlineChild(): void
+    {
+        $resolution = $this->get(InlineRelationResolver::class)
+            ->resolveParentReference('tt_content', 20);
+
+        $this->assertSame(InlineParentState::NotInlineChild, $resolution->state);
+        $this->assertNull($resolution->reference);
     }
 
     #[Test]
-    public function inlineChildWithoutPointerValueIsNotResolved(): void
+    public function recordWhichIsNoInlineChildIsNotInlineChild(): void
     {
-        $this->assertNull(
-            $this->get(InlineRelationResolver::class)
-                ->resolveParentReference('tx_testinlinerelations_child_declared', 2)
+        $resolver = $this->get(InlineRelationResolver::class);
+
+        $this->assertSame(
+            InlineParentState::NotInlineChild,
+            $resolver->resolveParentReference('tx_testinlinerelations_parent', 1)->state
+        );
+        $this->assertSame(
+            InlineParentState::NotInlineChild,
+            $resolver->resolveParentReference('pages', 1)->state
         );
     }
 
     #[Test]
-    public function inlineChildPointingToNonExistingParentIsNotResolved(): void
+    public function inlineChildWithoutPointerValueIsNotInlineChild(): void
     {
-        $this->assertNull(
+        $this->assertSame(
+            InlineParentState::NotInlineChild,
             $this->get(InlineRelationResolver::class)
-                ->resolveParentReference('tx_testinlinerelations_child_declared', 3)
+                ->resolveParentReference('tx_testinlinerelations_child_declared', 2)->state
         );
     }
 
     #[Test]
-    public function nonExistingRecordIsNotResolved(): void
+    public function inlineChildPointingToNonExistingParentReportsParentMissing(): void
+    {
+        $this->assertSame(
+            InlineParentState::ParentMissing,
+            $this->get(InlineRelationResolver::class)
+                ->resolveParentReference('tx_testinlinerelations_child_declared', 3)->state
+        );
+    }
+
+    #[Test]
+    public function childClaimedByTwoParentRelationsReportsAmbiguous(): void
+    {
+        $this->assertSame(
+            InlineParentState::Ambiguous,
+            $this->get(InlineRelationResolver::class)
+                ->resolveParentReference('tx_testinlinerelations_child_declared', 4)->state
+        );
+    }
+
+    #[Test]
+    public function nonExistingRecordIsNotInlineChild(): void
     {
         $resolver = $this->get(InlineRelationResolver::class);
 
-        $this->assertNull($resolver->resolveParentReference('tx_testinlinerelations_child_declared', 99));
-        $this->assertNull($resolver->resolveParentReference('tx_testinlinerelations_child_declared', 0));
-        $this->assertNull($resolver->resolveParentReference('table_which_does_not_exist', 1));
+        $this->assertSame(
+            InlineParentState::NotInlineChild,
+            $resolver->resolveParentReference('tx_testinlinerelations_child_declared', 99)->state
+        );
+        $this->assertSame(
+            InlineParentState::NotInlineChild,
+            $resolver->resolveParentReference('tx_testinlinerelations_child_declared', 0)->state
+        );
+        $this->assertSame(
+            InlineParentState::NotInlineChild,
+            $resolver->resolveParentReference('table_which_does_not_exist', 1)->state
+        );
     }
 }
