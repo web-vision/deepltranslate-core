@@ -1,0 +1,21 @@
+{
+	"name": "web-vision/test-inline-relations",
+	"type": "typo3-cms-extension",
+	"description": "Testing extension providing inline (IRRE) parent/child tables with foreign_field relations",
+	"license": [
+		"GPL-2.0-or-later"
+	],
+	"require": {
+		"typo3/cms-core": "*",
+		"web-vision/deepltranslate-core": "*"
+	},
+	"extra":{
+		"typo3/cms": {
+			"extension-key": "test_inline_relations",
+			"Package": {
+				"providesPackages": []
+			}
+		}
+	},
+	"version": "1.0.0-dev"
+}
