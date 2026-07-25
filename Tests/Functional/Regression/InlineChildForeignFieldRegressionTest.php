@@ -166,6 +166,38 @@ final class InlineChildForeignFieldRegressionTest extends AbstractDeepLTestCase
         self::assertCSVDataSet(__DIR__ . '/Fixtures/Results/inlineRelationsUntranslatedParentUnchanged.csv');
     }
 
+    /**
+     * Issue #503 review follow-up: a child whose inline relation cannot be resolved reliably - here
+     * a record claimed by two parent relations at once - must be skipped and reported, not silently
+     * localized into a mis-attached translation.
+     *
+     * @test
+     */
+    public function translatingChildWithAmbiguousInlineRelationCreatesNoTranslation(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/inlineRelationsBrokenChild.csv');
+
+        $this->dispatchDeeplTranslateCommand('tx_testinlinerelations_child_declared', 5, 1);
+
+        // Only the two default-language records from the fixture, no translation was created.
+        static::assertSame(2, $this->countRecords('tx_testinlinerelations_child_declared'));
+    }
+
+    /**
+     * Issue #503 review follow-up: a child pointing at a parent record that does not exist is broken
+     * data - it must be skipped and reported, not localized on its own.
+     *
+     * @test
+     */
+    public function translatingChildPointingToMissingParentCreatesNoTranslation(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/inlineRelationsBrokenChild.csv');
+
+        $this->dispatchDeeplTranslateCommand('tx_testinlinerelations_child_declared', 6, 1);
+
+        static::assertSame(2, $this->countRecords('tx_testinlinerelations_child_declared'));
+    }
+
     private function dispatchDeeplTranslateCommand(string $table, int $uid, int $targetLanguageId): void
     {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);

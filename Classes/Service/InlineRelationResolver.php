@@ -7,6 +7,7 @@ namespace WebVision\Deepltranslate\Core\Service;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentReference;
+use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentResolution;
 
 /**
  * Resolves the record owning an inline (IRRE) child record in connected mode, meaning the parent
@@ -50,26 +51,37 @@ final class InlineRelationResolver
     }
 
     /**
-     * Returns the connected mode inline parent of the given record, or null if the record is not an
-     * inline child in connected mode, if the relation cannot be resolved unambiguously or if the
-     * parent record does not exist.
+     * Resolves the connected mode inline parent of the given record.
+     *
+     * The returned {@see InlineParentResolution} distinguishes a normal standalone record - for
+     * example a `tt_content` element placed directly on a page, which shares its table with inline
+     * children but is not one - from a broken relation configuration, so the caller can localize the
+     * former silently and report the latter to the editor.
      */
-    public function resolveParentReference(string $childTable, int $childUid): ?InlineParentReference
+    public function resolveParentReference(string $childTable, int $childUid): InlineParentResolution
     {
         if ($childUid <= 0 || !isset($GLOBALS['TCA'][$childTable])) {
-            return null;
+            return InlineParentResolution::notInlineChild();
         }
         $childRecord = BackendUtility::getRecord($childTable, $childUid);
         if (!is_array($childRecord)) {
-            return null;
+            return InlineParentResolution::notInlineChild();
         }
 
         $references = [];
+        $parentMissing = false;
         foreach ($this->getInlineParentCandidates($childTable) as $candidate) {
             $parentTable = $candidate['parentTable'];
             $configuration = $candidate['configuration'];
             $parentUid = $this->determineParentUid($childRecord, $parentTable, $configuration);
             if ($parentUid === null) {
+                // The record is not attached to this parent field (pointer empty, or a table/match
+                // field discriminator excludes it) - not an inline child through this candidate.
+                continue;
+            }
+            if (!is_array(BackendUtility::getRecord($parentTable, $parentUid))) {
+                // The record points at a parent record that does not exist (any more).
+                $parentMissing = true;
                 continue;
             }
             $reference = new InlineParentReference(
@@ -83,13 +95,19 @@ final class InlineRelationResolver
             $references[$reference->getIdentifier()] = $reference;
         }
 
-        if (count($references) !== 1) {
-            // Either no connected mode inline parent at all, or an ambiguous relation configuration
-            // which cannot be resolved reliably. Both must not be handled as inline child.
-            return null;
+        if (count($references) > 1) {
+            // The record could be an inline child of more than one parent at the same time, which
+            // cannot be resolved reliably - a broken or conflicting relation configuration.
+            return InlineParentResolution::ambiguous();
+        }
+        if (count($references) === 1) {
+            return InlineParentResolution::resolved(array_pop($references));
+        }
+        if ($parentMissing) {
+            return InlineParentResolution::parentMissing();
         }
 
-        return array_pop($references);
+        return InlineParentResolution::notInlineChild();
     }
 
     /**
@@ -154,7 +172,7 @@ final class InlineRelationResolver
             }
         }
         $parentUid = (int)($childRecord[$foreignField] ?? 0);
-        if ($parentUid <= 0 || !is_array(BackendUtility::getRecord($parentTable, $parentUid))) {
+        if ($parentUid <= 0) {
             return null;
         }
 

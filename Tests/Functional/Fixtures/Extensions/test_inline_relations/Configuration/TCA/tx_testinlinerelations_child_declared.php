@@ -32,6 +32,13 @@ return [
                 'type' => 'passthrough',
             ],
         ],
+        // Second pointer column, used only to construct an ambiguous relation (a child owned by two
+        // parent fields at once), see `tx_testinlinerelations_parent.children_declared_ambiguous`.
+        'parentid_ambiguous' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
         'title' => [
             'exclude' => true,
             'l10n_mode' => 'prefixLangTitle',
