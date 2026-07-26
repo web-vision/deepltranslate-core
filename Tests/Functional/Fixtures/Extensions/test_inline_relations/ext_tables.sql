@@ -45,3 +45,13 @@ CREATE TABLE tx_testinlinerelations_child_undeclared (
     title varchar(255) DEFAULT '' NOT NULL,
     parentid int(11) DEFAULT '0' NOT NULL
 );
+
+#
+# Table declaring a `translationSource` (l10n_source), used to reproduce the TYPO3 Core
+# empty-l10n_source lookup defect (forge #110281). `l10n_source` is a `type => passthrough` column
+# and is therefore declared explicitly here.
+#
+CREATE TABLE tx_testinlinerelations_l10nsource (
+    title varchar(255) DEFAULT '' NOT NULL,
+    l10n_source int(11) DEFAULT '0' NOT NULL
+);
