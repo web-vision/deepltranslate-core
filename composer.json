@@ -95,8 +95,8 @@
 		"typo3/cms-extbase": "^12.4.2 || ^13.4",
 		"typo3/cms-fluid": "^12.4.2 || ^13.4",
 		"typo3/cms-setup": "^12.4.2 || ^13.4",
-		"web-vision/deepl-base": "^1.0.4@dev",
-		"web-vision/deeplcom-deepl-php": "^1.16.1"
+		"web-vision/deepl-base": "^1.0.7@dev",
+		"web-vision/deeplcom-deepl-php": "~1.19.0@dev"
 	},
 	"require-dev": {
 		"b13/container": "^2.3.6 || ^3.2.2",
