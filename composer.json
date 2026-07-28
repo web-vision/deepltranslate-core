@@ -68,7 +68,7 @@
             "Package": {
                 "providesPackages": []
             },
-            "version": "6.0.4-dev"
+            "version": "6.0.4"
         },
         "branch-alias": {
             "dev-main": "6.0.x-dev"
