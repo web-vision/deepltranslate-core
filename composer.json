@@ -70,7 +70,7 @@
 			"version": "5.1.8-dev"
 		},
 		"branch-alias": {
-			"dev-5": "5.1.x-dev"
+			"5.x-dev": "5.1.x-dev"
 		},
 		"patches": {
 			"typo3/cms-backend": {
