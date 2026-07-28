@@ -67,7 +67,7 @@
 			"ignore-as-root": false,
 			"web-dir": ".Build/Web",
 			"app-dir": ".Build",
-			"version": "5.1.7"
+			"version": "5.1.8-dev"
 		},
 		"branch-alias": {
 			"dev-main": "5.x.x-dev"
