@@ -77,11 +77,11 @@
         "patches": {
             "typo3/cms-backend": {
                 "TYPO3 Core #110281 (find translations with empty l10n_source) on TYPO3 v13.4 - TEMPORARY until the fix ships in the next patch level release": {
-                    "source": "Build/patches/typo3-cms-backend-110281-v13.patch",
+                    "source": "Documentation/CorePatches/typo3-cms-backend-110281-v13.patch",
                     "version": ">=13.4.0 <13.4.34"
                 },
                 "TYPO3 Core #110281 (find translations with empty l10n_source) on TYPO3 v14.3 - TEMPORARY until the fix ships in the next patch level release": {
-                    "source": "Build/patches/typo3-cms-backend-110281-v14.patch",
+                    "source": "Documentation/CorePatches/typo3-cms-backend-110281-v14.patch",
                     "version": ">=14.3.0 <14.3.6"
                 }
             }
