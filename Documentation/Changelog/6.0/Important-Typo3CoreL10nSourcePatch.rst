@@ -31,17 +31,39 @@ The fix is upstream in the TYPO3 Core:
 *   13.4: `Gerrit 94915 <https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915>`__
 
 Until the fix is released, instances have to apply the Core fix through a
-**Composer patch**. This extension applies it only for its own test runs (a
-``require-dev`` patcher) and ships a regression test that fails without it.
+**Composer patch**. This extension ships the patch files below
+``Documentation/CorePatches/``, declares them in its own ``composer.json`` and
+ships a regression test which fails without them.
 
 Applying the patch in your instance
 ===================================
 
-Use a Composer patch plugin - for example
-`cweagans/composer-patches <https://github.com/cweagans/composer-patches>`__ or
-`vaimo/composer-patches <https://github.com/vaimo/composer-patches>`__ - and
-reference the patch matching your TYPO3 version (shown below), scoped so it only
-applies to the affected versions:
+With ``vaimo/composer-patches``
+-------------------------------
+
+Nothing has to be configured. `vaimo/composer-patches
+<https://github.com/vaimo/composer-patches>`__ collects patch declarations from
+**installed dependencies** as well, not only from the root ``composer.json``.
+Having this extension installed is therefore enough, and the patch matching the
+TYPO3 version in use is applied automatically:
+
+..  code-block:: text
+
+    - Applying patches for typo3/cms-backend (1)
+      ~ web-vision/deepltranslate-core: Documentation/CorePatches/typo3-cms-backend-110281-v13.patch [NEW]
+
+Do **not** declare the same patch a second time in the project. Declarations for
+the same target package are de-duplicated, the declaration of the dependency wins
+and the own one is dropped silently.
+
+With other patch plugins
+------------------------
+
+Plugins which only evaluate the root ``composer.json`` - for example
+`cweagans/composer-patches <https://github.com/cweagans/composer-patches>`__ in
+its default configuration - do not pick the declaration of this extension up.
+Copy the patch file matching the TYPO3 version (shown below) into the project and
+declare it, scoped so it only applies to the affected versions:
 
 ..  code-block:: json
 
@@ -64,6 +86,14 @@ applies to the affected versions:
             }
         }
     }
+
+Already existing patches
+------------------------
+
+Patches the project applies to ``typo3/cms-backend`` itself may need adoption:
+they have to apply on top of the changes shown below, otherwise patching fails
+and aborts the Composer run. The same is true for patches provided by other
+extensions for the same file.
 
 Raise or drop the version bounds once the Core fix ships in a patch level
 release. See the general TYPO3 documentation on applying Composer patches for
