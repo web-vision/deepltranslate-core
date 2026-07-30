@@ -180,4 +180,32 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
             $resolver->resolveParentReference('table_which_does_not_exist', 1)->state
         );
     }
+
+    #[Test]
+    public function inlineChildOfANonTranslatableParentIsNotHandedOverToTheParent(): void
+    {
+        $resolver = $this->get(InlineRelationResolver::class);
+
+        // `sys_file` owns `sys_file_metadata` through a `foreign_field` pointer, so the metadata
+        // record really is an inline child in connected mode - but `sys_file` itself has no
+        // `languageField`/`transOrigPointerField` and can never carry a localization. Handing the
+        // localization over to the parent would create nothing at all, so such a child has to be
+        // reported as `ParentNotTranslatable` and localized on its own.
+        $resolution = $resolver->resolveParentReference('sys_file_metadata', 1);
+
+        $this->assertSame(InlineParentState::ParentNotTranslatable, $resolution->state);
+        $this->assertNull($resolution->reference);
+        $this->assertFalse($resolution->isResolved());
+    }
+
+    #[Test]
+    public function tableOwnedByANonTranslatableParentIsStillAPossibleInlineChildTable(): void
+    {
+        $resolver = $this->get(InlineRelationResolver::class);
+
+        // Unchanged behaviour: the table-level check only answers whether records of that table can
+        // be inline children at all. Whether the concrete parent is translatable is decided per
+        // record in `resolveParentReference()`.
+        $this->assertTrue($resolver->isPossibleInlineChildTable('sys_file_metadata'));
+    }
 }

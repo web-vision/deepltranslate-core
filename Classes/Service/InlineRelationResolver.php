@@ -68,6 +68,7 @@ final class InlineRelationResolver
 
         $references = [];
         $parentMissing = false;
+        $parentNotTranslatable = false;
         foreach ($this->getInlineParentCandidates($childTable) as $candidate) {
             $parentTable = $candidate['parentTable'];
             $configuration = $candidate['configuration'];
@@ -75,6 +76,17 @@ final class InlineRelationResolver
             if ($parentUid === null) {
                 // The record is not attached to this parent field (pointer empty, or a table/match
                 // field discriminator excludes it) - not an inline child through this candidate.
+                continue;
+            }
+            if (!$this->tcaSchemaFactory->get($parentTable)->isLanguageAware()) {
+                // `sys_file` owns `sys_file_metadata` through a `foreign_field` pointer, but
+                // `sys_file` itself is not translatable. There can never be a parent localization
+                // to attach the child to, so handing the localization over to
+                // `DataHandler::inlineLocalizeSynchronize()` would create nothing at all. Such a
+                // child is localized on its own instead. Checked before looking the parent record
+                // up: it saves a query and keeps a non-translatable parent from being reported as
+                // a missing one.
+                $parentNotTranslatable = true;
                 continue;
             }
             if (!is_array(BackendUtility::getRecord($parentTable, $parentUid))) {
@@ -100,6 +112,11 @@ final class InlineRelationResolver
         }
         if (count($references) === 1) {
             return InlineParentResolution::resolved(array_pop($references));
+        }
+        if ($parentNotTranslatable) {
+            // Takes precedence over `$parentMissing`: if the parent table cannot be translated at
+            // all, the hand-over never applies and a dangling pointer is not worth reporting.
+            return InlineParentResolution::parentNotTranslatable();
         }
         if ($parentMissing) {
             return InlineParentResolution::parentMissing();

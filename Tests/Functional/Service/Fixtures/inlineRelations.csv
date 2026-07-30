@@ -20,3 +20,9 @@ tt_content
 ,"uid","pid","sorting","sys_language_uid","l18n_parent","l10n_source","CType","colPos","header","tx_testinlinerelations_related"
 ,10,1,256,0,0,0,"textmedia",0,"proton beam",1
 ,20,1,512,0,0,0,"textmedia",0,"proton beam",0
+sys_file
+,"uid","pid","storage","identifier","identifier_hash","folder_hash","extension","mime_type","name","sha1","size","type"
+,1,0,1,"/proton-beam.jpg","1111111111111111111111111111111111111111","2222222222222222222222222222222222222222","jpg","image/jpeg","proton-beam.jpg","3333333333333333333333333333333333333333",1024,2
+sys_file_metadata
+,"uid","pid","sys_language_uid","l10n_parent","file","title","description","alternative"
+,1,0,0,0,1,"proton beam","proton beam description","proton beam alternative"

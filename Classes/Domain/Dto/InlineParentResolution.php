@@ -12,7 +12,9 @@ use WebVision\Deepltranslate\Core\Domain\Enum\InlineParentState;
  *
  * The state lets the caller tell a normal standalone record ({@see InlineParentState::NotInlineChild},
  * silent) apart from a broken relation configuration ({@see InlineParentState::Ambiguous},
- * {@see InlineParentState::ParentMissing}, worth reporting to the editor).
+ * {@see InlineParentState::ParentMissing}, worth reporting to the editor) and from an inline
+ * child whose parent table cannot be translated at all
+ * ({@see InlineParentState::ParentNotTranslatable}, silent, localized on its own).
  */
 final readonly class InlineParentResolution
 {
@@ -39,6 +41,11 @@ final readonly class InlineParentResolution
     public static function parentMissing(): self
     {
         return new self(InlineParentState::ParentMissing);
+    }
+
+    public static function parentNotTranslatable(): self
+    {
+        return new self(InlineParentState::ParentNotTranslatable);
     }
 
     public function isResolved(): bool
