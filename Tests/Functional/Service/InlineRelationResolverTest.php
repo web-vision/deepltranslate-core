@@ -226,13 +226,17 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
     /**
      * @test
      */
-    public function tableOwnedByANonTranslatableParentIsStillAPossibleInlineChildTable(): void
+    public function tableOwnedOnlyByANonTranslatableParentIsNotAPossibleInlineChildTable(): void
     {
         $resolver = $this->get(InlineRelationResolver::class);
 
-        // Unchanged behaviour: the table-level check only answers whether records of that table can
-        // be inline children at all. Whether the concrete parent is translatable is decided per
-        // record in `resolveParentReference()`.
-        static::assertTrue($resolver->isPossibleInlineChildTable('sys_file_metadata'));
+        // `sys_file_metadata` is owned by `sys_file` only, which cannot carry a localization, so the
+        // hand-over to the parent could never produce anything. Callers which have to decide before
+        // the pointer column of a new record is written - the DataHandler processing does - must be
+        // able to see that from the table alone.
+        static::assertFalse($resolver->isPossibleInlineChildTable('sys_file_metadata'));
+
+        // Counter check: a table owned by a translatable parent is still reported.
+        static::assertTrue($resolver->isPossibleInlineChildTable('sys_file_reference'));
     }
 }

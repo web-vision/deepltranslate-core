@@ -32,7 +32,13 @@ final class InlineRelationResolver
 
     /**
      * Whether any TCA field can own records of the given table through a `foreign_field` pointer
-     * column, meaning records of that table can be inline children in connected mode.
+     * column, meaning records of that table can be inline children in connected mode whose
+     * localization has to be handed over to their parent.
+     *
+     * Only parents which can carry a localization themselves count. A table owned exclusively by
+     * untranslatable parents - `sys_file_metadata`, owned by `sys_file` - is not reported, because
+     * the hand-over could never produce anything for it and such a child has to be localized on
+     * its own.
      *
      * In contrast to {@see self::resolveParentReference()} this does not need a record and can
      * therefore be used at points where the pointer column of a newly created child record has not
@@ -43,8 +49,10 @@ final class InlineRelationResolver
         if (!isset($GLOBALS['TCA'][$childTable])) {
             return false;
         }
-        foreach ($this->getInlineParentCandidates($childTable) as $ignored) {
-            return true;
+        foreach ($this->getInlineParentCandidates($childTable) as $candidate) {
+            if ($this->parentCanCarryLocalization($candidate['parentTable'])) {
+                return true;
+            }
         }
 
         return false;
@@ -80,8 +88,7 @@ final class InlineRelationResolver
                 // field discriminator excludes it) - not an inline child through this candidate.
                 continue;
             }
-            $parentCtrl = $GLOBALS['TCA'][$parentTable]['ctrl'] ?? [];
-            if (!isset($parentCtrl['languageField'], $parentCtrl['transOrigPointerField'])) {
+            if (!$this->parentCanCarryLocalization($parentTable)) {
                 // `sys_file` owns `sys_file_metadata` through a `foreign_field` pointer, but
                 // `sys_file` itself is not translatable. There can never be a parent localization
                 // to attach the child to, so handing the localization over to
@@ -127,6 +134,23 @@ final class InlineRelationResolver
         }
 
         return InlineParentResolution::notInlineChild();
+    }
+
+    /**
+     * Whether the given parent table can carry a localization at all, meaning a localized inline
+     * child could be attached to a translated parent record.
+     *
+     * `sys_file` is the prominent counter example: it owns `sys_file_metadata` through a
+     * `foreign_field` pointer, but has neither `languageField` nor `transOrigPointerField`, so a
+     * hand-over to `DataHandler::inlineLocalizeSynchronize()` could never produce anything.
+     *
+     * Mirrors `TcaSchema::isLanguageAware()` of TYPO3 v13, which is not available on v12.
+     */
+    private function parentCanCarryLocalization(string $parentTable): bool
+    {
+        $parentCtrl = $GLOBALS['TCA'][$parentTable]['ctrl'] ?? [];
+
+        return isset($parentCtrl['languageField'], $parentCtrl['transOrigPointerField']);
     }
 
     /**
