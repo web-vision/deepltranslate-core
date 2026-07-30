@@ -3,7 +3,7 @@
 $EM_CONF[$_EXTKEY] = [
     'title' => 'DeepL Translate (CORE)',
     'description' => 'This extension provides option to translate content element, and TCA record texts to DeepL supported languages.',
-    'version' => '6.0.6',
+    'version' => '6.0.7',
     'category' => 'backend',
     'state' => 'stable',
     'author' => 'web-vision GmbH Team',
