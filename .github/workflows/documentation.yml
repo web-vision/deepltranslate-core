@@ -1,5 +1,15 @@
 name: documentation
 
+# Every "runTests.sh" call below passes "-b docker". The script prefers podman
+# whenever it is present and only falls back to docker, which is the right
+# default for it -- but GitHub hosted runners ship both, and since 2026-07-29
+# their podman/crun combination aborts the first container start of a job with
+# "OCI runtime error: crun: unknown version specified" (exit code 126). It is
+# intermittent, hits any job, and was traced to neither the runner image nor
+# the TYPO3 testing image changing. Selecting docker here avoids crun entirely
+# and leaves the script default and local runs untouched. Drop the flag once
+# GitHub stops producing the mismatch.
+
 on:
   pull_request:
 
@@ -27,7 +37,7 @@ jobs:
           comment-author: 'github-actions[bot]'
 
       - name: "Render documentation"
-        run: "Build/Scripts/runTests.sh -b podman -s renderDocumentation"
+        run: "Build/Scripts/runTests.sh -b docker -s renderDocumentation"
 
       - uses: actions/upload-artifact@v6
         id: documentation-artifact

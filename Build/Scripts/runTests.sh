@@ -566,7 +566,13 @@ case ${TEST_SUITE} in
             sqlite)
                 # create sqlite tmpfs mount typo3temp/var/tests/functional-sqlite-dbs/ to avoid permission issues
                 mkdir -p "${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/"
-                CONTAINERPARAMS="-e typo3DatabaseDriver=pdo_sqlite --tmpfs ${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/:rw,noexec,nosuid -e DEEPL_API_KEY=mock_server -e DEEPL_HOST=deepl-func-${SUFFIX} -e DEEPL_PORT=3000 -e DEEPL_SERVER_URL=deepl-func-${SUFFIX}:3000 -e DEEPL_MOCK_SERVER_PORT=3000 -e DEEPL_SCHEME=http -e DEEPL_MOCKSERVER_USED=1"
+                # "mode=1777" is required for docker and harmless for podman: docker runs
+                # the container as "--user $HOST_UID" with group 0, while the tmpfs comes
+                # up owned by root with mode 0755, so the test databases cannot be created
+                # and every test fails with "unable to open database file". Rootless podman
+                # passes no "--user" (it is root inside its user namespace), which is why
+                # this only shows with docker.
+                CONTAINERPARAMS="-e typo3DatabaseDriver=pdo_sqlite --tmpfs ${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/:rw,noexec,nosuid,mode=1777 -e DEEPL_API_KEY=mock_server -e DEEPL_HOST=deepl-func-${SUFFIX} -e DEEPL_PORT=3000 -e DEEPL_SERVER_URL=deepl-func-${SUFFIX}:3000 -e DEEPL_MOCK_SERVER_PORT=3000 -e DEEPL_SCHEME=http -e DEEPL_MOCKSERVER_USED=1"
                 ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name functional-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${CONTAINERPARAMS} ${IMAGE_PHP} "${COMMAND[@]}"
                 SUITE_EXIT_CODE=$?
                 ;;
@@ -584,7 +590,7 @@ case ${TEST_SUITE} in
         ;;
     renderDocumentation)
         # ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name rendering-documentation-${SUFFIX} --pull always -w /project -v ${ROOT_DIR}:/project -it ${IMAGE_RSTRENDERING} --config=Documentation --fail-on-log --fail-on-error --no-progress --config=Documentation Documentation
-        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name rendering-documentation-${SUFFIX} --pull always -w /project -v ${ROOT_DIR}:/project -it ${IMAGE_RSTRENDERING} --config=Documentation --fail-on-error --no-progress --config=Documentation Documentation
+        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name rendering-documentation-${SUFFIX} --pull always -w /project -v ${ROOT_DIR}:/project ${IMAGE_RSTRENDERING} --config=Documentation --fail-on-error --no-progress --config=Documentation Documentation
         SUITE_EXIT_CODE=$?
         ;;
     phpstan)
