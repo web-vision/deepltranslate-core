@@ -10,10 +10,13 @@ fi
 waitFor() {
     local HOST=${1}
     local PORT=${2}
+    # 60 rather than 10 seconds: mysql:8.0 needs 12-13s under docker to
+    # initialise a fresh data directory, about twice as long as under podman,
+    # so an 11 second budget aborted the functional mysql suites at random.
     local TESTCOMMAND="
         COUNT=0;
         while ! nc -z ${HOST} ${PORT}; do
-            if [ \"\${COUNT}\" -gt 10 ]; then
+            if [ \"\${COUNT}\" -gt 60 ]; then
               echo \"Can not connect to ${HOST} port ${PORT}. Aborting.\";
               exit 1;
             fi;
@@ -23,7 +26,11 @@ waitFor() {
     "
     ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name wait-for-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_PHP} /bin/sh -c "${TESTCOMMAND}"
     if [[ $? -gt 0 ]]; then
-        kill -SIGINT -$$
+        # Not "kill -SIGINT -$$": the SIGINT trap is only installed when CI is
+        # not "true", so in CI the signal was a no-op, the run continued and the
+        # test suite connected to a database that was not listening.
+        cleanUp
+        exit 1
     fi
 }
 
