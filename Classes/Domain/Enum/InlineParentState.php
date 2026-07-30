@@ -33,5 +33,14 @@ enum InlineParentState
     /**
      * The record is an inline child in connected mode and its parent was resolved unambiguously.
      */
+    /**
+     * The record is an inline child in connected mode, but the parent table itself is not
+     * translatable - most prominently `sys_file_metadata`, which is owned by the
+     * non-translatable `sys_file`. There can never be a parent localization to attach the
+     * child to, so the child has to be localized on its own instead of being handed over to
+     * the DataHandler command dealing with inline children.
+     */
+    case ParentNotTranslatable;
+
     case Resolved;
 }
