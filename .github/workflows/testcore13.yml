@@ -84,10 +84,10 @@ jobs:
         run: "Build/Scripts/runTests.sh -b docker -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
 
       - name: "Functional MySQL 8.0 mysqli"
-        run: "Build/Scripts/runTests.sh -b docker -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+        run: "Build/Scripts/runTests.sh -b docker -t 13 -p ${{ matrix.php-version }} -s functional -d mysql -a mysqli"
 
       - name: "Functional MySQL 8.0 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -b docker -t 13 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+        run: "Build/Scripts/runTests.sh -b docker -t 13 -p ${{ matrix.php-version }} -s functional -d mysql -a pdo_mysql"
 
       - name: "Functional PostgresSQL 10"
         run: "Build/Scripts/runTests.sh -b docker -t 13 -p ${{ matrix.php-version }} -s functional -d postgres"
