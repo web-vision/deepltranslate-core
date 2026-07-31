@@ -78,16 +78,16 @@ jobs:
         run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d sqlite"
 
       - name: "Functional MariaDB 10.4 mysqli"
-        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
+        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli -i 10.4"
 
       - name: "Functional MariaDB 10.4 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
+        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql -i 10.4"
 
       - name: "Functional MySQL 8.0 mysqli"
-        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mysql -a mysqli"
+        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mysql -a mysqli -i 8.0"
 
       - name: "Functional MySQL 8.0 pdo_mysql"
-        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mysql -a pdo_mysql"
+        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d mysql -a pdo_mysql -i 8.0"
 
       - name: "Functional PostgresSQL 10"
-        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d postgres"
+        run: "Build/Scripts/runTests.sh -b docker -t 14 -p ${{ matrix.php-version }} -s functional -d postgres -i 10"
