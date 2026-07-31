@@ -37,3 +37,9 @@ record translation cannot be attached to anything. Nothing is created in that ca
 and a message is written to the system log, mirroring the behaviour of
 :php:`\TYPO3\CMS\Core\DataHandling\DataHandler::inlineLocalizeSynchronize()`.
 Translate the parent record first, which localizes its children along with it.
+
+This applies only to parents which can be translated at all. An inline child whose
+parent table carries no language configuration - `sys_file_metadata`, owned by the
+untranslatable `sys_file` - is not handed over and is localized on its own
+instead, because there could never be a parent localization to attach it to. See
+:ref:`bugfix-inline-child-of-untranslatable-parent-1785481012`.
