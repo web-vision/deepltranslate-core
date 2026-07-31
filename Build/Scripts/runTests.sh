@@ -554,7 +554,11 @@ case ${TEST_SUITE} in
     composerUpdate)
         # backup current composer.json
         cp -Rf composer.json composer.json.orig
-        rm -rf vendor composer.lock
+        # The vendor tree must go, not just the lock file: Composer boots plugins from
+        # it before resolving, so a leftover tree from another "-t" runs the previous
+        # core's "typo3/class-alias-loader" over the newly installed one. ".Build/.cache"
+        # is kept so the reinstall is served from the local Composer cache.
+        rm -rf .Build/vendor .Build/bin composer.lock
         ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-update-${CORE_VERSION}-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} composer require --dev "typo3/minimal":"^${CORE_VERSION}"
         SUITE_EXIT_CODE=$?
         # restore composer json
