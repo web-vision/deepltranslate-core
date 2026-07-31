@@ -74,10 +74,10 @@ jobs:
       - name: "Functional SQLite"
         run: "Build/Scripts/runTests.sh -b docker -t 12 -p ${{ matrix.php-version }} -s functional -d sqlite"
 
-      - name: "Functional MariaDB 10.5 mysqli"
+      - name: "Functional MariaDB 10.4 mysqli"
         run: "Build/Scripts/runTests.sh -b docker -t 12 -p ${{ matrix.php-version }} -s functional -d mariadb -a mysqli"
 
-      - name: "Functional MariaDB 10.5 pdo_mysql"
+      - name: "Functional MariaDB 10.4 pdo_mysql"
         run: "Build/Scripts/runTests.sh -b docker -t 12 -p ${{ matrix.php-version }} -s functional -d mariadb -a pdo_mysql"
 
       - name: "Functional MySQL 8.0 mysqli"
