@@ -400,6 +400,9 @@ COMPOSER_ROOT_VERSION="6.0.7-dev"
 CONTAINER_INTERACTIVE="-it --init"
 HOST_UID=$(id -u)
 HOST_GID=$(id -g)
+# Additional container parameters, provided by the environment. Empty unless the caller
+# exports it, which is how the portfolio harnesses inject CI specific flags.
+CI_PARAMS="${CI_PARAMS:-}"
 USERSET=""
 if [ $(uname) != "Darwin" ]; then
     USERSET="--user $HOST_UID"
@@ -612,7 +615,7 @@ case ${TEST_SUITE} in
         ;;
     renderDocumentation)
         # ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name rendering-documentation-${SUFFIX} --pull always -w /project -v ${ROOT_DIR}:/project -it ${IMAGE_RSTRENDERING} --config=Documentation --fail-on-log --fail-on-error --no-progress --config=Documentation Documentation
-        ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name rendering-documentation-${SUFFIX} --pull always -w /project -v ${ROOT_DIR}:/project ${IMAGE_RSTRENDERING} --config=Documentation --fail-on-error --no-progress --config=Documentation Documentation
+        ${CONTAINER_BIN} run ${DOCUMENTATION_COMMON_PARAMS} --name rendering-documentation-${SUFFIX} --pull always -w /project ${IMAGE_RSTRENDERING} --config=Documentation --fail-on-error --no-progress --config=Documentation Documentation
         SUITE_EXIT_CODE=$?
         ;;
     phpstan)
