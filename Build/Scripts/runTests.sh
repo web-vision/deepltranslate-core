@@ -397,6 +397,7 @@ handleDbmsOptions
 COMPOSER_ROOT_VERSION="5.1.10-dev"
 CONTAINER_INTERACTIVE="-it --init"
 HOST_UID=$(id -u)
+HOST_GID=$(id -g)
 USERSET=""
 if [ $(uname) != "Darwin" ]; then
     USERSET="--user $HOST_UID"
@@ -463,9 +464,25 @@ if [ "${CONTAINER_BIN}" == "docker" ]; then
     CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
     CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
     DOCUMENTATION_COMMON_PARAMS="${CONTAINER_INTERACTIVE} --rm ${USERSET} -v ${ROOT_DIR}:/project"
+    # docker creates a tmpfs owned by "root:root", inheriting the mode of its host
+    # mountpoint, while "${USERSET}" above passes a uid but no group and therefore runs
+    # the container as "uid=${HOST_UID} gid=0". At a CI umask of 0022 the mountpoint is
+    # 0755, so group 0 gets "r-x" and no test database can be created.
+    #
+    # "uid"/"gid" address that at the source: the mount is owned by the user the container
+    # runs as, whatever the umask of the host mountpoint. "mode=1777" is the workaround the
+    # docker adoption introduced instead, and is kept next to them - it is what has been
+    # proven on a GitHub hosted runner, and it costs nothing to leave in place.
+    #
+    # None of this reproduces at the 0002 umask of a typical workstation, where the
+    # mountpoint comes up 0775 and the group bit already grants access. Use "umask 0022".
+    TMPFS_MOUNT_OPTIONS="rw,noexec,nosuid,uid=${HOST_UID},gid=${HOST_GID},mode=1777"
 else
     # podman
     CONTAINER_HOST="host.containers.internal"
+    # Rootless podman maps the container root to the host user, so the tmpfs is writable
+    # without an explicit owner. "mode=1777" is kept for the rootful case.
+    TMPFS_MOUNT_OPTIONS="rw,noexec,nosuid,mode=1777"
     CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm --network ${NETWORK} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT}  -w ${ROOT_DIR}"
     CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT}  -w ${ROOT_DIR}"
     DOCUMENTATION_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm -v ${ROOT_DIR}:${ROOT_DIR} -v ${ROOT_DIR}:/project"
@@ -571,13 +588,11 @@ case ${TEST_SUITE} in
             sqlite)
                 # create sqlite tmpfs mount typo3temp/var/tests/functional-sqlite-dbs/ to avoid permission issues
                 mkdir -p "${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/"
-                # "mode=1777" is required for docker and harmless for podman: docker runs
-                # the container as "--user $HOST_UID" with group 0, while the tmpfs comes
-                # up owned by root with mode 0755, so the test databases cannot be created
-                # and every test fails with "unable to open database file". Rootless podman
-                # passes no "--user" (it is root inside its user namespace), which is why
-                # this only shows with docker.
-                CONTAINERPARAMS="-e typo3DatabaseDriver=pdo_sqlite --tmpfs ${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/:rw,noexec,nosuid,mode=1777 -e DEEPL_API_KEY=mock_server -e DEEPL_HOST=deepl-func-${SUFFIX} -e DEEPL_PORT=3000 -e DEEPL_SERVER_URL=deepl-func-${SUFFIX}:3000 -e DEEPL_MOCK_SERVER_PORT=3000 -e DEEPL_SCHEME=http -e DEEPL_MOCKSERVER_USED=1"
+                # "${TMPFS_MOUNT_OPTIONS}" carries the owner and mode the mount needs, which
+                # differ per container binary - see where it is assigned. Without them the
+                # test databases cannot be created and every test fails with "unable to open
+                # database file".
+                CONTAINERPARAMS="-e typo3DatabaseDriver=pdo_sqlite --tmpfs ${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/:${TMPFS_MOUNT_OPTIONS} -e DEEPL_API_KEY=mock_server -e DEEPL_HOST=deepl-func-${SUFFIX} -e DEEPL_PORT=3000 -e DEEPL_SERVER_URL=deepl-func-${SUFFIX}:3000 -e DEEPL_MOCK_SERVER_PORT=3000 -e DEEPL_SCHEME=http -e DEEPL_MOCKSERVER_USED=1"
                 ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name functional-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${CONTAINERPARAMS} ${IMAGE_PHP} "${COMMAND[@]}"
                 SUITE_EXIT_CODE=$?
                 ;;
