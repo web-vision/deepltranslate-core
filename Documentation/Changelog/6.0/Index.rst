@@ -30,6 +30,16 @@ Features
 
     Feature-*
 
+Bugfix
+^^^^^^
+
+..  toctree::
+    :maxdepth: 1
+    :titlesonly:
+    :glob:
+
+    Bugfix-*
+
 Deprecation
 ^^^^^^^^^^^
 
