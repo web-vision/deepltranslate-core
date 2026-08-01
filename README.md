@@ -1,3 +1,13 @@
+> [!CAUTION]
+> **This branch is end of life.**
+>
+> `3.0` is no longer maintained. It receives no bug fixes, no security fixes and
+> no further releases, and its CI pipeline is not kept working.
+>
+> Use a maintained branch instead: `main` (6.x) or `5` (5.x).
+>
+> Marked end of life on 2026-08-01.
+
 [![Latest Stable Version](https://poser.pugx.org/web-vision/wv_deepltranslate/v/stable.svg?style=for-the-badge)](https://packagist.org/packages/web-vision/wv_deepltranslate)
 [![TYPO3 11.5](https://img.shields.io/badge/TYPO3-11.5-green.svg?style=for-the-badge)](https://get.typo3.org/version/11)
 [![TYPO3 10.4](https://img.shields.io/badge/TYPO3-10.4-orange.svg?style=for-the-badge)](https://get.typo3.org/version/10)
