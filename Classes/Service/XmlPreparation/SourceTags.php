@@ -90,6 +90,50 @@ final class SourceTags
     }
 
     /**
+     * Replaces the values of attributes in the attribute text of a start tag, as {@see self::prepare()} returns it.
+     * Like the parser, only the first of duplicate attributes counts and names are compared in lowercase. The
+     * quotes of the source stay, an unquoted value gets double quotes. Attributes not in the text are not added.
+     *
+     * @param array<string, string> $values the new value by lowercase attribute name, not escaped
+     */
+    public static function replaceAttributeValues(string $attributes, array $values): string
+    {
+        $replaced = '';
+        $seen = [];
+        $length = strlen($attributes);
+        $position = 0;
+        while ($position < $length) {
+            $whitespace = strspn($attributes, self::WHITESPACE, $position);
+            $replaced .= substr($attributes, $position, $whitespace);
+            $position += $whitespace;
+            $character = $attributes[$position] ?? '';
+            if ($character === '') {
+                break;
+            }
+            if ($character === '/' || $character === '>') {
+                $replaced .= $character;
+                $position++;
+                continue;
+            }
+            $valueMissing = false;
+            $start = $position;
+            $position = self::attribute($attributes, $position, $valueMissing, $name, $value);
+            if ($value === null || isset($seen[$name]) || !array_key_exists($name, $values)) {
+                $replaced .= substr($attributes, $start, $position - $start);
+            } else {
+                $quote = $value['quote'] === '' ? '"' : $value['quote'];
+                $replaced .= substr($attributes, $start, $value['start'] - $start)
+                    . ($value['quote'] === '' ? $quote : '')
+                    . strtr($values[$name], ['&' => '&amp;', '<' => '&lt;', '>' => '&gt;', $quote => $quote === '"' ? '&quot;' : '&#039;'])
+                    . ($value['quote'] === '' ? $quote : '')
+                    . substr($attributes, $value['end'], $position - $value['end']);
+            }
+            $seen[$name] = true;
+        }
+        return $replaced;
+    }
+
+    /**
      * Reads a start tag like `Tokenizer::tagName()` of masterminds/html5.
      *
      * @return array{name: string, attributesStart: int, attributesEnd: int, end: int, complete: bool, valueMissing: bool}
@@ -139,12 +183,19 @@ final class SourceTags
      * Reads one attribute like `Tokenizer::attribute()` of masterminds/html5.
      *
      * @param bool $valueMissing set to whether the attribute has a `=` without a value, like `class=` before `>`
+     * @param string|null $name set to the lowercase name of the attribute
+     * @param array{start: int, end: int, quote: string}|null $value set to the position of the value without its
+     *                                                              quotes, `null` for an attribute without value
+     * @param-out string $name
+     * @param-out array{start: int, end: int, quote: string}|null $value
      * @return int the position after the attribute
      */
-    private static function attribute(string $html, int $position, bool &$valueMissing): int
+    private static function attribute(string $html, int $position, bool &$valueMissing, ?string &$name = null, ?array &$value = null): int
     {
         $valueMissing = false;
+        $value = null;
         $nameLength = strcspn($html, '/>=' . self::WHITESPACE, $position);
+        $name = strtolower(substr($html, $position, $nameLength === 0 ? 1 : $nameLength));
         $position += $nameLength === 0 ? 1 : $nameLength;
         $position += strspn($html, self::WHITESPACE, $position);
         if (($html[$position] ?? '') !== '=') {
@@ -155,14 +206,18 @@ final class SourceTags
         $character = $html[$position] ?? '';
         if ($character === '"' || $character === "'") {
             $position++;
+            $start = $position;
             $position += strcspn($html, "\f" . $character, $position);
+            $value = ['start' => $start, 'end' => $position, 'quote' => $character];
             return min($position + 1, strlen($html));
         }
         if ($character === '>' || $character === '') {
             $valueMissing = true;
             return $position;
         }
-        return $position + strcspn($html, '>' . self::WHITESPACE, $position);
+        $end = $position + strcspn($html, '>' . self::WHITESPACE, $position);
+        $value = ['start' => $position, 'end' => $end, 'quote' => ''];
+        return $end;
     }
 
     /**

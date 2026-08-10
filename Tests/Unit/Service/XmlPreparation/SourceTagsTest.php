@@ -62,6 +62,50 @@ final class SourceTagsTest extends UnitTestCase
         static::assertSame([$expectedHtml, $expectedAttributes], SourceTags::prepare($html, true));
     }
 
+    public static function replaceAttributeValuesDataProvider(): \Generator
+    {
+        yield 'double, single and no quotes, the quotes of the source stay' => [
+            'attributes' => ' href="#" title="Read more" alt=\'A cat\' aria-label=Close',
+            'values' => ['title' => 'Mehr lesen', 'alt' => 'Eine Katze', 'aria-label' => 'Schließen'],
+            'expected' => ' href="#" title="Mehr lesen" alt=\'Eine Katze\' aria-label="Schließen"',
+        ];
+        yield 'escaped for the quotes used' => [
+            'attributes' => ' title="a" alt=\'b\' aria-label=c',
+            'values' => ['title' => '"x" & \'y\' <z>', 'alt' => '"x" & \'y\'', 'aria-label' => '"x"'],
+            'expected' => ' title="&quot;x&quot; &amp; \'y\' &lt;z&gt;" alt=\'"x" &amp; &#039;y&#039;\' aria-label="&quot;x&quot;"',
+        ];
+        yield 'names in any case, only the first of duplicates like the parser' => [
+            'attributes' => ' TITLE="Read more" title="Second" ALT="B"',
+            'values' => ['title' => 'Mehr lesen'],
+            'expected' => ' TITLE="Mehr lesen" title="Second" ALT="B"',
+        ];
+        yield 'attribute names XML does not allow, whitespace and slashes stay as they are' => [
+            'attributes' => "  @click=\"open = !open\"\n\ttitle = \"Show\" / :class=\"{ a: b }\" x-bind:aria-label=\"label\"",
+            'values' => ['title' => 'Zeigen', 'aria-label' => 'Nicht'],
+            'expected' => "  @click=\"open = !open\"\n\ttitle = \"Zeigen\" / :class=\"{ a: b }\" x-bind:aria-label=\"label\"",
+        ];
+        yield 'attributes without value and missing attributes are not added' => [
+            'attributes' => ' title data-title="x" alt=',
+            'values' => ['title' => 'Titel', 'alt' => 'Bild', 'aria-label' => 'Name'],
+            'expected' => ' title data-title="x" alt=',
+        ];
+        yield 'a value after whitespace following the equals sign, as the parser reads it' => [
+            'attributes' => ' alt= data-title="x"',
+            'values' => ['alt' => 'Bild'],
+            'expected' => ' alt= "Bild"',
+        ];
+    }
+
+    /**
+     * @param array<string, string> $values
+     */
+    #[Test]
+    #[DataProvider('replaceAttributeValuesDataProvider')]
+    public function replaceAttributeValuesReplacesTheValuesTheParserReads(string $attributes, array $values, string $expected): void
+    {
+        static::assertSame($expected, SourceTags::replaceAttributeValues($attributes, $values));
+    }
+
     #[Test]
     public function prepareWithoutMarkingOnlyEscapes(): void
     {

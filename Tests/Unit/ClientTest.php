@@ -211,6 +211,83 @@ class ClientTest extends UnitTestCase
         static::assertSame('<p>Dirección postal:<br />Apartado de correos 1234</p>', $result->text);
     }
 
+    /**
+     * Issue #427: DeepL translates no attribute values, the title of a link is sent as a text of its own.
+     */
+    #[Test]
+    public function translateSendsAttributeTextsInTheSameRequestAndBillsThem(): void
+    {
+        $translator = $this->createMock(Translator::class);
+        $translator->expects(static::once())
+            ->method('translateText')
+            ->with(
+                [
+                    '<p>Test auf <a href="t3://page?uid=1736" title="Deutscher Titel &amp; mehr" dlt-r="0">Deutsch</a></p>',
+                    'Deutscher Titel &amp; mehr',
+                ],
+                'DE',
+                'EN-GB',
+                static::isType('array'),
+            )
+            ->willReturn([
+                new TextResult('<p>Test in <a href="t3://page?uid=1736" title="Deutscher Titel &amp; mehr" dlt-r="0">German</a></p>', 'DE', 22),
+                new TextResult('German title &amp; more', 'DE', 22),
+            ]);
+        $client = $this->createClientWithTranslator($translator);
+
+        $result = $client->translate('<p>Test auf <a href="t3://page?uid=1736" title="Deutscher Titel &amp; mehr">Deutsch</a></p>', 'DE', 'EN-GB');
+
+        static::assertInstanceOf(TranslatedTextResult::class, $result);
+        static::assertSame('<p>Test in <a href="t3://page?uid=1736" title="German title &amp; more">German</a></p>', $result->text);
+        static::assertSame(44, $result->billedCharacters);
+    }
+
+    /**
+     * DeepL takes 50 texts in one request (https://developers.deepl.com/api-reference/translate), the content
+     * and the first 49 attribute texts go into the first one.
+     */
+    #[Test]
+    public function translateSendsMoreTextsThanOneRequestTakesInFurtherRequests(): void
+    {
+        $links = '';
+        for ($number = 1; $number <= 60; $number++) {
+            $links .= sprintf('<a href="#%1$d" title="Title %1$d">%1$d</a> ', $number);
+        }
+        $requests = [];
+        $translator = $this->createMock(Translator::class);
+        $translator->expects(static::exactly(2))->method('translateText')->willReturnCallback(
+            static function (array $texts) use (&$requests): array {
+                $requests[] = $texts;
+                return array_map(static fn (string $text): TextResult => new TextResult(str_replace('Title', 'Titel', $text), 'EN', 1), $texts);
+            }
+        );
+        $client = $this->createClientWithTranslator($translator);
+
+        $result = $client->translate('<p>' . $links . '</p>', 'EN', 'DE');
+
+        static::assertSame([50, 11], array_map(count(...), $requests));
+        static::assertStringStartsWith('<p>', $requests[0][0]);
+        static::assertSame('Title 50', $requests[1][0]);
+        static::assertInstanceOf(TranslatedTextResult::class, $result);
+        static::assertSame(61, $result->billedCharacters);
+        static::assertStringContainsString('<a href="#1" title="Titel 1">1</a>', $result->text);
+        static::assertStringContainsString('<a href="#60" title="Titel 60">60</a>', $result->text);
+    }
+
+    private function createClientWithTranslator(Translator $translator): Client
+    {
+        $client = new Client($this->createMock(ConfigurationInterface::class), new HtmlXmlConverter());
+        $client->setLogger(new NullLogger());
+        Closure::bind(
+            function (Translator $translator): void {
+                $this->translator = $translator;
+            },
+            $client,
+            Client::class
+        )->call($client, $translator);
+        return $client;
+    }
+
     #[Test]
     public function translateReturnsLostLinksAndLogsThem(): void
     {
