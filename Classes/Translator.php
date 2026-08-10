@@ -56,6 +56,11 @@ final class Translator extends AbstractClient implements TranslatorInterface
     ];
 
     /**
+     * The number of texts DeepL takes in one request, see https://developers.deepl.com/api-reference/translate.
+     */
+    private const MAXIMUM_TEXTS_PER_REQUEST = 50;
+
+    /**
      * @internal
      * @todo typo3/cms-core:>=13.4.29 Replace constructor with `inject*()` methods in {@see AbstractClient},
      *       link: https://review.typo3.org/c/Packages/TYPO3.CMS/+/89244
@@ -73,7 +78,9 @@ final class Translator extends AbstractClient implements TranslatorInterface
      * and joins `<br>` separated lines. The result is returned as HTML again, with the links of the source the
      * translation lost, which are logged as well.
      *
-     * @return TranslatedTextResult|TranslatedTextResult[]|null
+     * The values of attributes readers see as text, like the title of a link, are sent as further texts of the
+     * same request, DeepL translates no attribute values (issue #427). Their characters are billed as well. More
+     * texts than DeepL takes in one request are sent in further requests.
      */
     public function translate(
         string $content,
@@ -81,26 +88,36 @@ final class Translator extends AbstractClient implements TranslatorInterface
         string $targetLang,
         string $glossary = '',
         string $formality = '',
-    ): array|null|TextResult {
+    ): ?TranslatedTextResult {
         try {
-            $result = $this->client()->translateText(
-                $this->htmlXmlConverter->htmlToXml($content),
-                $sourceLang,
-                $targetLang,
-                $this->buildOptions($content, $glossary, $formality)
-            );
-            $translated = [];
-            foreach (is_array($result) ? $result : [$result] as $textResult) {
-                $converted = $this->htmlXmlConverter->xmlToHtml($textResult->text, $content);
-                foreach ($converted->lostLinks as $lostLink) {
-                    $this->logger->warning(
-                        'A link of the source content is missing in its translation to {targetLanguage}, it has to be added again: {href} on "{text}".',
-                        ['targetLanguage' => $targetLang, 'href' => $lostLink->href, 'text' => $lostLink->text]
-                    );
-                }
-                $translated[] = new TranslatedTextResult($textResult, $converted->html, $converted->lostLinks);
+            $xml = $this->htmlXmlConverter->htmlToXml($content);
+            $attributeTexts = $this->htmlXmlConverter->getAttributeTexts($content);
+            $options = $this->buildOptions($content, $glossary, $formality);
+            $results = [];
+            // A failing request of further attribute texts fails the field, like a failing request of the content.
+            foreach (array_chunk([$xml, ...$attributeTexts], self::MAXIMUM_TEXTS_PER_REQUEST) as $texts) {
+                $result = $this->client()->translateText($attributeTexts === [] ? $xml : $texts, $sourceLang, $targetLang, $options);
+                $results = [...$results, ...(is_array($result) ? array_values($result) : [$result])];
             }
-            return is_array($result) ? $translated : $translated[0];
+            $contentResult = $results[0];
+            $attributeResults = array_slice($results, 1);
+            $converted = $this->htmlXmlConverter->xmlToHtml(
+                $contentResult->text,
+                $content,
+                array_map(static fn(TextResult $attributeResult): string => $attributeResult->text, $attributeResults)
+            );
+            foreach ($converted->lostLinks as $lostLink) {
+                $this->logger->warning(
+                    'A link of the source content is missing in its translation to {targetLanguage}, it has to be added again: {href} on "{text}".',
+                    ['targetLanguage' => $targetLang, 'href' => $lostLink->href, 'text' => $lostLink->text]
+                );
+            }
+            return new TranslatedTextResult(
+                $contentResult,
+                $converted->html,
+                $converted->lostLinks,
+                array_sum(array_map(static fn(TextResult $textResult): int => $textResult->billedCharacters, [$contentResult, ...$attributeResults]))
+            );
         } catch (DeepLException|XmlConversionException $exception) {
             // The caller knows the record and logs it, see TranslateHook.
             $this->logger->error(

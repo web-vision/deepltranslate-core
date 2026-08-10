@@ -17,6 +17,7 @@ use WebVision\Deepltranslate\Core\Service\XmlPreparation\ScriptDigitStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\ScriptPlaceholderStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\SourceTags;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\StrictXmlStep;
+use WebVision\Deepltranslate\Core\Service\XmlPreparation\TextAttributes;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\TouchingElementStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\XmlPreparationStepInterface;
 
@@ -93,7 +94,18 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
         return $xml;
     }
 
-    public function xmlToHtml(string $xml, string $sourceHtml): ConvertedHtml
+    public function getAttributeTexts(string $html): array
+    {
+        if (!self::mayHaveTextAttributes($html)) {
+            return [];
+        }
+        return array_values(array_map(
+            static fn(string $value): string => htmlspecialchars($value, ENT_NOQUOTES | ENT_XML1, 'UTF-8'),
+            TextAttributes::values($this->parseHtml($html))
+        ));
+    }
+
+    public function xmlToHtml(string $xml, string $sourceHtml, array $translatedAttributeTexts = []): ConvertedHtml
     {
         if ($xml === '') {
             return new ConvertedHtml('');
@@ -113,12 +125,62 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
         foreach (array_reverse($steps) as $step) {
             $step->revert($translation, $record);
         }
+        if ($translatedAttributeTexts !== []) {
+            TextAttributes::translate(
+                $translation,
+                $this->attributeTranslations($sourceHtml, $translatedAttributeTexts),
+                $record
+            );
+        }
         $html5 = $this->createHtml5();
         $html = '';
         foreach ($translation->childNodes as $node) {
             $html .= $html5->saveHTML($node, [RichTextOutputRules::SOURCE_ATTRIBUTES_OPTION => $record->sourceAttributes()]);
         }
         return new ConvertedHtml($html, $lostLinks);
+    }
+
+    /**
+     * @param list<string> $translatedAttributeTexts
+     * @return array<string, string> the translation by the key of the attribute value, see {@see TextAttributes::key()}
+     * @throws XmlConversionException
+     */
+    private function attributeTranslations(string $sourceHtml, array $translatedAttributeTexts): array
+    {
+        $values = self::mayHaveTextAttributes($sourceHtml) ? TextAttributes::values($this->parseHtml($sourceHtml)) : [];
+        if (count($values) !== count($translatedAttributeTexts)) {
+            throw new XmlConversionException(
+                sprintf(
+                    'The translated attribute texts do not belong to the given source content: %d translations for %d attribute texts.',
+                    count($translatedAttributeTexts),
+                    count($values)
+                ),
+                1790969971
+            );
+        }
+        $translations = [];
+        foreach (array_map(null, array_keys($values), $values, array_values($translatedAttributeTexts)) as [$key, $sentText, $text]) {
+            // DeepL answers in the escaping of the request, see getAttributeTexts(). The spaces around the value
+            // are kept as sent, \s with /u includes the non-breaking spaces trim() keeps. An empty translation
+            // keeps the source.
+            $translated = (string)preg_replace('/^\s+|\s+$/u', '', html_entity_decode((string)$text, ENT_QUOTES | ENT_XML1, 'UTF-8'));
+            preg_match('/^(\s*).*?(\s*)$/su', (string)$sentText, $spaces);
+            $translations[(string)$key] = $translated === '' ? '' : ($spaces[1] ?? '') . $translated . ($spaces[2] ?? '');
+        }
+        return $translations;
+    }
+
+    /**
+     * A cheap check before parsing: false if no attribute of the content can be one of {@see TextAttributes::NAMES}.
+     */
+    private static function mayHaveTextAttributes(string $html): bool
+    {
+        foreach (TextAttributes::NAMES as $name) {
+            if (stripos($html, $name) !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

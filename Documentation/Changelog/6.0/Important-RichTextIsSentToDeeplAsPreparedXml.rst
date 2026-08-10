@@ -73,8 +73,11 @@ superscripts where the source has them. Some results differ from before:
 
 Integrators who replace
 :php:`\WebVision\Deepltranslate\Core\Service\HtmlXmlConverterInterface` have to
-implement the new tag options and return the lost links, see
-:php:`\WebVision\Deepltranslate\Core\Service\ConvertedHtml`. Callers of
+implement the new tag options, return the lost links, see
+:php:`\WebVision\Deepltranslate\Core\Service\ConvertedHtml`, and return the
+attribute texts to translate and accept their translations in
+:php:`\WebVision\Deepltranslate\Core\Service\HtmlXmlConverterInterface::xmlToHtml()`,
+see :ref:`bugfix-translate-titles-and-alternative-texts-1790970336`. Callers of
 :php:`\WebVision\Deepltranslate\Core\Service\DeeplService::translateContent()`
 find the lost links in
 :php:`\WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext::getLostLinks()`.

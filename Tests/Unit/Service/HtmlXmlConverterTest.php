@@ -626,6 +626,217 @@ final class HtmlXmlConverterTest extends UnitTestCase
         $this->assertSame($expectedHtml, $subject->xmlToHtml($answer, $html)->html);
     }
 
+    public static function attributeTextsDataProvider(): \Generator
+    {
+        yield 'no attribute read as text' => [
+            'html' => '<p>A <a href="t3://page?uid=1" class="title">link</a> and <span data-alt="x">text</span>.</p>',
+            'expectedTexts' => [],
+        ];
+        yield 'title of a link as reported in issue 427' => [
+            'html' => '<p>Test auf <a href="t3://page?uid=1736" title="Deutscher Titel">Deutsch</a></p>',
+            'expectedTexts' => ['Deutscher Titel'],
+        ];
+        yield 'title, alt and aria-label on any element, each value once, in the order of the content' => [
+            'html' => '<p title="Paragraph"><abbr title="World Health Organization">WHO</abbr> <img src="x.png" alt="A red bicycle"></p>'
+                . '<button type="button" aria-label="Close" title="Close">x</button><a href="#" title="Paragraph">again</a>',
+            'expectedTexts' => ['Paragraph', 'World Health Organization', 'A red bicycle', 'Close'],
+        ];
+        yield 'values as XML text, quotes stay literal' => [
+            'html' => '<a href="#" title="Tom &amp; Jerry say &quot;hi&quot; &lt;3">x</a><a href="#" title=\'It&#039;s > 2\'>y</a>',
+            'expectedTexts' => ['Tom &amp; Jerry say "hi" &lt;3', 'It\'s &gt; 2'],
+        ];
+        yield 'characters XML does not allow are replaced like in the content' => [
+            'html' => "<a href=\"#\" title=\"First line\u{B}second line\u{1}\">x</a>",
+            'expectedTexts' => ['First line second line'],
+        ];
+        yield 'content marked as not to be translated, the nearest translate attribute decides' => [
+            'html' => '<p><a href="#" class="button notranslate" title="Own class">a</a> <span class="notranslate"><a href="#" title="Ancestor class">b</a></span>'
+                . ' <a href="#" translate="no" title="Own attribute">c</a> <span translate="NO"><abbr title="Ancestor attribute">d</abbr>'
+                . '<span translate="yes"><a href="#" title="Translated again">e</a></span></span></p>',
+            'expectedTexts' => ['Translated again'],
+        ];
+        yield 'an invalid translate value is inherited, the attribute wins over the class of its element' => [
+            'html' => '<p translate="no"><a href="#" translate="no " title="Inherited no">a</a></p>'
+                . '<p><a href="#" translate="maybe" title="Inherited yes">b</a> <a href="#" class="notranslate" translate="yes" title="Attribute yes">c</a></p>',
+            'expectedTexts' => ['Inherited yes', 'Attribute yes'],
+        ];
+        yield 'line breaks and tabs are sent, equal values apart from them once' => [
+            'html' => "<a href=\"#\" title=\"Line one&#10;line\ttwo\">x</a><a href=\"#\" title=\"Line one line two\">y</a>",
+            'expectedTexts' => ["Line one\nline\ttwo"],
+        ];
+        yield 'script and style, empty values and values without a letter' => [
+            'html' => '<style title="Print styles">p {}</style><script title="Tracking">x()</script>'
+                . '<p><a href="#" title="">a</a> <a href="#" title="  ">b</a> <a href="#" title="2026">c</a> <a href="#" title="→ 50 %">d</a></p>',
+            'expectedTexts' => [],
+        ];
+    }
+
+    /**
+     * @param list<string> $expectedTexts
+     */
+    #[Test]
+    #[DataProvider('attributeTextsDataProvider')]
+    public function getAttributeTextsReturnsTheValuesReadersSeeAsText(string $html, array $expectedTexts): void
+    {
+        $subject = new HtmlXmlConverter();
+
+        $attributeTexts = $subject->getAttributeTexts($html);
+
+        $this->assertSame($expectedTexts, $attributeTexts);
+        foreach ($attributeTexts as $text) {
+            $this->assertWellFormedXml($text);
+        }
+    }
+
+    public static function translatedAttributeTextsDataProvider(): \Generator
+    {
+        yield 'title of a link as reported in issue 427' => [
+            'html' => '<p>Test auf <a href="t3://page?uid=1736" title="Deutscher Titel">Deutsch</a></p>',
+            'answer' => static fn(string $xml): string => str_replace(['Test auf', 'Deutsch<'], ['Test in', 'German<'], $xml),
+            'translations' => ['German title'],
+            'expectedHtml' => '<p>Test in <a href="t3://page?uid=1736" title="German title">German</a></p>',
+        ];
+        // Recorded with the real API, German to English: "Anna" moves to the front.
+        yield 'links swapped by the word order keep their own title' => [
+            'html' => '<p>Den <a href="t3://page?uid=1" title="Der unterschriebene Vertrag">Vertrag</a> hat gestern <a href="t3://page?uid=2" title="Das Profil von Anna">Anna</a> unterschrieben.</p>',
+            'answer' => static fn(string $xml): string => '<p><a href="t3://page?uid=2" title="Das Profil von Anna" dlt-r="1">Anna</a> signed the <a href="t3://page?uid=1" title="Der unterschriebene Vertrag" dlt-r="0">contract</a> yesterday.</p>',
+            'translations' => ['The signed contract', 'Anna\'s profile'],
+            'expectedHtml' => '<p><a href="t3://page?uid=2" title="Anna\'s profile">Anna</a> signed the <a href="t3://page?uid=1" title="The signed contract">contract</a> yesterday.</p>',
+        ];
+        yield 'both copies of a link DeepL split' => [
+            'html' => '<p>Ask our <a href="#advice" title="Contact the advisory service">advisory service</a> today.</p>',
+            'answer' => static fn(string $xml): string => '<p>Fragen Sie <a href="#advice" title="Contact the advisory service" dlt-r="0">unsere</a> heute <a href="#advice" title="Contact the advisory service" dlt-r="0">Beratung</a>.</p>',
+            'translations' => ['Kontakt zur Beratung'],
+            'expectedHtml' => '<p>Fragen Sie <a href="#advice" title="Kontakt zur Beratung">unsere</a> heute <a href="#advice" title="Kontakt zur Beratung">Beratung</a>.</p>',
+        ];
+        yield 'touching links sent under the helper name, the revert restores their title' => [
+            'html' => '<p><a href="#a" title="Call us now">Call</a><a href="#b" title="Book a date">Book</a></p>',
+            'answer' => static fn(string $xml): string => str_replace(['>Call<', '>Book<'], ['>Anrufen<', '>Buchen<'], $xml),
+            'translations' => ['Jetzt anrufen', 'Termin buchen'],
+            'expectedHtml' => '<p><a href="#a" title="Jetzt anrufen">Anrufen</a><a href="#b" title="Termin buchen">Buchen</a></p>',
+        ];
+        yield 'image, abbreviation and button' => [
+            'html' => '<p><abbr title="World Health Organization">WHO</abbr> <img src="x.png" alt="A red bicycle" /></p><button type="button" aria-label="Close the dialog">x</button>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Weltgesundheitsorganisation', 'Ein rotes Fahrrad', 'Dialog schließen'],
+            'expectedHtml' => '<p><abbr title="Weltgesundheitsorganisation">WHO</abbr> <img src="x.png" alt="Ein rotes Fahrrad" /></p><button type="button" aria-label="Dialog schließen">x</button>',
+        ];
+        yield 'answer in XML text, written escaped as rich text stores it' => [
+            'html' => '<a href="#" title="Tom &amp; Jerry say &quot;hi&quot; &lt;3">x</a>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Tom &amp; Jerry sagen „hallo“ "Hi" &lt;3'],
+            'expectedHtml' => '<a href="#" title="Tom &amp; Jerry sagen „hallo“ &quot;Hi&quot; &lt;3">x</a>',
+        ];
+        yield 'the same value marked as not to be translated stays' => [
+            'html' => '<p><a href="#a" title="Read more">a</a> <a href="#b" class="notranslate" title="Read more">b</a></p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Mehr lesen'],
+            'expectedHtml' => '<p><a href="#a" title="Mehr lesen">a</a> <a href="#b" class="notranslate" title="Read more">b</a></p>',
+        ];
+        yield 'an empty translation keeps the value of the source' => [
+            'html' => '<p><a href="#a" title="Read more">a</a></p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => [' '],
+            'expectedHtml' => '<p><a href="#a" title="Read more">a</a></p>',
+        ];
+        yield 'value with characters XML does not allow' => [
+            'html' => "<p><a href=\"#a\" title=\"First line\u{B}second line\">a</a></p>",
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Erste Zeile zweite Zeile'],
+            'expectedHtml' => '<p><a href="#a" title="Erste Zeile zweite Zeile">a</a></p>',
+        ];
+        yield 'a value DeepL returns unchanged is kept as stored, also in the attribute text of the source' => [
+            'html' => '<p><a href="#a" title="Tom & Jerry" @click="a()">a</a> <a href="#b" title=Anna data-x=1>b</a> <a href="#c" title="Caf&eacute; Anna">c</a></p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Tom &amp; Jerry', 'Anna', 'Café Anna'],
+            'expectedHtml' => '<p><a href="#a" title="Tom & Jerry" @click="a()">a</a> <a href="#b" title=Anna data-x=1>b</a> <a href="#c" title="Caf&eacute; Anna">c</a></p>',
+        ];
+        yield 'spaces around a value are kept' => [
+            'html' => '<p><a href="#a" title=" Read more ">a</a></p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Mehr lesen'],
+            'expectedHtml' => '<p><a href="#a" title=" Mehr lesen ">a</a></p>',
+        ];
+        yield 'non-breaking spaces around a value are kept once' => [
+            'html' => "<p><a href=\"#a\" title=\"\u{A0}Read more\">a</a> <a href=\"#b\" title=\"Price\u{202F}\">b</a> <a href=\"#c\" title=\"Name\u{A0}\">c</a></p>",
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ["\u{A0}Mehr lesen", "Preis\u{202F}", "Name\u{A0}"],
+            // Written as the attribute text of the source, which has the characters, not references.
+            'expectedHtml' => "<p><a href=\"#a\" title=\"\u{A0}Mehr lesen\">a</a> <a href=\"#b\" title=\"Preis\u{202F}\">b</a> <a href=\"#c\" title=\"Name\u{A0}\">c</a></p>",
+        ];
+        yield 'a value with a line break DeepL returns unchanged is kept as stored' => [
+            'html' => '<p><a href="#a" title="Line one&#10;line two">a</a> <a href="#b" title="Read more&#10;">b</a></p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ["Line one\nline two", 'Mehr lesen'],
+            // The tags are written as the attribute text of the source, the translated line break as character.
+            'expectedHtml' => "<p><a href=\"#a\" title=\"Line one&#10;line two\">a</a> <a href=\"#b\" title=\"Mehr lesen\n\">b</a></p>",
+        ];
+        yield 'a line break DeepL answers as character, which XML reads as a space' => [
+            'html' => '<p><a href="#a" title="Line one&#10;line two">a</a></p>',
+            'answer' => static fn(string $xml): string => str_replace('&#10;', "\n", $xml),
+            'translations' => ['Zeile eins Zeile zwei'],
+            'expectedHtml' => '<p><a href="#a" title="Zeile eins Zeile zwei">a</a></p>',
+        ];
+        yield 'a translation equal to another value of the source is not translated again' => [
+            'html' => '<p><a href="#a" title="Hund">a</a> <a href="#b" title="Dog">b</a></p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Dog', 'Doggy'],
+            'expectedHtml' => '<p><a href="#a" title="Dog">a</a> <a href="#b" title="Doggy">b</a></p>',
+        ];
+        yield 'content using a helper name, sent without preparation' => [
+            'html' => '<p dlt-x="1"><a href="#a" title="Read more">a</a></p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Mehr lesen'],
+            'expectedHtml' => '<p dlt-x="1"><a href="#a" title="Mehr lesen">a</a></p>',
+        ];
+        yield 'a link in a sup sent as placeholder' => [
+            'html' => '<p>See the note<sup><a href="#fn1" title="Read the footnote">1</a></sup>.</p>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Fußnote lesen'],
+            'expectedHtml' => '<p>See the note<sup><a href="#fn1" title="Fußnote lesen">1</a></sup>.</p>',
+        ];
+        yield 'both copies of an element written as the attribute text of the source' => [
+            'html' => '<p>Ask our <a href="#advice" @click="track()" title="Contact the advisory service">advisory service</a> today.</p>',
+            'answer' => static fn(string $xml): string => (string)preg_replace('#<a ([^>]*)>advisory service</a>#', '<a $1>advisory</a> and <a $1>service</a>', $xml),
+            'translations' => ['Kontakt zur Beratung'],
+            'expectedHtml' => '<p>Ask our <a href="#advice" @click="track()" title="Kontakt zur Beratung">advisory</a> and <a href="#advice" @click="track()" title="Kontakt zur Beratung">service</a> today.</p>',
+        ];
+        yield 'attributes written as in the source get the translation in the attribute text' => [
+            'html' => '<p><a href="#" title="Read more" data-x=1>Link</a><img src="x.jpg" alt="A cat" ALT="B"></p>'
+                . '<button type="button" title=\'Show the "opening" hours\' @click="open = !open" aria-label=Close>Opening hours</button>',
+            'answer' => static fn(string $xml): string => $xml,
+            'translations' => ['Mehr lesen', 'Eine Katze', 'Die „Öffnungs“-Zeiten & \'mehr\' > zeigen', 'Schließen'],
+            'expectedHtml' => '<p><a href="#" title="Mehr lesen" data-x=1>Link</a><img src="x.jpg" alt="Eine Katze" ALT="B" /></p>'
+                . '<button type="button" title=\'Die „Öffnungs“-Zeiten &amp; &#039;mehr&#039; &gt; zeigen\' @click="open = !open" aria-label="Schließen">Opening hours</button>',
+        ];
+    }
+
+    /**
+     * @param \Closure(string): string $answer DeepL's answer for the XML of the content
+     * @param list<string> $translations DeepL's answer for the attribute texts
+     */
+    #[Test]
+    #[DataProvider('translatedAttributeTextsDataProvider')]
+    public function xmlToHtmlReplacesAttributeValuesByTheirTranslation(string $html, \Closure $answer, array $translations, string $expectedHtml): void
+    {
+        $subject = new HtmlXmlConverter();
+        $this->assertCount(count($translations), $subject->getAttributeTexts($html));
+
+        $this->assertSame($expectedHtml, $subject->xmlToHtml($answer($subject->htmlToXml($html)), $html, $translations)->html);
+    }
+
+    #[Test]
+    public function xmlToHtmlThrowsExceptionIfTheAttributeTranslationsDoNotBelongToTheSource(): void
+    {
+        $subject = new HtmlXmlConverter();
+        $html = '<p><a href="#a" title="Read more">a</a></p>';
+
+        $this->expectException(XmlConversionException::class);
+        $this->expectExceptionCode(1790969971);
+
+        $subject->xmlToHtml($subject->htmlToXml($html), $html, ['Mehr lesen', 'Zu viel']);
+    }
+
     public static function xmlToHtmlDataProvider(): \Generator
     {
         yield 'translated issue 642 result' => [
