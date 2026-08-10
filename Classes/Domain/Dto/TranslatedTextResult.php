@@ -17,12 +17,15 @@ final class TranslatedTextResult extends TextResult
 {
     /**
      * @param list<LostLink> $lostLinks
+     * @param int|null $billedCharacters the characters of the whole request, if more than the text of `$result`
+     *                                   was sent, like the attribute texts of the content
      */
     public function __construct(
         TextResult $result,
         string $text,
         public readonly array $lostLinks = [],
+        ?int $billedCharacters = null,
     ) {
-        parent::__construct($text, $result->detectedSourceLang, $result->billedCharacters, $result->modelTypeUsed);
+        parent::__construct($text, $result->detectedSourceLang, $billedCharacters ?? $result->billedCharacters, $result->modelTypeUsed);
     }
 }

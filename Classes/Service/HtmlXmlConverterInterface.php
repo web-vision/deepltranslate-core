@@ -28,11 +28,27 @@ interface HtmlXmlConverterInterface
     public function getTagHandlingOptions(string $html): array;
 
     /**
+     * Returns the values of the attributes readers see or hear as text, `title`, `alt` and `aria-label`, as XML
+     * text to translate next to the content of {@see self::htmlToXml()}. DeepL translates no attribute values.
+     * Each value is returned once, values in content marked with `translate="no"` or the class `notranslate` and
+     * values without a letter are left out.
+     *
+     * @return list<string>
+     */
+    public function getAttributeTexts(string $html): array;
+
+    /**
      * Returns the XML fragment, usually the DeepL result, serialized as HTML5 again, with the preparation of
      * {@see self::htmlToXml()} reverted, and the links of the source the translation lost. `$sourceHtml` must be
      * the content that was passed to {@see self::htmlToXml()}, the preparation is derived from it again.
      *
-     * @throws XmlConversionException if the fragment is not well-formed XML or does not belong to `$sourceHtml`
+     * `$translatedAttributeTexts` are the translations of the texts {@see self::getAttributeTexts()} returned for
+     * `$sourceHtml`, in the same order, as XML text. They replace the attribute values of the translation. An
+     * empty translation keeps the value of the source.
+     *
+     * @param list<string> $translatedAttributeTexts
+     * @throws XmlConversionException if the fragment is not well-formed XML, or it or the attribute translations do
+     *                                not belong to `$sourceHtml`
      */
-    public function xmlToHtml(string $xml, string $sourceHtml): ConvertedHtml;
+    public function xmlToHtml(string $xml, string $sourceHtml, array $translatedAttributeTexts = []): ConvertedHtml;
 }
