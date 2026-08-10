@@ -17,6 +17,7 @@ use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
+use WebVision\Deepltranslate\Core\Service\XmlPreparation\TextAttributes;
 
 /**
  * Sends the content of reported issues through the real translation path to the real DeepL API and checks both
@@ -114,7 +115,7 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
             'target' => 'DE',
             'expectedFragments' => [],
             'contentFormat' => ContentFormat::RichText,
-            'checks' => ['linkTexts'],
+            'checks' => ['linkTexts', 'textAttributes'],
         ];
         yield 'issue 665, buttons without any space, element 10003' => [
             'content' => '<p><a class="button" href="https://api.whatsapp.com/send?phone=123456789">Whatsapp</a><a class="button" href="tel:+491234567">Call</a><a class="button" href="t3://page?uid=40">Book</a></p>',
@@ -261,7 +262,9 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
                 . '<p><a href="https://example.org/office?floor=1&amp;room=2" title="Learn &quot;everything&quot; about the office">Visit the office</a> and&nbsp;say hello.</p>',
             'source' => 'EN',
             'target' => 'FR',
-            'expectedFragments' => ['&lt;b&gt;', '&lt;i&gt;', 'href="https://example.org/office?floor=1&amp;room=2"', 'title="Learn &quot;everything&quot; about the office"'],
+            'expectedFragments' => ['&lt;b&gt;', '&lt;i&gt;', 'href="https://example.org/office?floor=1&amp;room=2"'],
+            'contentFormat' => ContentFormat::RichText,
+            'checks' => ['textAttributes'],
         ];
         yield 'list, element 15001' => [
             'content' => '<ul>' . "\r\n"
@@ -315,11 +318,13 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
                 . '</div>' . "\n" . $style . "\n" . $script,
             'source' => 'EN',
             'target' => 'DE',
-            'expectedFragments' => [$comment, $style, $script],
+            'expectedFragments' => [$comment, $style, $script, 'data-label="Opening hours"'],
+            'contentFormat' => ContentFormat::RichText,
+            'checks' => ['textAttributes'],
         ];
         $alpineOpen = '<div x-data="{ open: false }" @click.outside="open = false" :class="{ \'is-open\': open }">';
-        $alpineButton = '<button type="button" title="Show the opening hours" @click="open = !open" x-bind:aria-expanded="open">';
-        $alpine = $alpineOpen . "\n" . $alpineButton . 'Opening hours</button>' . "\n"
+        $alpineButtonEnd = '" @click="open = !open" x-bind:aria-expanded="open">';
+        $alpine = $alpineOpen . "\n" . '<button type="button" title="Show the opening hours' . $alpineButtonEnd . 'Opening hours</button>' . "\n"
             . '<p x-show="open" onclick="if (a < b && c) { track(); }">We are open from Monday to Friday. <a href="#map" title="Show the map">Find us</a></p>' . "\n"
             . '</div>';
         foreach (['DE', 'FR'] as $target) {
@@ -327,20 +332,72 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
                 'content' => $alpine,
                 'source' => 'EN',
                 'target' => $target,
+                // The title of the button is translated in the attribute text of the source.
                 'expectedFragments' => [
                     $alpineOpen,
-                    $alpineButton,
+                    '<button type="button" title="',
+                    $alpineButtonEnd,
                     '<p x-show="open" onclick="if (a < b && c) { track(); }">',
-                    'title="Show the map"',
                 ],
+                'contentFormat' => ContentFormat::RichText,
+                'checks' => ['textAttributes'],
             ];
         }
+        yield 'issue 427, the title of a link as reported, to English' => [
+            'content' => '<p>Test auf <a href="t3://page?uid=1736" title="Deutscher Titel">Deutsch</a></p>',
+            'source' => 'DE',
+            'target' => 'EN-GB',
+            'expectedFragments' => [],
+            'contentFormat' => ContentFormat::RichText,
+            'checks' => ['textAttributes'],
+        ];
+        yield 'issue 427, titles on page, external, mail and phone links, element 14003' => [
+            'content' => '<p>Read more <a href="t3://page?uid=30" title="Learn who builds the DeepL extensions">about us</a>, look at the <a href="t3://page?uid=20" title="Everything the extensions can do for an editor">features</a> or visit <a href="https://www.deepl.com/" target="_blank" title="Opens the website of DeepL in a new window">DeepL</a>.</p>' . "\r\n"
+                . '<p>Questions? <a href="mailto:hello@example.org" title="Send us an e-mail with your question">Write to us</a> or <a href="tel:+491234567" title="Call our office during business hours">call the office</a>.</p>',
+            'source' => 'EN',
+            'target' => 'DE',
+            'expectedFragments' => [],
+            'contentFormat' => ContentFormat::RichText,
+            'checks' => ['textAttributes'],
+        ];
+        yield 'issue 427, links swapped by the word order keep their own title' => [
+            'content' => '<p>Den <a href="t3://page?uid=1" title="Der unterschriebene Vertrag">Vertrag</a> hat gestern <a href="t3://page?uid=2" title="Das Profil von Anna">Anna</a> unterschrieben.</p>',
+            'source' => 'DE',
+            'target' => 'EN-GB',
+            'expectedFragments' => [],
+            'contentFormat' => ContentFormat::RichText,
+            'checks' => ['textAttributes'],
+            'knownLimitation' => '',
+            'expectedPatterns' => [
+                '#<a href="t3://page\?uid=1" title="[^"]*\bcontract\b[^"]*">#i',
+                '#<a href="t3://page\?uid=2" title="[^"]*\bprofile\b[^"]*">#i',
+            ],
+        ];
+        yield 'issue 427, a title with an ampersand and quotes, to Japanese' => [
+            'content' => '<p>Read the <a href="t3://page?uid=6" title="Opens the &quot;terms &amp; conditions&quot;">terms</a> before you buy.</p>',
+            'source' => 'EN',
+            'target' => 'JA',
+            'expectedFragments' => [],
+            'contentFormat' => ContentFormat::RichText,
+            'checks' => ['textAttributes'],
+        ];
+        yield 'issue 427, abbreviation, image, label and content not to be translated, element 14007' => [
+            'content' => '<p>The <abbr title="World Health Organization">WHO</abbr> recommends <a href="#a" class="notranslate" title="Keep this title">this guide</a> and <span translate="no"><a href="#b" title="Keep this one too">that guide</a></span>.</p>' . "\r\n"
+                . '<p><img src="bicycle.png" alt="A red bicycle in front of a bakery" /> <a href="#cart" aria-label="Open the shopping cart">Cart</a></p>',
+            'source' => 'EN',
+            'target' => 'DE',
+            'expectedFragments' => ['title="Keep this title"', 'title="Keep this one too"'],
+            'contentFormat' => ContentFormat::RichText,
+            'checks' => ['textAttributes'],
+        ];
     }
 
     /**
      * @param list<string> $expectedFragments markup that must be part of the translation as it is
-     * @param list<string> $checks further checks: `spaces` (issue #278), `linkTexts` (issue #665)
+     * @param list<string> $checks further checks: `spaces` (issue #278), `linkTexts` (issue #665),
+     *                             `textAttributes` (issue #427)
      * @param string $knownLimitation reason to mark the test incomplete instead of failing when a link or an element is lost
+     * @param list<string> $expectedPatterns regular expressions the translation must match
      */
     #[Test]
     #[DataProvider('contentDataProvider')]
@@ -352,6 +409,7 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
         ContentFormat $contentFormat = ContentFormat::RichText,
         array $checks = [],
         string $knownLimitation = '',
+        array $expectedPatterns = [],
     ): void {
         $translateContext = new TranslateContext($content);
         $translateContext->setSourceLanguageCode($source);
@@ -377,17 +435,26 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
             $this->assertBlocksTranslated($content, $translated, $message);
             $this->assertSameStructure($content, $translated, $message);
             $this->assertLinesStartWithoutPunctuation($translated, $message);
-            $this->assertNoWordGluedToElements($content, $translated, $message);
+            // Japanese and Chinese are written without spaces between words, every element touches a word there.
+            if (!in_array($target, ['JA', 'ZH', 'ZH-HANS', 'ZH-HANT'], true)) {
+                $this->assertNoWordGluedToElements($content, $translated, $message);
+            }
             if (in_array('spaces', $checks, true)) {
                 $this->assertSameSpacesAroundInlineElements($content, $translated, $message);
             }
             if (in_array('linkTexts', $checks, true)) {
                 $this->assertEachLinkHasItsOwnText($content, $translated, $message);
             }
+            if (in_array('textAttributes', $checks, true)) {
+                $this->assertTextAttributesTranslated($content, $translated, $message);
+            }
         }
         $this->assertNoHelperLeft($content, $translated, $message);
         foreach ($expectedFragments as $fragment) {
             static::assertStringContainsString($fragment, $translated, $message);
+        }
+        foreach ($expectedPatterns as $pattern) {
+            static::assertMatchesRegularExpression($pattern, $translated, $message);
         }
     }
 
@@ -504,6 +571,34 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
         }
     }
 
+    /**
+     * Issue #427: every value of `title`, `alt` and `aria-label` is translated, apart from those in content marked
+     * with `translate="no"` or the class `notranslate`, which stay as in the source. DeepL may move elements, so
+     * no source value may be left among the values of the translation, whatever element carries it. Which element
+     * gets which translation is checked with `expectedPatterns`.
+     */
+    private function assertTextAttributesTranslated(string $content, string $translated, string $message): void
+    {
+        $sourceValues = $this->textAttributeValues($content);
+        $translatedValues = $this->textAttributeValues($translated);
+        static::assertNotSame([], $sourceValues, 'The content has no attribute read as text. ' . $message);
+        $attributesOf = static fn (array $values): array => array_count_values(array_column($values, 'attribute'));
+        static::assertEquals($attributesOf($sourceValues), $attributesOf($translatedValues), $message);
+        $protectedOf = static fn (array $values, bool $protected): array => array_column(
+            array_filter($values, static fn (array $value): bool => $value['protected'] === $protected),
+            'value'
+        );
+        static::assertEqualsCanonicalizing($protectedOf($sourceValues, true), $protectedOf($translatedValues, true), 'A protected attribute value was translated. ' . $message);
+        $translatedTexts = $protectedOf($translatedValues, false);
+        foreach ($protectedOf($sourceValues, false) as $sourceValue) {
+            static::assertNotContains($sourceValue, $translatedTexts, sprintf('"%s" was not translated. %s', $sourceValue, $message));
+        }
+        foreach ($translatedTexts as $translatedText) {
+            static::assertNotSame('', trim($translatedText), $message);
+            static::assertDoesNotMatchRegularExpression('/&(amp|quot|lt|gt|#[0-9]+);/', $translatedText, 'An attribute value is escaped twice. ' . $message);
+        }
+    }
+
     private function assertNoHelperLeft(string $content, string $translated, string $message): void
     {
         static::assertDoesNotMatchRegularExpression('/[< ]dlt-/', $translated, $message);
@@ -514,6 +609,38 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
     }
 
     /**
+     * @return list<array{attribute: string, value: string, protected: bool}> the values of the attributes read as
+     *                                                                         text, in document order
+     */
+    private function textAttributeValues(string $html): array
+    {
+        $values = [];
+        $xpath = new \DOMXPath($this->parse($html));
+        foreach ($xpath->query('//*') ?: [] as $element) {
+            if (!$element instanceof \DOMElement) {
+                continue;
+            }
+            foreach (TextAttributes::NAMES as $name) {
+                if ($element->hasAttribute($name)) {
+                    $protected = $xpath->query(
+                        'ancestor-or-self::*[@translate="no" or contains(concat(" ", normalize-space(@class), " "), " notranslate ")]',
+                        $element
+                    );
+                    $values[] = [
+                        'attribute' => $element->localName . '@' . $name,
+                        'value' => $element->getAttribute($name),
+                        'protected' => $protected !== false && $protected->length > 0,
+                    ];
+                }
+            }
+        }
+        return $values;
+    }
+
+    /**
+     * The values of the attributes read as text are left out of the signature, they are translated, see
+     * {@see self::assertTextAttributesTranslated()}.
+     *
      * @return list<array{signature: string, block: bool, script: bool, text: string}>
      */
     private function elements(string $html): array
@@ -526,7 +653,7 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
                 }
                 $attributes = [];
                 foreach ($node->attributes as $attribute) {
-                    $attributes[] = $attribute->name . '="' . $attribute->value . '"';
+                    $attributes[] = $attribute->name . (in_array($attribute->name, TextAttributes::NAMES, true) ? '' : '="' . $attribute->value . '"');
                 }
                 sort($attributes);
                 $hasWords = preg_match('/[\p{L}\p{N}]/u', $node->textContent) === 1;

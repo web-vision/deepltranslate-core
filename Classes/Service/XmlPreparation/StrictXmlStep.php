@@ -33,12 +33,12 @@ final class StrictXmlStep implements XmlPreparationStepInterface
         }
         foreach (DomTree::query($content, './/text()') as $text) {
             if ($text instanceof \DOMText) {
-                $text->data = $this->replaceCharacters($text->data);
+                $text->data = self::replaceCharacters($text->data);
             }
         }
         foreach (DomTree::query($content, './/comment()') as $comment) {
             if ($comment instanceof \DOMComment) {
-                $comment->data = $this->separateHyphens($this->replaceCharacters($comment->data));
+                $comment->data = $this->separateHyphens(self::replaceCharacters($comment->data));
             }
         }
         foreach (DomTree::elements($content) as $element) {
@@ -47,7 +47,7 @@ final class StrictXmlStep implements XmlPreparationStepInterface
                 if (!$attribute instanceof \DOMAttr) {
                     continue;
                 }
-                $value = $this->replaceCharacters($attribute->value);
+                $value = self::replaceCharacters($attribute->value);
                 if ($value !== $attribute->value) {
                     DomTree::setAttribute($element, $attribute, $value);
                 }
@@ -59,7 +59,11 @@ final class StrictXmlStep implements XmlPreparationStepInterface
     {
     }
 
-    private function replaceCharacters(string $text): string
+    /**
+     * Also the key of an attribute value DeepL translates, see {@see TextAttributes}: the XML holds the value
+     * replaced, an element the revert restores from the record holds it as stored.
+     */
+    public static function replaceCharacters(string $text): string
     {
         $text = str_replace(["\u{B}", "\u{C}"], ' ', $text);
         return preg_replace(self::NOT_XML_CHARACTER, '', $text) ?? $text;

@@ -145,9 +145,44 @@ final class TranslateHookContentFormatTest extends AbstractDeepLTestCase
             [
                 'Kids &lt; 12 &amp; "Teens" use &lt;b&gt;not markup&lt;/b&gt; &amp;amp; more',
                 "<p>Use &lt;b&gt; for bold &amp; <a href=\"t3://page?uid=1\" title=\"Say &quot;hi&quot; &gt; now\" dlt-r=\"0\">more</a><br/>Line\u{A0}two</p>",
+                // The title of the link, as a text of its own (issue #427).
+                'Say "hi" &gt; now',
             ],
             $this->sentTexts
         );
+    }
+
+    /**
+     * Issue #427: DeepL translates no attribute values. The title of a link, the alternative text of an image and
+     * the label of a button are sent as texts of their own in the request of the field and stored translated,
+     * escaped like the editor stores them. A title marked as not to be translated is kept.
+     */
+    #[Test]
+    public function attributeValuesReadAsTextAreTranslatedWithTheirField(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/pages.csv');
+        $bodytext = '<p>Read the <a href="t3://page?uid=1" title="Terms &amp; conditions">terms</a>'
+            . ' or <a href="#help" class="notranslate" title="Help center">ask</a>.</p>'
+            . '<p><img src="x.png" alt="A red bicycle" /> <button type="button" aria-label="Close" @click="close()">x</button></p>';
+        $this->insertContentElement(['uid' => 10, 'CType' => 'text', 'header' => 'Terms', 'bodytext' => $bodytext]);
+        // DeepL keeps the attribute values in the content, only the texts of their own are translated.
+        $this->answer = static fn (string $text): string => [
+            'Terms &amp; conditions' => 'AGB &amp; Bedingungen',
+            'A red bicycle' => 'Ein "rotes" Fahrrad',
+            'Close' => 'Schließen',
+            'Help center' => 'Hilfe',
+        ][$text] ?? $text;
+
+        $this->translate('tt_content', 10);
+
+        static::assertSame(
+            '<p>Read the <a href="t3://page?uid=1" title="AGB &amp; Bedingungen">terms</a>'
+                . ' or <a href="#help" class="notranslate" title="Help center">ask</a>.</p>'
+                . '<p><img src="x.png" alt="Ein &quot;rotes&quot; Fahrrad" /> <button type="button" aria-label="Schließen" @click="close()">x</button></p>',
+            $this->fetchTranslation('tt_content', 'l18n_parent', 10, ['bodytext'])['bodytext']
+        );
+        static::assertContains('Terms &amp; conditions', $this->sentTexts);
+        static::assertNotContains('Help center', $this->sentTexts);
     }
 
     /**

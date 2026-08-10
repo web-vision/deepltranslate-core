@@ -37,7 +37,11 @@ final class DeeplServiceTest extends UnitTestCase
         yield 'rich text keeps quotes inside attributes escaped' => [
             'contentFormat' => ContentFormat::RichText,
             'content' => '<p><a href="t3://page?uid=1&amp;x=2" title="Mehr &quot;erfahren&quot;">Link</a> und&nbsp;mehr</p>',
-            'expectedSent' => "<p><a href=\"t3://page?uid=1&amp;x=2\" title=\"Mehr &quot;erfahren&quot;\" dlt-r=\"0\">Link</a> und\u{00A0}mehr</p>",
+            // The title is sent as a text of its own, see Client::translate().
+            'expectedSent' => [
+                "<p><a href=\"t3://page?uid=1&amp;x=2\" title=\"Mehr &quot;erfahren&quot;\" dlt-r=\"0\">Link</a> und\u{00A0}mehr</p>",
+                'Mehr "erfahren"',
+            ],
             'expected' => '<p><a href="t3://page?uid=1&amp;x=2" title="Mehr &quot;erfahren&quot;">Link</a> und&nbsp;mehr</p>',
         ];
         yield 'plain text with markup characters stays literal' => [
@@ -99,21 +103,25 @@ final class DeeplServiceTest extends UnitTestCase
     /**
      * DeepL is replaced by a client returning its input, so the test covers everything the
      * extension does to the content before and after the API call.
+     *
+     * @param string|list<string>|null $expectedSent the texts sent to DeepL, `null` for none
      */
     #[Test]
     #[DataProvider('translateContentDataProvider')]
     public function translateContentReturnsContentInTheFormatOfTheField(
         ContentFormat $contentFormat,
         string $content,
-        ?string $expectedSent,
+        string|array|null $expectedSent,
         string $expected,
     ): void {
         $sent = [];
         $translator = $this->createMock(Translator::class);
         $translator->expects($expectedSent === null ? static::never() : static::once())->method('translateText')->willReturnCallback(
-            static function (string $text) use (&$sent): TextResult {
-                $sent[] = $text;
-                return new TextResult($text, 'DE', mb_strlen($text));
+            static function (string|array $text) use (&$sent): TextResult|array {
+                $texts = (array)$text;
+                $sent = [...$sent, ...$texts];
+                $results = array_map(static fn (string $text): TextResult => new TextResult($text, 'DE', mb_strlen($text)), $texts);
+                return is_array($text) ? $results : $results[0];
             }
         );
         $client = new Client($this->createMock(ConfigurationInterface::class), new HtmlXmlConverter());
@@ -145,7 +153,7 @@ final class DeeplServiceTest extends UnitTestCase
         $translateContext->setContentFormat($contentFormat);
 
         static::assertSame($expected, $subject->translateContent($translateContext));
-        static::assertSame($expectedSent === null ? [] : [$expectedSent], $sent);
+        static::assertSame((array)$expectedSent, $sent);
     }
 
     #[Test]
