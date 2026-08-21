@@ -249,12 +249,13 @@ abstract class AbstractTranslateHook
         // - 14.3: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94916
         // - 13.4: https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915
         //
-        // TYPO3 v12.4 has reached ELTS and no longer receives fixes from the public community, so it
-        // will never contain the change. Instances on v12.4 need a composer patch, for which this
-        // extension already ships the tooling (`vaimo/composer-patches` and the `patches/` directory).
+        // The fix is released with TYPO3 v13.4.34 and v14.3.6, and the minimum TYPO3 v13 version
+        // required by this extension contains it. TYPO3 v12.4 has reached ELTS and no longer
+        // receives fixes from the public community, so it will never contain the change. Instances
+        // on v12.4 have to apply the patch shipped in `Documentation/CorePatches/` themselves, see
+        // the "Known issues" chapter of the extension documentation.
         //
-        // @todo Raise the minimum TYPO3 core version constraint to the releases containing the fix
-        //       above, once they are merged and released, and drop this note.
+        // @todo Drop this note once the TYPO3 v12.4 support is dropped.
         $translatedParentRecords = BackendUtility::getRecordLocalization(
             $reference->parentTable,
             $reference->parentUid,
