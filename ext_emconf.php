@@ -18,7 +18,7 @@ $EM_CONF[$_EXTKEY] = [
             'fluid' => '13.4.34-14.3.99',
             'install' => '13.4.34-14.3.99',
             'deeplcom_deeplphp' => '1.19.0-1.19.99',
-            'deepl_base' => '2.0.5-2.99.99',
+            'deepl_base' => '2.0.6-2.99.99',
         ],
         'conflicts' => [
             'recordlist_thumbnail' => '',
