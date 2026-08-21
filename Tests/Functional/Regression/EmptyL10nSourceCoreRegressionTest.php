@@ -26,9 +26,11 @@ use WebVision\Deepltranslate\Core\Tests\Functional\AbstractDeepLTestCase;
  *
  * This is the root cause of the duplicated translations reported in
  * web-vision/deepltranslate-auto-renew#42. It cannot be fixed inside this extension; the fix is in
- * the TYPO3 Core (forge #110281, Gerrit 94914/94915/94916) and is applied for these test runs as a
- * ``require-dev`` Composer patch on ``typo3/cms-backend`` (see the ``patches/`` directory and
- * ``Documentation/CorePatches``). Without that patch this test fails.
+ * the TYPO3 Core (forge #110281, Gerrit 94914/94915/94916) and is released with TYPO3 v13.4.34 and
+ * v14.3.6. On TYPO3 v13 the required Core version therefore contains the fix and nothing has to be
+ * done. TYPO3 v12.4 has reached ELTS and never receives it, so ``Build/Scripts/runTests.sh``
+ * applies ``Documentation/CorePatches/typo3-cms-backend-110281-v12-v13.patch`` to the installed
+ * ``typo3/cms-backend`` during ``-s composerUpdate -t 12``. Without the fix this test fails.
  *
  * @see https://forge.typo3.org/issues/110281
  * @see https://github.com/web-vision/deepltranslate-auto-renew/issues/42

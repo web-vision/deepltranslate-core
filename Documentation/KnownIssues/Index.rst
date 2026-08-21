@@ -10,8 +10,8 @@ When API key is not set, *deepltranslate_core* disables all functions.
 Go to :ref:`Settings <extensionConfiguration>` and fix it. Clear cache
 after this.
 
-TYPO3 Core patch required (l10n_source)
----------------------------------------
+TYPO3 Core patch may be required (l10n_source)
+----------------------------------------------
 
 Localizing a record whose table declares a translation source field
 (``l10n_source``) - for example content elements built with ``MASK`` - can create
@@ -28,49 +28,67 @@ The defect is in the TYPO3 Core, not in this extension:
 
 The fix is upstream: `forge #110281 <https://forge.typo3.org/issues/110281>`__,
 `Gerrit 94915 (13.4) <https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915>`__.
-TYPO3 v12.4 has reached ELTS and never receives the fix upstream. Until the fix
-is released for v13.4, and permanently for v12.4, instances have to apply it
-through a Composer patch.
+It is released with TYPO3 **v13.4.34** and **v14.3.6**. This extension requires
+at least TYPO3 v13.4.34 on the TYPO3 v13 side, so **nothing has to be done** on
+TYPO3 v13.
 
-This extension ships the patch file below ``Documentation/CorePatches/`` and
-declares it in its own ``composer.json``. When the project uses
-`vaimo/composer-patches <https://github.com/vaimo/composer-patches>`__, **nothing
-has to be configured**: patch declarations are collected from installed
-dependencies as well, not only from the root ``composer.json``, so having this
-extension installed is enough and the patch matching the TYPO3 version in use is
-applied automatically:
+TYPO3 **v12.4 has reached ELTS and never receives the fix**. Instances on
+TYPO3 v12.4, and instances pinning an older TYPO3 v13 release, have to apply the
+patch themselves.
 
-..  code-block:: text
+No Composer patch is declared any more
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    - Applying patches for typo3/cms-backend (1)
-      ~ web-vision/deepltranslate-core: Documentation/CorePatches/typo3-cms-backend-110281-v12-v13.patch [NEW]
+Earlier releases declared the patch in the ``extra.patches`` section of the
+``composer.json`` of this extension. That declaration used the object form with
+a ``source`` and a ``version`` key, which only
+`vaimo/composer-patches <https://github.com/vaimo/composer-patches>`__
+understands. Patch declarations are collected from installed dependencies as
+well, so projects using
+`cweagans/composer-patches <https://github.com/cweagans/composer-patches>`__
+aborted their Composer run with an "Array to string conversion" error (1.7.3) or
+a type error in ``ResolverBase`` (2.0.0). See
+`deepltranslate-core#646 <https://github.com/web-vision/deepltranslate-core/issues/646>`__.
 
-Do **not** declare the same patch a second time in the project. Declarations for
-the same target package are de-duplicated, the declaration of the dependency wins
-and the own one is dropped silently.
+The extension therefore **no longer declares or applies** any Composer patch.
+The patch file below ``Documentation/CorePatches/`` stays in the repository as
+documentation.
 
-Plugins which only evaluate the root ``composer.json`` - for example
-`cweagans/composer-patches <https://github.com/cweagans/composer-patches>`__ in
-its default configuration - do not pick that declaration up. Copy the patch file
-into the project and declare it, scoped so it only applies to the affected
-versions:
+Applying the patch in a project
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Copy ``Documentation/CorePatches/typo3-cms-backend-110281-v12-v13.patch`` from
+`web-vision/deepltranslate-core <https://github.com/web-vision/deepltranslate-core>`__
+into the project - for example into its ``patches/`` directory - and declare it
+for ``typo3/cms-backend``.
+
+With ``cweagans/composer-patches`` the patch is declared as a plain path or URL
+string:
 
 ..  code-block:: json
 
     {
-        "require-dev": {
-            "vaimo/composer-patches": "^6.0.1"
-        },
         "extra": {
             "patches": {
                 "typo3/cms-backend": {
-                    "TYPO3 #110281 l10n_source on v12.4 (ELTS, always)": {
+                    "TYPO3 #110281 l10n_source": "patches/typo3-cms-backend-110281-v12-v13.patch"
+                }
+            }
+        }
+    }
+
+``vaimo/composer-patches`` additionally understands the object form, which can
+scope a patch to the affected TYPO3 versions:
+
+..  code-block:: json
+
+    {
+        "extra": {
+            "patches": {
+                "typo3/cms-backend": {
+                    "TYPO3 #110281 l10n_source": {
                         "source": "patches/typo3-cms-backend-110281-v12-v13.patch",
                         "version": ">=12.4.0 <13.0.0"
-                    },
-                    "TYPO3 #110281 l10n_source on v13.4 (until the fix release)": {
-                        "source": "patches/typo3-cms-backend-110281-v12-v13.patch",
-                        "version": ">=13.4.0 <13.4.34"
                     }
                 }
             }
@@ -83,7 +101,7 @@ and aborts the Composer run. The same is true for patches provided by other
 extensions for the same file.
 
 See the general TYPO3 documentation on applying Composer patches for
-project-specific setup details. The patch used by this extension:
+project-specific setup details. The patch shipped by this extension:
 
 ..  literalinclude:: ../CorePatches/typo3-cms-backend-110281-v12-v13.patch
     :language: diff
