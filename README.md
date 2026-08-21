@@ -159,8 +159,8 @@ Prerequisites:
 ```bash
 echo '>> Create release based on configuration' ; \
   RELEASE_BRANCH='main' ; \
-  RELEASE_VERSION='6.0.6' ; \
-  DEV_VERSION='6.0.7' ; \
+  RELEASE_VERSION='6.0.7' ; \
+  DEV_VERSION='6.0.8' ; \
   echo ">> Checkout branches" && \
   git checkout main && \
   git fetch --all && \
