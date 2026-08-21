@@ -54,8 +54,7 @@
             "helhum/typo3-console-plugin": true,
             "php-http/discovery": true,
             "typo3/class-alias-loader": true,
-            "typo3/cms-composer-installers": true,
-            "vaimo/composer-patches": true
+            "typo3/cms-composer-installers": true
         }
     },
     "extra": {
@@ -72,19 +71,6 @@
         },
         "branch-alias": {
             "dev-main": "6.0.x-dev"
-        },
-        "patches-search": "patches/",
-        "patches": {
-            "typo3/cms-backend": {
-                "TYPO3 Core #110281 (find translations with empty l10n_source) on TYPO3 v13.4 - TEMPORARY until the fix ships in the next patch level release": {
-                    "source": "Documentation/CorePatches/typo3-cms-backend-110281-v13.patch",
-                    "version": ">=13.4.0 <13.4.34"
-                },
-                "TYPO3 Core #110281 (find translations with empty l10n_source) on TYPO3 v14.3 - TEMPORARY until the fix ships in the next patch level release": {
-                    "source": "Documentation/CorePatches/typo3-cms-backend-110281-v14.patch",
-                    "version": ">=14.3.0 <14.3.6"
-                }
-            }
         }
     },
     "require": {
@@ -121,8 +107,7 @@
         "typo3/cms-styleguide": "~13.4.28@dev || ~14.3.0@dev",
         "typo3/cms-tstemplate": "~13.4.28@dev || ~14.3.0@dev",
         "typo3/cms-workspaces": "~13.4.28@dev || ~14.3.0@dev",
-        "typo3/testing-framework": "^9.5.0",
-        "vaimo/composer-patches": "^6.0.1"
+        "typo3/testing-framework": "^9.5.0"
     },
     "suggest": {
         "b13/container": "Just to be loaded after EXT:container",
