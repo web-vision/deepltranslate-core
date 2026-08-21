@@ -42,6 +42,40 @@ cleanUp() {
     ${CONTAINER_BIN} network rm ${NETWORK} >/dev/null
 }
 
+# TYPO3 v12.4 has reached ELTS and never receives the fix for the Core defect
+# forge #110281 - translations whose "l10n_source" is empty are invisible to
+# "BackendUtility::getRecordLocalization()", so "DataHandler::localize()"
+# creates a duplicate. The packages no longer declare that fix as a Composer
+# patch, because the declaration format broke Composer runs of projects using
+# "cweagans/composer-patches" (deepltranslate-core#646). The patch is shipped as
+# documentation only, so the test setup has to apply it to the installed Core
+# itself. "patch" is part of the PHP image, nothing is needed on the host.
+applyTypo3CorePatches() {
+    if [ "${CORE_VERSION}" != "12" ]; then
+        return 0
+    fi
+    local patchFile="Documentation/CorePatches/typo3-cms-backend-110281-v12-v13.patch"
+    local targetDir=".Build/vendor/typo3/cms-backend"
+    if [ ! -f "${ROOT_DIR}/${patchFile}" ]; then
+        echo "TYPO3 Core patch file '${patchFile}' is missing." >&2
+        return 1
+    fi
+    if [ ! -d "${ROOT_DIR}/${targetDir}" ]; then
+        echo "Patch target '${targetDir}' is missing, run '-s composerUpdate' first." >&2
+        return 1
+    fi
+    # Reverse dry run first: a vendor tree kept from a previous "-t 12" run is
+    # already patched, and "patch" would prompt instead of failing on it.
+    local patchCommand="
+        if patch -p1 -R --dry-run --force -d '${targetDir}' < '${patchFile}' >/dev/null 2>&1; then
+            echo 'TYPO3 Core patch for forge #110281 is already applied.';
+        else
+            patch -p1 --no-backup-if-mismatch -d '${targetDir}' < '${patchFile}';
+        fi
+    "
+    ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name core-patch-${CORE_VERSION}-${SUFFIX} ${IMAGE_PHP} /bin/sh -c "${patchCommand}"
+}
+
 handleDbmsOptions() {
     # -a, -d, -i depend on each other. Validate input combinations and set defaults.
     case ${DBMS} in
@@ -561,6 +595,10 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         # restore composer json
         cp -Rf composer.json.orig composer.json
+        if [ ${SUITE_EXIT_CODE} -eq 0 ]; then
+            applyTypo3CorePatches
+            SUITE_EXIT_CODE=$?
+        fi
         ;;
     functional)
         PHPUNIT_CONFIG_FILE="Build/phpunit/FunctionalTests.xml"
