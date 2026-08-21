@@ -27,14 +27,12 @@ The defect is in the TYPO3 Core, not in this extension:
 ``MASK``) is not found, so ``DataHandler::localize()`` creates a second one.
 
 The fix is upstream: `forge #110281 <https://forge.typo3.org/issues/110281>`__,
-`Gerrit 94915 (13.4) <https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915>`__.
-It is released with TYPO3 **v13.4.34** and **v14.3.6**. This extension requires
-at least TYPO3 v13.4.34 on the TYPO3 v13 side, so **nothing has to be done** on
-TYPO3 v13.
+`Gerrit 94915 (13.4) <https://review.typo3.org/c/Packages/TYPO3.CMS/+/94915>`__
+and released with TYPO3 **v13.4.34**. This extension requires at least that
+version on the TYPO3 v13 side, so **nothing has to be done** on TYPO3 v13.
 
 TYPO3 **v12.4 has reached ELTS and never receives the fix**. Instances on
-TYPO3 v12.4, and instances pinning an older TYPO3 v13 release, have to apply the
-patch themselves.
+TYPO3 v12.4 have to apply the patch themselves.
 
 No Composer patch is declared any more
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
