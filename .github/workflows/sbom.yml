@@ -7,7 +7,7 @@ on:
 
 jobs:
   sbom:
-    uses: web-vision/.github/.github/workflows/sbom-reusable.yml@v1.0.1
+    uses: web-vision/.github/.github/workflows/sbom-reusable.yml@v1.0.3
     with:
       dry_run: false
     secrets:
