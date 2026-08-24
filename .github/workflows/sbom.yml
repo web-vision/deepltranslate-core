@@ -7,9 +7,9 @@ on:
 
 jobs:
   sbom:
-    uses: web-vision/.github/.github/workflows/sbom-reusable.yml@v1.0.0
+    uses: web-vision/.github/.github/workflows/sbom-reusable.yml@v1.0.1
     with:
-      dtrack_url: ${{ vars.DTRACK_URL }}
       dry_run: false
     secrets:
       DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
+      DTRACK_API_URL: ${{ secrets.DTRACK_API_URL }}
