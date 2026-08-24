@@ -1,0 +1,15 @@
+name: SBOM
+on:
+  push:
+    branches: [main]
+    tags: ['*']
+  workflow_dispatch:
+
+jobs:
+  sbom:
+    uses: web-vision/.github/.github/workflows/sbom-reusable.yml@v1.0.0
+    with:
+      dtrack_url: ${{ secrets.DTRACK_URL }}
+      dry_run: false
+    secrets:
+      DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
