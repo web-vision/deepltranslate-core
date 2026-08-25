@@ -1,18 +1,38 @@
+# .github/workflows/sbom.yml — thin per-repository caller.
+#
+# Pinned to @v1, a moving tag on <org>/.github that tracks the latest compatible 1.x release. That
+# means a fix to the reusable workflow reaches every caller when the tag moves, without touching
+# each repository. Pin @v1.1.0 instead where a repository must not move on its own.
+#
+# Deliberately has NO `schedule:` trigger. GitHub auto-disables scheduled workflows in repositories
+# with no activity for 60 days — already true for 58 of our 99 repos — and notifies only whoever
+# last edited the cron line. Periodic coverage is the central orchestrator's job; this workflow
+# exists to capture release-time state, which is exactly what a schedule cannot do reliably.
 name: SBOM
+
 on:
   push:
-    branches: [main]
+    branches: [main, master]
     tags: ['*']
   schedule:
-    # weekly, Monday 04:00 UTC 
+    # weekly, Monday 04:00 UTC
     - cron: '0 4 * * 1'
   workflow_dispatch:
+    inputs:
+      target_ref:
+        description: "Regenerate for this ref (e.g. a release tag). Empty = current branch."
+        required: false
+        type: string
+        default: ""
+
 
 jobs:
   sbom:
-    uses: web-vision/.github/.github/workflows/sbom-reusable.yml@v1.0.3
+    uses: web-vision/.github/.github/workflows/sbom-reusable.yml@v1
     with:
       dry_run: false
+      target_ref: ${{ inputs.target_ref || '' }}
     secrets:
       DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
       DTRACK_API_URL: ${{ secrets.DTRACK_API_URL }}
+
