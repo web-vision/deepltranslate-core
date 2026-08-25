@@ -35,4 +35,18 @@ jobs:
     secrets:
       DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
       DTRACK_API_URL: ${{ secrets.DTRACK_API_URL }}
+      # Composer credentials for PRIVATE dependencies. Deliberately commented out: which secret a
+      # repository holds differs, and a template that names one would silently remove the working
+      # wiring from a repository that uses the other. install-workflow.sh detects what the
+      # repository actually has and preserves whatever is already wired.
+      #
+      # Uncomment the line matching this repository's secret:
+      #
+      #   COMPOSER_AUTH holds a complete auth.json document - this is the established convention
+      #   here, and PRIVATE_PACKAGE_TOKEN is what holds it:
+      # COMPOSER_AUTH: ${{ secrets.PRIVATE_PACKAGE_TOKEN }}
+      #
+      #   COMPOSER_GITHUB_TOKEN holds a bare GitHub token, used both to rewrite SSH remotes and as
+      #   a github-oauth entry:
+      # COMPOSER_GITHUB_TOKEN: ${{ secrets.COMPOSER_GITHUB_TOKEN }}
 
