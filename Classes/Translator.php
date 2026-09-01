@@ -49,13 +49,62 @@ final class Translator extends AbstractClient implements TranslatorInterface
             $options[TranslateTextOptions::GLOSSARY] = $glossary;
         }
 
+        $replaceLinks = false;
+        if (preg_match('/<a [^<]+>/', $content, $m) != 0) {
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML('<?xml encoding="utf-8" ?>' . $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            libxml_clear_errors();
+
+            $links = $dom->getElementsByTagName('a');
+            $titlesToTranslate = [];
+
+            foreach ($links as $link) {
+                if ($link->hasAttribute('title')) {
+                    $titlesToTranslate[] = $link->getAttribute('title');
+                }
+            }
+            $content = array_merge([$content], $titlesToTranslate);
+            $replaceLinks = true;
+        }
+
         try {
-            return $this->client()->translateText(
+            $translations = $this->client()->translateText(
                 $content,
                 $sourceLang,
                 $targetLang,
                 $options
             );
+
+            if ($replaceLinks) {
+                $translatedHtml = $translations[0]->text;
+                $billedCharacters = $translations[0]->billedCharacters;
+
+                $translatedTitles = [];
+                for ($i = 1; $i < count($translations); $i++) {
+                    $translatedTitles[] = $translations[$i]->text;
+                    $billedCharacters += $translations[$i]->billedCharacters;
+                }
+
+                $domResult = new \DOMDocument();
+                libxml_use_internal_errors(true);
+                $domResult->loadHTML('<?xml encoding="utf-8" ?>' . $translatedHtml, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                libxml_clear_errors();
+
+                $resultLinks = $domResult->getElementsByTagName('a');
+                $titleIndex = 0;
+
+                foreach ($resultLinks as $link) {
+                    if ($link->hasAttribute('title') && isset($translatedTitles[$titleIndex])) {
+                        $link->setAttribute('title', $translatedTitles[$titleIndex]);
+                        $titleIndex++;
+                    }
+                }
+
+                $html = $domResult->saveHTML();
+                $translations = new TextResult($html, $translations[0]->detectedSourceLang, $billedCharacters, $translations[0]->modelTypeUsed);
+            }
+            return $translations;
         } catch (DeepLException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
