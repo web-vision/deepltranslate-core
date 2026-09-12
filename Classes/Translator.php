@@ -35,6 +35,7 @@ final class Translator extends AbstractClient implements TranslatorInterface
         string $targetLang,
         string $glossary = '',
         string $formality = '',
+        string $context = '',
     ): array|null|TextResult {
         $options = [
             // @todo Make this configurable, either as global setting or dependency injection (factory?) / event
@@ -47,6 +48,10 @@ final class Translator extends AbstractClient implements TranslatorInterface
 
         if (!empty($glossary)) {
             $options[TranslateTextOptions::GLOSSARY] = $glossary;
+        }
+
+        if (!empty($context)) {
+            $options[TranslateTextOptions::CONTEXT] = $context;
         }
 
         try {

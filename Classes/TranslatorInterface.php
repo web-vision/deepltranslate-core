@@ -26,6 +26,7 @@ interface TranslatorInterface extends ClientInterface
         string $targetLang,
         string $glossary = '',
         string $formality = '',
+        string $context = '',
     ): array|TextResult|null;
 
     /**

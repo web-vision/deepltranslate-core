@@ -16,6 +16,7 @@ final class TranslateContext
     private string $sourceLanguageCode = '';
     private string $formality = 'default';
     private string $glossaryId = '';
+    private string $context = '';
 
     public function __construct(
         private string $content,
@@ -68,5 +69,15 @@ final class TranslateContext
     public function setGlossaryId(string $glossaryId): void
     {
         $this->glossaryId = $glossaryId;
+    }
+
+    public function getContext(): string
+    {
+        return $this->context;
+    }
+
+    public function setContext(string $context): void
+    {
+        $this->context = $context;
     }
 }
