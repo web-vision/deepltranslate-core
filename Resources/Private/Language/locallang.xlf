@@ -34,6 +34,12 @@
 			<trans-unit id="pages.tx_wvdeepltranslate_translated_time">
 				<source>Last Translated Date</source>
 			</trans-unit>
+			<trans-unit id="pages.tx_wvdeepltranslate_context">
+				<source>Translation Context</source>
+			</trans-unit>
+			<trans-unit id="pages.tx_wvdeepltranslate_context_description">
+				<source>A few complete sentences in the source language are sufficient and recommended; the field is limited to 3,000 characters.</source>
+			</trans-unit>
 			<trans-unit id="preview.flag">
 				<source>Translated with DeepL</source>
 			</trans-unit>
@@ -44,6 +50,12 @@
 			<!-- SiteConfiguration labels -->
 			<trans-unit id="site_configuration.deepl.title">
 				<source>DeepL Settings</source>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.field.context.label">
+				<source>Translation Context</source>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.field.context.description">
+				<source>A few complete sentences in the source language are sufficient and recommended; the field is limited to 3,000 characters.</source>
 			</trans-unit>
 			<trans-unit id="site_configuration.deepl.field.targetlanguage.label">
 				<source>Target Language (ISO Code)</source>
