@@ -161,7 +161,10 @@ Options:
             - clean: clean up build and testing related files
             - composer: "composer" with all remaining arguments dispatched.
             - composerUpdate: "composer update", handy if host has no PHP
-            - functional: functional tests
+            - functional: functional tests, using the DeepL mock server. Excludes the "deepl-real-api" group.
+            - functionalDeepLApi: functional tests of the "deepl-real-api" group against the real DeepL API,
+              using SQLite. Billed per character, therefore never run by "functional" or in CI. Requires the
+              environment variable DEEPL_AUTH_KEY, e.g. "DEEPL_AUTH_KEY=<key> $0 -s functionalDeepLApi".
             - lintPhp: PHP linting
             - lintTypoScript: TypoScript linting
             - renderDocumentation: This uses the official rendering container to render the extension documentation.
@@ -566,7 +569,7 @@ case ${TEST_SUITE} in
         ;;
     functional)
         PHPUNIT_CONFIG_FILE="Build/phpunit/FunctionalTests.xml"
-        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-${DBMS} --exclude-group not-core-${CORE_VERSION} "$@")
+        COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --exclude-group not-${DBMS} --exclude-group not-core-${CORE_VERSION} --exclude-group deepl-real-api "$@")
         echo "Using deepl-mockserver"
         ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name deepl-func-${SUFFIX} --network ${NETWORK} -d ${IMAGE_DEEPL} >/dev/null
         waitFor deepl-func-${SUFFIX} 3000
@@ -606,6 +609,21 @@ case ${TEST_SUITE} in
                 SUITE_EXIT_CODE=$?
                 ;;
         esac
+        ;;
+    functionalDeepLApi)
+        if [ -z "${DEEPL_AUTH_KEY}" ]; then
+            echo "The suite \"functionalDeepLApi\" requires the environment variable DEEPL_AUTH_KEY." >&2
+            SUITE_EXIT_CODE=1
+        else
+            PHPUNIT_CONFIG_FILE="Build/phpunit/FunctionalTests.xml"
+            COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --group deepl-real-api "$@")
+            mkdir -p "${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/"
+            # "-e DEEPL_AUTH_KEY" without a value passes the variable from the host environment, which keeps
+            # the key out of the process list.
+            CONTAINERPARAMS="-e typo3DatabaseDriver=pdo_sqlite --tmpfs ${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/:${TMPFS_MOUNT_OPTIONS} -e DEEPL_AUTH_KEY"
+            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name functional-deepl-api-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${CONTAINERPARAMS} ${IMAGE_PHP} "${COMMAND[@]}"
+            SUITE_EXIT_CODE=$?
+        fi
         ;;
     lintPhp)
         COMMAND="find . -name \\*.php ! -path "./.Build/\\*" ! -path "./.cache/\\*" -print0 | xargs -0 -n1 -P4 php -dxdebug.mode=off -l >/dev/null"
