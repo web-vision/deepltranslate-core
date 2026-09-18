@@ -15,6 +15,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
+use WebVision\Deepltranslate\Core\Service\ContentFormatResolver;
 
 /**
  * The main translation rendering on localization.
@@ -22,13 +23,18 @@ use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 #[Autoconfigure(public: true)]
 final class TranslateHook extends AbstractTranslateHook
 {
+    public function __construct(
+        private readonly ContentFormatResolver $contentFormatResolver,
+    ) {}
+
     /**
      * @param array{uid: int} $languageRecord
      */
     public function processTranslateTo_copyAction(
         string &$content,
         array $languageRecord,
-        DataHandler $dataHandler
+        DataHandler $dataHandler,
+        string $fieldName = ''
     ): void {
         if (MathUtility::canBeInterpretedAsInteger($content)) {
             return;
@@ -105,6 +111,9 @@ final class TranslateHook extends AbstractTranslateHook
         }
         try {
             $translatedContext = $this->createTranslateContextForRecords($content, $sourceLanguageRecord, $targetLanguageRecord);
+            $translatedContext->setContentFormat(
+                $this->contentFormatResolver->resolve($tableName, $fieldName, $currentRecord)
+            );
             $translatedContent = $this->deeplService->translateContent($translatedContext);
             if ($translatedContent === '') {
                 $this->flashMessages(
