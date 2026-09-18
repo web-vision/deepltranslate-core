@@ -28,3 +28,16 @@ Contribution workflow
 #.  Please always create a pull request based on the updated release branch. This
     ensures that the necessary quality checks and tests are performed as a quality
     can be performed.
+
+Tests against the real DeepL API
+--------------------------------
+
+Functional tests in the PHPUnit group `deepl-real-api` send content to the real
+DeepL API instead of the mock server. Every run is billed per character, so
+the `functional` suite and CI exclude them. Run them locally with your own API
+key in the environment variable `DEEPL_AUTH_KEY`:
+
+..  code-block:: bash
+    :caption: functional tests against the real DeepL API
+
+    DEEPL_AUTH_KEY=<your-api-key> Build/Scripts/runTests.sh -t 13 -p 8.2 -s functionalDeepLApi
