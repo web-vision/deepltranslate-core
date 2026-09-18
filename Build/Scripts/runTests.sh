@@ -458,6 +458,16 @@ if [ "${CI}" == "true" ]; then
     IS_CORE_CI=1
     IMAGE_PREFIX=""
     CONTAINER_INTERACTIVE=""
+elif [ ! -t 0 ] || [ ! -t 1 ]; then
+    # If stdin or stdout is not a TTY (e.g. a script runner, pipe, or non-interactive shell),
+    # drop the interactive "-it" flags automatically to avoid podman warning "The input device
+    # is not a TTY." and docker failure, and to keep redirected output free of TTY control characters.
+    # Keep "--init" so the PID 1 init process still forwards signals (e.g. ctrl-c) to the test process.
+    #
+    # It also stops a scripted run from hanging forever: with a pseudo TTY every tool inside the
+    # container believes it may ask a question, and composer does - it asks whether a plugin missing
+    # from "allow-plugins" is trusted, and then waits for an answer nobody is there to give.
+    CONTAINER_INTERACTIVE="--init"
 fi
 
 # determine default container binary to use: 1. podman 2. docker
