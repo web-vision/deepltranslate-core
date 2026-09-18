@@ -9,6 +9,24 @@
 			<trans-unit id="backend.label">
 				<source>Translate with DeepL</source>
 			</trans-unit>
+			<trans-unit id="inline.button.localizeWithDeepl">
+				<source>Localize with DeepL</source>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.title">
+				<source>Localize with DeepL</source>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.content">
+				<source>The record is translated with DeepL and the form is reloaded afterwards. Unsaved changes in this form are discarded.</source>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.ok">
+				<source>Localize with DeepL</source>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.cancel">
+				<source>Cancel</source>
+			</trans-unit>
+			<trans-unit id="inline.error.parentNotTranslated">
+				<source>The inline record cannot be localized yet, because its parent record has no translation in this language. Localize the parent record first.</source>
+			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslateHeader">
 				<source>Translate with DeepL</source>
 			</trans-unit>

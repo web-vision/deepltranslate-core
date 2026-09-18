@@ -11,6 +11,30 @@
 				<source>Translate with DeepL</source>
 				<target>Mit DeepL übersetzen</target>
 			</trans-unit>
+			<trans-unit id="inline.button.localizeWithDeepl">
+				<source>Localize with DeepL</source>
+				<target>Mit DeepL lokalisieren</target>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.title">
+				<source>Localize with DeepL</source>
+				<target>Mit DeepL lokalisieren</target>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.content">
+				<source>The record is translated with DeepL and the form is reloaded afterwards. Unsaved changes in this form are discarded.</source>
+				<target>Der Datensatz wird mit DeepL übersetzt und das Formular danach neu geladen. Nicht gespeicherte Änderungen in diesem Formular gehen verloren.</target>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.ok">
+				<source>Localize with DeepL</source>
+				<target>Mit DeepL lokalisieren</target>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.cancel">
+				<source>Cancel</source>
+				<target>Abbrechen</target>
+			</trans-unit>
+			<trans-unit id="inline.error.parentNotTranslated">
+				<source>The inline record cannot be localized yet, because its parent record has no translation in this language. Localize the parent record first.</source>
+				<target>Der Inline-Datensatz kann noch nicht lokalisiert werden, weil sein übergeordneter Datensatz in dieser Sprache noch keine Übersetzung hat. Bitte zuerst den übergeordneten Datensatz lokalisieren.</target>
+			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslateHeader">
 				<source>Translate with DeepL</source>
 				<target>Mit DeepL übersetzen</target>

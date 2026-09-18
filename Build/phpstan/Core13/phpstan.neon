@@ -15,6 +15,7 @@ parameters:
 
   excludePaths:
     - ../../../.Build/*
+    - ../../../Tests/Functional/Core14/*
 
   bootstrapFiles:
     - classAliasses.php
@@ -24,3 +25,4 @@ parameters:
       'frontend.preview': TYPO3\CMS\Frontend\Aspect\PreviewAspect
     requestGetAttributeMapping:
       'typo3.testing.context': TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequestContext
+      'route': TYPO3\CMS\Backend\Routing\Route|null

@@ -28,6 +28,7 @@ use WebVision\Deepltranslate\Core\Core14\Backend\Localization\Event\DetermineRec
 use WebVision\Deepltranslate\Core\Event\DisallowTableFromDeeplTranslateEvent;
 use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException as DeeplTranslateCoreInvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
+use WebVision\Deepltranslate\Core\Service\InlineRelationResolver;
 use WebVision\Deepltranslate\Core\Service\LanguageService as DeeplTranslateCoreLanguageService;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
@@ -45,6 +46,7 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         private LocalizationRepository $localizationRepository,
         private SiteFinder $siteFinder,
         private DeeplTranslateCoreLanguageService $deeplTranslateCoreLanguageService,
+        private InlineRelationResolver $inlineRelationResolver,
     ) {}
 
     /**
@@ -176,6 +178,12 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
 
         if ($dataHandler->errorLog !== []) {
             return LocalizationResult::error($dataHandler->errorLog);
+        }
+
+        // An inline child is localized through its parent and shown in the parent's edit form, which is
+        // where the editor usually starts from, so stay there.
+        if ($this->inlineRelationResolver->resolveParentReference($type, $uid)->reference !== null) {
+            return LocalizationResult::success(new ReloadLocalizationFinisher());
         }
 
         // Get the newly created record UID from DataHandler's copy mapping
