@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
+use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
 use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
@@ -84,7 +85,7 @@ final class DeeplService implements LoggerAwareInterface
 
         try {
             $response = $this->client->translate(
-                $translateContext->getContent(),
+                $this->prepareContent($translateContext),
                 $translateContext->getSourceLanguageCode(),
                 $translateContext->getTargetLanguageCode(),
                 $translateContext->getGlossaryId(),
@@ -110,7 +111,31 @@ final class DeeplService implements LoggerAwareInterface
             $content = $response->text;
         }
 
-        return htmlspecialchars_decode($content, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5);
+        return $this->restoreContent($content, $translateContext->getContentFormat());
+    }
+
+    /**
+     * The client handles its input as HTML, so plain text is escaped to keep "<" and "&" literal.
+     */
+    private function prepareContent(TranslateContext $translateContext): string
+    {
+        if ($translateContext->getContentFormat() === ContentFormat::PlainText) {
+            return htmlspecialchars($translateContext->getContent(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+        }
+        return $translateContext->getContent();
+    }
+
+    /**
+     * Rich text is returned as the HTML the client serialized, which is the form the rich text editor
+     * stores. Decoding it would turn an escaped "&lt;" into markup and break quotes inside attributes.
+     */
+    private function restoreContent(string $translatedContent, ContentFormat $contentFormat): string
+    {
+        return match ($contentFormat) {
+            ContentFormat::RichText => $translatedContent,
+            ContentFormat::PlainText => html_entity_decode($translatedContent, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
+            ContentFormat::Unknown => htmlspecialchars_decode($translatedContent, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5),
+        };
     }
 
     /**

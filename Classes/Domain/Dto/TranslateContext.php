@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Domain\Dto;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
+use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
 
 /**
  * DTO providing the data shipped to DeepL translation.
@@ -21,6 +22,8 @@ final class TranslateContext
     protected string $formality = 'default';
 
     protected string $glossaryId = '';
+
+    protected ContentFormat $contentFormat = ContentFormat::Unknown;
 
     public function __construct(string $content)
     {
@@ -74,5 +77,15 @@ final class TranslateContext
     public function setGlossaryId(string $glossaryId): void
     {
         $this->glossaryId = $glossaryId;
+    }
+
+    public function getContentFormat(): ContentFormat
+    {
+        return $this->contentFormat;
+    }
+
+    public function setContentFormat(ContentFormat $contentFormat): void
+    {
+        $this->contentFormat = $contentFormat;
     }
 }
