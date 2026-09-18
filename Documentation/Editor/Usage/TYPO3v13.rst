@@ -48,3 +48,13 @@ use normal translation.
 .. note::
    Fields of custom extensions need to be properly
    :ref:`configured <tableConfiguration>` to enable translation.
+
+Translating inline records
+==========================
+
+Inline records, for example the items of a card group, which are added after
+the record they belong to has been translated, are translated from the edit
+form of the translated record: click :guilabel:`Localize with DeepL` in the
+controls of the inline record and confirm. The inline record is translated with
+DeepL and the form reloads. Unsaved changes in the form are discarded, so save
+the form first. See also :ref:`translateInlineRecords`.

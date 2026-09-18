@@ -10,6 +10,7 @@ translating pages, content elements and/or records.
 *   `Translate Page with or without contents elements <translatePageWithOrWithoutContents>`_
 *   `Translate Content Elements <translateContentElements>`_
 *   `Translate Record <translateRecord>`_
+*   :ref:`Translate inline records <translateInlineRecords>`
 
 ..  note::
 
@@ -170,5 +171,40 @@ translate button for the language you want.
 
     The process is the same as already visually demonstrated above. Dedicated
     images will be added in the next extension release.
+
+
+..  _translateInlineRecords:
+
+Translate inline records
+========================
+
+Inline records are records edited inside another record, for example the items
+of a card group or an accordion. Their translation belongs to the translation of
+the record they are part of, so they are translated together with it.
+
+When an inline record is added in the default language after the record it
+belongs to has already been translated, open the translated record. The new
+inline record is listed there as not yet localized.
+
+..  rst-class:: bignums-tip
+
+#.  Click :guilabel:`Localize with DeepL` in the controls of the inline record.
+
+#.  The localization wizard of TYPO3 opens. Select :guilabel:`Translate` and
+    :guilabel:`Translate with DeepL`.
+
+#.  The inline record is translated with DeepL and the form reloads, showing
+    the new translation. TYPO3 asks before unsaved changes are discarded.
+
+The control is only shown when DeepL is configured for the language and you are
+allowed to translate with DeepL. In TYPO3 v13 the control asks for confirmation
+and translates the record directly, see :ref:`basicUsageTYPO3v13`.
+
+..  note::
+
+    The localize buttons of TYPO3 itself, including
+    :guilabel:`Localize all records` and
+    :guilabel:`Synchronize with default language`, copy the content without
+    translating it.
 
 
