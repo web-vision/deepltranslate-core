@@ -118,6 +118,16 @@ Examples
     Build/Scripts/runTests.sh -t 14 -p 8.5 -s functional -d sqlite && \
     Build/Scripts/runTests.sh -t 14 -p 8.5 -s functional -d mariadb -i 10.7
 
+Functional tests in the PHPUnit group `deepl-real-api` send content to the real
+DeepL API instead of the mock server. Every run is billed per character, so
+the `functional` suite and CI exclude them. Run them locally with your own API
+key in the environment variable `DEEPL_AUTH_KEY`:
+
+..  code-block:: bash
+    :caption: functional tests against the real DeepL API
+
+    DEEPL_AUTH_KEY=<your-api-key> Build/Scripts/runTests.sh -t 13 -p 8.2 -s functionalDeepLApi
+
 ..  code-block:: bash
     :caption: unit tests for TYPO3 v13.4 with PHP 8.5
 
