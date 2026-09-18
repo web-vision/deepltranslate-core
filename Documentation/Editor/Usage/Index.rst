@@ -10,6 +10,7 @@ translating pages, content elements and/or records.
 *   `Translate Page with or without contents elements <translatePageWithOrWithoutContents>`_
 *   `Translate Content Elements <translateContentElements>`_
 *   `Translate Record <translateRecord>`_
+*   :ref:`Translate inline records <translateInlineRecords>`
 
 ..  note::
 
@@ -170,5 +171,66 @@ translate button for the language you want.
 
     The process is the same as already visually demonstrated above. Dedicated
     images will be added in the next extension release.
+
+
+..  _translateInlineRecords:
+
+Translate inline records
+========================
+
+Inline records are records edited inside another record, for example the items
+of a card group or an accordion. Their translation belongs to the translation of
+the record they are part of, so they are translated together with it.
+
+When an inline record is added in the default language after the record it
+belongs to has already been translated, open the translated record. The new
+inline record is listed there as not yet localized, with a DeepL icon in its
+controls. Its tooltip says :guilabel:`Translate with DeepL`.
+
+..  rst-class:: bignums-tip
+
+#.  Click the DeepL icon :guilabel:`Translate with DeepL` in the controls of the
+    inline record.
+
+    ..  figure:: /Images/Editor/inline-record-translate-with-deepl-control.png
+        :alt: The DeepL icon in the controls of an inline record which is not translated yet
+
+#.  The localization wizard of TYPO3 opens for the inline record. Keep the mode
+    :guilabel:`Translate` and click :guilabel:`Next`.
+
+#.  :guilabel:`Manual Translation` is preselected as handler. Select
+    :guilabel:`Translate with DeepL` instead and click :guilabel:`Next`.
+
+    ..  figure:: /Images/Editor/inline-record-translation-wizard-select-handler.png
+        :alt: The handler step of the localization wizard with Manual Translation preselected
+
+#.  Check the summary and click :guilabel:`Localize`.
+
+#.  When the wizard reports :guilabel:`Localization completed`, click
+    :guilabel:`Finish`. The edit form of the translated record opens again and
+    shows the translated inline record. If the form has unsaved changes, TYPO3
+    asks whether to save or discard them first.
+
+In TYPO3 v13 the icon asks for confirmation and translates the inline record
+directly, see :ref:`basicUsageTYPO3v13`.
+
+The icon is only shown when
+
+*   the inline field shows records which are not translated yet, an integrator
+    setting (ask your integrator if new inline records do not appear in the
+    translated record),
+*   DeepL is configured for the language of the translated record, and you are
+    allowed to translate with DeepL and to edit the inline records,
+*   the localize button of TYPO3 is shown for the inline record, and
+*   the inline record is stored with a reference to the record it belongs to,
+    which is the usual configuration. Inline fields that store a list of
+    records do not get the icon, and neither do files (images, media).
+
+..  note::
+
+    The localize buttons of TYPO3 itself, including
+    :guilabel:`Localize all records` and
+    :guilabel:`Synchronize with original language`, copy the content without
+    translating it.
 
 

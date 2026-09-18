@@ -1,0 +1,28 @@
+pages
+,"uid","pid","title","sys_language_uid","slug"
+,1,0,"Deepl-Functional-Test",0,"/"
+tx_testinlinerelations_parent
+,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","title","children_declared","children_undeclared"
+,1,1,256,0,0,0,"proton beam",3,0
+,2,1,256,1,1,1,"Protonenstrahl",1,0
+# Parent without translation
+,3,1,512,0,0,0,"proton beam",1,0
+# Parent whose only record in language 1 is a free mode copy
+,4,1,768,0,0,0,"proton beam",1,0
+,5,1,768,1,0,4,"proton beam",0,0
+# Record without inline relation
+,6,1,1024,0,0,0,"proton beam",0,0
+tx_testinlinerelations_child_declared
+,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","parentid","title","grandchildren"
+,1,1,256,0,0,0,1,"proton beam",2
+,2,1,256,1,1,1,2,"Protonenstrahl",1
+,3,1,512,0,0,0,1,"proton beam",0
+,4,1,768,0,0,0,1,"proton beam",0
+,5,1,256,0,0,0,3,"proton beam",0
+,6,1,256,0,0,0,4,"proton beam",0
+tx_testinlinerelations_grandchild
+,"uid","pid","sorting","sys_language_uid","l10n_parent","l10n_source","childid","title"
+# Grandchild 3 was added after child 1 and its first grandchild had been translated
+,1,1,256,0,0,0,1,"proton beam"
+,2,1,256,1,1,1,2,"Protonenstrahl"
+,3,1,512,0,0,0,1,"proton beam"

@@ -58,10 +58,25 @@ return [
                 'type' => 'text',
             ],
         ],
+        // Nested inline relation, see `tx_testinlinerelations_grandchild`.
+        'grandchildren' => [
+            'exclude' => true,
+            'label' => 'Grandchildren',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_testinlinerelations_grandchild',
+                'foreign_field' => 'childid',
+                'foreign_sortby' => 'sorting',
+                'appearance' => [
+                    'showPossibleLocalizationRecords' => true,
+                    'expandSingle' => true,
+                ],
+            ],
+        ],
     ],
     'types' => [
         '0' => [
-            'showitem' => 'title, description, --div--;meta, hidden, sys_language_uid, l10n_parent',
+            'showitem' => 'title, description, grandchildren, --div--;meta, hidden, sys_language_uid, l10n_parent',
         ],
     ],
 ];

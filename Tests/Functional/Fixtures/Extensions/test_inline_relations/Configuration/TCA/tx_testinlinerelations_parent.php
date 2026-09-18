@@ -99,10 +99,27 @@ return [
                 ],
             ],
         ],
+        // Inline field storing the child uids as a comma separated list in the parent, without a pointer
+        // column on the child side. Such a relation cannot be handed over to the translated parent.
+        'children_list' => [
+            'exclude' => true,
+            'label' => 'Children (comma separated list, no pointer field)',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_testinlinerelations_child_declared',
+                'appearance' => [
+                    'showPossibleLocalizationRecords' => true,
+                    'expandSingle' => true,
+                    'enabledControls' => [
+                        'localize' => true,
+                    ],
+                ],
+            ],
+        ],
     ],
     'types' => [
         '0' => [
-            'showitem' => 'title, children_declared, children_undeclared, children_declared_ambiguous, --div--;meta, hidden, sys_language_uid, l10n_parent',
+            'showitem' => 'title, children_declared, children_undeclared, children_declared_ambiguous, children_list, --div--;meta, hidden, sys_language_uid, l10n_parent',
         ],
     ],
 ];

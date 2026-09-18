@@ -14,6 +14,12 @@
 			<trans-unit id="error.recordNotFound">
 				<source>Record with uid "%s" of type "%s" does not exist or is not accessible.</source>
 			</trans-unit>
+			<trans-unit id="error.inlineParentNotTranslated">
+				<source>The inline record cannot be localized yet because the record it belongs to has no translation in this language. Localize that record first.</source>
+			</trans-unit>
+			<trans-unit id="error.inlineChildNotLocalized">
+				<source>The inline record has not been localized. Check that the record it belongs to has a translation in connected mode in this language.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

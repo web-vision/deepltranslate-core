@@ -20,6 +20,8 @@ can be defined via the following options in the user group settings.
     This setting controls the visibility of the general translation function in the
     translation modal of the page module, in the translation options of data records in the list module
     and in the translation selection in the page header of the page and list module.
+    It also decides whether inline records in the edit form of a translated
+    record get the :guilabel:`Translate with DeepL` icon.
 
 ..  confval:: Allowed Glossary Sync
 
