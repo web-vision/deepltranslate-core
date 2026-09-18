@@ -75,8 +75,11 @@
     },
     "require": {
         "php": " ^8.2 || ^8.3 || ^8.4 || ^8.5",
+        "ext-dom": "*",
         "ext-intl": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
+        "masterminds/html5": "^2.10.0",
         "typo3/cms-backend": "~13.4.34@dev || ~14.3.6@dev",
         "typo3/cms-core": "~13.4.34@dev || ~14.3.6@dev",
         "typo3/cms-extbase": "~13.4.34@dev || ~14.3.6@dev",
