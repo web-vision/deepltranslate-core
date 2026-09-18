@@ -22,6 +22,7 @@ use WebVision\Deepltranslate\Core\Domain\Repository\PageRepository;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
+use WebVision\Deepltranslate\Core\Service\DeepLContextResolver;
 use WebVision\Deepltranslate\Core\Service\InlineRelationResolver;
 use WebVision\Deepltranslate\Core\Service\LanguageService;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
@@ -41,6 +42,8 @@ abstract class AbstractTranslateHook
     protected readonly InlineRelationResolver $inlineRelationResolver;
     /** @phpstan-ignore property.uninitializedReadonly */
     protected readonly RecordLocalizationResolverInterface $recordLocalizationResolver;
+    /** @phpstan-ignore property.uninitializedReadonly */
+    protected readonly DeepLContextResolver $deepLContextResolver;
 
     #[Required]
     final public function injectInlineRelationResolver(InlineRelationResolver $inlineRelationResolver): void
@@ -82,6 +85,13 @@ abstract class AbstractTranslateHook
     {
         /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
         $this->processingInstruction = $processingInstruction;
+    }
+
+    #[Required]
+    final public function injectDeepLContextResolver(DeepLContextResolver $deepLContextResolver): void
+    {
+        /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
+        $this->deepLContextResolver = $deepLContextResolver;
     }
 
     /**
@@ -147,7 +157,7 @@ abstract class AbstractTranslateHook
      * @throws LanguageRecordNotFoundException
      * @throws LanguageIsoCodeNotFoundException
      */
-    protected function createTranslateContextForRecords(string $content, array $sourceLanguageRecord, array $targetLanguageRecord): TranslateContext
+    protected function createTranslateContextForRecords(string $content, array $sourceLanguageRecord, array $targetLanguageRecord, int $pageId, string $siteContext): TranslateContext
     {
         $context = new TranslateContext($content);
         $context->setSourceLanguageCode($sourceLanguageRecord['languageCode']);
@@ -159,6 +169,8 @@ abstract class AbstractTranslateHook
         ) {
             $context->setFormality($targetLanguageRecord['formality']);
         }
+
+        $context->setContext($this->deepLContextResolver->resolve($pageId, $siteContext));
 
         return $context;
     }

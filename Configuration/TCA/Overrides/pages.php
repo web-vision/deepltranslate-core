@@ -35,12 +35,25 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         ],
     ];
 
+    $columns['tx_wvdeepltranslate_context'] = [
+        'exclude' => 1,
+        'label' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:pages.tx_wvdeepltranslate_context',
+        'description' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:pages.tx_wvdeepltranslate_context_description',
+        'config' => [
+            'type' => 'text',
+            'rows' => 5,
+            'cols' => 60,
+            'max' => 3000,
+        ],
+    ];
+
     ExtensionManagementUtility::addTCAcolumns('pages', $columns);
 
     ExtensionManagementUtility::addFieldsToPalette(
         'pages',
         'deepl_translate',
         implode(',', [
+            'tx_wvdeepltranslate_context',
             'tx_wvdeepltranslate_content_not_checked',
             'tx_wvdeepltranslate_translated_time',
         ])

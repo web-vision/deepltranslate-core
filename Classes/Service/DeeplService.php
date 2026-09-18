@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
+use WebVision\Deepltranslate\Core\Event\DeepLContextEvent;
 use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 use WebVision\Deepltranslate\Core\TranslatorInterface;
@@ -71,13 +72,22 @@ final class DeeplService
             }
         }
 
+        $contextEvent = $this->eventDispatcher->dispatch(new DeepLContextEvent(
+            $translateContext->getContext(),
+            $translateContext->getSourceLanguageCode() ?? 'auto',
+            $translateContext->getTargetLanguageCode(),
+            DeeplBackendUtility::detectCurrentPage($this->processingInstruction)
+        ));
+        $translateContext->setContext($contextEvent->context);
+
         try {
             $response = $this->client->translate(
                 $translateContext->getContent(),
                 $translateContext->getSourceLanguageCode(),
                 $translateContext->getTargetLanguageCode(),
                 $translateContext->getGlossaryId(),
-                $translateContext->getFormality()
+                $translateContext->getFormality(),
+                $translateContext->getContext()
             );
         } catch (ApiKeyNotSetException $exception) {
             // @todo Add proper error logging here.

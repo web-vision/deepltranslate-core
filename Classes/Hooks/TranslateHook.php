@@ -104,7 +104,8 @@ final class TranslateHook extends AbstractTranslateHook
             );
         }
         try {
-            $translatedContext = $this->createTranslateContextForRecords($content, $sourceLanguageRecord, $targetLanguageRecord);
+            $siteContext = (string)($siteInformation->getConfiguration()['deeplContext'] ?? '');
+            $translatedContext = $this->createTranslateContextForRecords($content, $sourceLanguageRecord, $targetLanguageRecord, $pageId, $siteContext);
             $translatedContent = $this->deeplService->translateContent($translatedContext);
             if ($translatedContent === '') {
                 $this->flashMessages(
