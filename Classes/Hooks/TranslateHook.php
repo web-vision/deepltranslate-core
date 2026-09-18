@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Hooks;
 
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Contracts\Service\Attribute\Required;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
@@ -15,6 +16,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
+use WebVision\Deepltranslate\Core\Service\ContentFormatResolver;
 
 /**
  * The main translation rendering on localization.
@@ -22,13 +24,25 @@ use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 #[Autoconfigure(public: true)]
 final class TranslateHook extends AbstractTranslateHook
 {
+    private ContentFormatResolver $contentFormatResolver;
+
+    /**
+     * Setter injection to avoid changing the constructor signature within a maintenance branch.
+     */
+    #[Required]
+    public function injectContentFormatResolver(ContentFormatResolver $contentFormatResolver): void
+    {
+        $this->contentFormatResolver = $contentFormatResolver;
+    }
+
     /**
      * @param array{uid: int} $languageRecord
      */
     public function processTranslateTo_copyAction(
         string &$content,
         array $languageRecord,
-        DataHandler $dataHandler
+        DataHandler $dataHandler,
+        string $fieldName = ''
     ): void {
         if (MathUtility::canBeInterpretedAsInteger($content)) {
             return;
@@ -105,6 +119,9 @@ final class TranslateHook extends AbstractTranslateHook
         }
         try {
             $translatedContext = $this->createTranslateContextForRecords($content, $sourceLanguageRecord, $targetLanguageRecord);
+            $translatedContext->setContentFormat(
+                $this->contentFormatResolver->resolve($tableName, $fieldName, $currentRecord)
+            );
             $translatedContent = $this->deeplService->translateContent($translatedContext);
             if ($translatedContent === '') {
                 $this->flashMessages(
