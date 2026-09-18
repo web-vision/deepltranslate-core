@@ -305,7 +305,6 @@ abstract class AbstractTranslateHook
                     'inlineLocalizeSynchronize' => [
                         'field' => $reference->parentField,
                         'language' => $languageId,
-                        'action' => 'localize',
                         'ids' => [$reference->childUid],
                     ],
                 ],
