@@ -9,6 +9,12 @@
 			<trans-unit id="backend.label">
 				<source>Translate with DeepL</source>
 			</trans-unit>
+			<trans-unit id="inline.button.translateWithDeepl">
+				<source>Translate with DeepL</source>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.content">
+				<source>The record will be translated with DeepL and the form reloaded. Unsaved changes in this form will be lost.</source>
+			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslateHeader">
 				<source>Translate with DeepL</source>
 			</trans-unit>

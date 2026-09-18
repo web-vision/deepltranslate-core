@@ -17,6 +17,14 @@
 				<source>Record with uid "%s" of type "%s" does not exist or is not accessible.</source>
 				<target>Der Datensatz mit der UID „%s“ vom Typ „%s“ existiert nicht oder ist nicht zugänglich.</target>
 			</trans-unit>
+			<trans-unit id="error.inlineParentNotTranslated">
+				<source>The inline record cannot be localized yet because the record it belongs to has no translation in this language. Localize that record first.</source>
+				<target>Der Inline-Datensatz kann noch nicht lokalisiert werden, weil der Datensatz, zu dem er gehört, in dieser Sprache keine Übersetzung hat. Bitte zuerst diesen Datensatz lokalisieren.</target>
+			</trans-unit>
+			<trans-unit id="error.inlineChildNotLocalized">
+				<source>The inline record has not been localized. Check that the record it belongs to has a translation in connected mode in this language.</source>
+				<target>Der Inline-Datensatz wurde nicht lokalisiert. Bitte prüfen, ob der Datensatz, zu dem er gehört, in dieser Sprache eine Übersetzung im verbundenen Modus hat.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

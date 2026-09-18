@@ -21,6 +21,10 @@ CREATE TABLE tx_testinlinerelations_child_declared (
     parentid_ambiguous int(11) DEFAULT '0' NOT NULL
 );
 
+CREATE TABLE tx_testinlinerelations_grandchild (
+    childid int(11) DEFAULT '0' NOT NULL
+);
+
 CREATE TABLE tx_testinlinerelations_child_undeclared (
     parentid int(11) DEFAULT '0' NOT NULL
 );

@@ -11,6 +11,14 @@
 				<source>Translate with DeepL</source>
 				<target>Mit DeepL übersetzen</target>
 			</trans-unit>
+			<trans-unit id="inline.button.translateWithDeepl">
+				<source>Translate with DeepL</source>
+				<target>Mit DeepL übersetzen</target>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.content">
+				<source>The record will be translated with DeepL and the form reloaded. Unsaved changes in this form will be lost.</source>
+				<target>Der Datensatz wird mit DeepL übersetzt und das Formular danach neu geladen. Nicht gespeicherte Änderungen in diesem Formular gehen verloren.</target>
+			</trans-unit>
 			<trans-unit id="localize.educate.deepltranslateHeader">
 				<source>Translate with DeepL</source>
 				<target>Mit DeepL übersetzen</target>

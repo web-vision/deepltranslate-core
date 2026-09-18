@@ -28,6 +28,7 @@ use WebVision\Deepltranslate\Core\Core14\Backend\Localization\Event\DetermineRec
 use WebVision\Deepltranslate\Core\Event\DisallowTableFromDeeplTranslateEvent;
 use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException as DeeplTranslateCoreInvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
+use WebVision\Deepltranslate\Core\Service\InlineRelationResolver;
 use WebVision\Deepltranslate\Core\Service\LanguageService as DeeplTranslateCoreLanguageService;
 use WebVision\Deepltranslate\Core\Utility\DeeplBackendUtility;
 
@@ -45,6 +46,8 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         private LocalizationRepository $localizationRepository,
         private SiteFinder $siteFinder,
         private DeeplTranslateCoreLanguageService $deeplTranslateCoreLanguageService,
+        private InlineRelationResolver $inlineRelationResolver,
+        private InlineChildLocalization $inlineChildLocalization,
     ) {}
 
     /**
@@ -162,6 +165,15 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
             );
         }
 
+        // An inline child in connected mode is localized through its translated parent by the DataHandler
+        // hook, which skips it with a notice only when the parent has no translation.
+        $inlineParentReference = $this->inlineRelationResolver->resolveParentReference($type, $uid)->reference;
+        if ($inlineParentReference !== null
+            && !$this->inlineChildLocalization->hasTranslatedParent($inlineParentReference, $targetLanguage)
+        ) {
+            return $this->inlineChildLocalization->createParentNotTranslatedResult();
+        }
+
         $cmd = [
             $type => [
                 $uid => [
@@ -174,6 +186,9 @@ final readonly class DeeplTranslateLocalizationHandler implements LocalizationHa
         $dataHandler->start([], $cmd);
         $dataHandler->process_cmdmap();
 
+        if ($inlineParentReference !== null) {
+            return $this->inlineChildLocalization->createResult($inlineParentReference, $targetLanguage, $dataHandler->errorLog);
+        }
         if ($dataHandler->errorLog !== []) {
             return LocalizationResult::error($dataHandler->errorLog);
         }

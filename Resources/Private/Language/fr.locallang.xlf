@@ -54,6 +54,14 @@
 				<source>The DeepL translation of field "%1$s" of record %2$s:%3$d failed. The field keeps the text of the source language.</source>
 				<target>La traduction DeepL du champ « %1$s » de l'enregistrement %2$s:%3$d a échoué. Le champ conserve le texte de la langue source.</target>
 			</trans-unit>
+			<trans-unit id="inline.button.translateWithDeepl">
+				<source>Translate with DeepL</source>
+				<target>Traduire avec DeepL</target>
+			</trans-unit>
+			<trans-unit id="inline.confirmation.content">
+				<source>The record will be translated with DeepL and the form reloaded. Unsaved changes in this form will be lost.</source>
+				<target>L'enregistrement sera traduit avec DeepL, puis le formulaire sera rechargé. Les modifications non enregistrées de ce formulaire seront perdues.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
