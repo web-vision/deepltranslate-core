@@ -508,9 +508,9 @@ fi
 
 if [ "${CONTAINER_BIN}" == "docker" ]; then
     # docker needs the add-host for xdebug remote debugging. podman has host.container.internal built in
-    CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
-    CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
-    DOCUMENTATION_COMMON_PARAMS="${CONTAINER_INTERACTIVE} --rm ${USERSET} -v ${ROOT_DIR}:/project"
+    CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
+    CONTAINER_SIMPLE_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm --network ${NETWORK} --add-host ${CONTAINER_HOST}:host-gateway ${USERSET} -v ${ROOT_DIR}:${ROOT_DIR} ${DEEPL_BASE_MOUNT} -w ${ROOT_DIR}"
+    DOCUMENTATION_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm ${USERSET} -v ${ROOT_DIR}:/project"
     # docker creates a tmpfs owned by "root:root", inheriting the mode of its host
     # mountpoint, while "${USERSET}" above passes a uid but no group and therefore runs
     # the container as "uid=${HOST_UID} gid=0". At a CI umask of 0022 the mountpoint is
