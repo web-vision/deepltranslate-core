@@ -35,20 +35,26 @@ Tests against the real DeepL API
 Functional tests in the PHPUnit group `deepl-real-api` send content to the real
 DeepL API instead of the mock server. Every run is billed per character, so
 the `functional` suite and CI exclude them. Run them locally with your own API
-key in the environment variable `DEEPL_AUTH_KEY`:
+key in the environment variable `DEEPL_AUTH_KEY`. Read the key with `read -rs`,
+it is neither shown nor written to the shell history, which a key typed into
+the command line would be:
 
 ..  code-block:: bash
     :caption: functional tests against the real DeepL API
 
-    DEEPL_AUTH_KEY=<your-api-key> Build/Scripts/runTests.sh -t 13 -p 8.2 -s functionalDeepLApi
+    read -rs DEEPL_AUTH_KEY && export DEEPL_AUTH_KEY
+    Build/Scripts/runTests.sh -t 13 -p 8.2 -s functionalDeepLApi
+    unset DEEPL_AUTH_KEY
 
 A failing test shows the translation and the raw answer of DeepL. To keep the
 request text, the answer and the billed characters of every call, name a file
 below the extension directory in `DEEPL_REAL_API_LOG`. The API key is never
-written to it:
+written to it. The key is read the same way:
 
 ..  code-block:: bash
     :caption: functional tests against the real DeepL API, with a log of every call
 
-    DEEPL_AUTH_KEY=<your-api-key> CI_PARAMS="-e DEEPL_REAL_API_LOG=$PWD/.Build/deepl-real-api.jsonl" \
+    read -rs DEEPL_AUTH_KEY && export DEEPL_AUTH_KEY
+    CI_PARAMS="-e DEEPL_REAL_API_LOG=$PWD/.Build/deepl-real-api.jsonl" \
         Build/Scripts/runTests.sh -t 13 -p 8.2 -s functionalDeepLApi
+    unset DEEPL_AUTH_KEY

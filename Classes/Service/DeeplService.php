@@ -37,7 +37,8 @@ final class DeeplService implements LoggerAwareInterface
         FrontendInterface $cache,
         ClientInterface $client,
         ProcessingInstruction $processingInstruction,
-        private readonly EventDispatcher $eventDispatcher
+        private readonly EventDispatcher $eventDispatcher,
+        private readonly PlainTextDetector $plainTextDetector = new PlainTextDetector(),
     ) {
         $this->cache = $cache;
         $this->client = $client;
@@ -71,6 +72,10 @@ final class DeeplService implements LoggerAwareInterface
             $this->logger?->warning('DeepL mode not set. Exit.');
             return $translateContext->getContent();
         }
+        $contentFormat = $this->resolveContentFormat($translateContext);
+        if ($contentFormat === ContentFormat::Code) {
+            return $translateContext->getContent();
+        }
         // If the source language is set to Autodetect, no glossary can be detected.
         if ($translateContext->getSourceLanguageCode() !== null) {
             $glossaryEvent = $this->eventDispatcher->dispatch(new DeepLGlossaryIdEvent(
@@ -86,7 +91,7 @@ final class DeeplService implements LoggerAwareInterface
 
         try {
             $response = $this->client->translate(
-                $this->prepareContent($translateContext),
+                $this->prepareContent($translateContext->getContent(), $contentFormat),
                 $translateContext->getSourceLanguageCode(),
                 $translateContext->getTargetLanguageCode(),
                 $translateContext->getGlossaryId(),
@@ -119,30 +124,45 @@ final class DeeplService implements LoggerAwareInterface
         }
         $translateContext->setLostLinks($lostLinks);
 
-        return $this->restoreContent($content, $translateContext->getContentFormat());
+        return $this->restoreContent($content, $contentFormat);
+    }
+
+    /**
+     * Content of unknown format the HTML parser would change is plain text, for example "Ref <title> & co".
+     */
+    private function resolveContentFormat(TranslateContext $translateContext): ContentFormat
+    {
+        $contentFormat = $translateContext->getContentFormat();
+        if ($contentFormat === ContentFormat::Unknown && $this->plainTextDetector->isPlainText($translateContext->getContent())) {
+            return ContentFormat::PlainText;
+        }
+        return $contentFormat;
     }
 
     /**
      * The client handles its input as HTML, so plain text is escaped to keep "<" and "&" literal.
      */
-    private function prepareContent(TranslateContext $translateContext): string
+    private function prepareContent(string $content, ContentFormat $contentFormat): string
     {
-        if ($translateContext->getContentFormat() === ContentFormat::PlainText) {
-            return htmlspecialchars($translateContext->getContent(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+        if ($contentFormat === ContentFormat::PlainText) {
+            return htmlspecialchars($content, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
         }
-        return $translateContext->getContent();
+        return $content;
     }
 
     /**
      * Rich text is returned as the HTML the client serialized, which is the form the rich text editor
      * stores. Decoding it would turn an escaped "&lt;" into markup and break quotes inside attributes.
+     *
+     * Content of unknown format is decoded as before this format existed. `html_entity_decode()` instead of
+     * `htmlspecialchars_decode()` decodes `&nbsp;` as well, which the HTML serializer writes for every non-breaking
+     * space, and it decodes in one pass, so a text "&amp;nbsp;" becomes "&nbsp;" and not the character.
      */
     private function restoreContent(string $translatedContent, ContentFormat $contentFormat): string
     {
         return match ($contentFormat) {
-            ContentFormat::RichText => $translatedContent,
-            ContentFormat::PlainText => html_entity_decode($translatedContent, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
-            ContentFormat::Unknown => htmlspecialchars_decode($translatedContent, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5),
+            ContentFormat::RichText, ContentFormat::Code => $translatedContent,
+            ContentFormat::PlainText, ContentFormat::Unknown => html_entity_decode($translatedContent, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
         };
     }
 

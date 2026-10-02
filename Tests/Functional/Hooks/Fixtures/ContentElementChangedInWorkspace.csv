@@ -1,0 +1,7 @@
+"sys_workspace",,,,,,,,,
+,"uid","pid","title",,,,,,
+,1,0,"Changes",,,,,,
+"tt_content",,,,,,,,,
+,"uid","pid","sys_language_uid","colPos","CType","header","bodytext","t3ver_oid","t3ver_wsid","t3ver_state"
+,10,1,0,0,"bullets","List","Line one",0,0,0
+,11,1,0,0,"text","List","<p>Use <strong>bold</strong> text</p>",10,1,0
