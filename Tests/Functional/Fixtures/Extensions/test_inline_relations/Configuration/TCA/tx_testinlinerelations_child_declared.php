@@ -48,10 +48,20 @@ return [
                 'size' => 30,
             ],
         ],
+        // Plain text here, rich text only through the `overrideChildTca` of
+        // `tx_testinlinerelations_parent.children_declared`, like the accordion items of the dev theme.
+        'description' => [
+            'exclude' => true,
+            'l10n_mode' => 'prefixLangTitle',
+            'label' => 'Description',
+            'config' => [
+                'type' => 'text',
+            ],
+        ],
     ],
     'types' => [
         '0' => [
-            'showitem' => 'title, --div--;meta, hidden, sys_language_uid, l10n_parent',
+            'showitem' => 'title, description, --div--;meta, hidden, sys_language_uid, l10n_parent',
         ],
     ],
 ];

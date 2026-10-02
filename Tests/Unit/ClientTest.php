@@ -182,6 +182,10 @@ class ClientTest extends UnitTestCase
                         'pre',
                         'dlt-s',
                     ],
+                    'ignore_tags' => [
+                        'script',
+                        'style',
+                    ],
                     'non_splitting_tags' => [
                         'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'del', 'dfn', 'em', 'i', 'ins', 'kbd', 'mark', 'q',
                         's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var',
@@ -204,7 +208,7 @@ class ClientTest extends UnitTestCase
         $result = $client->translate('<p>Postanschrift:<br>Postfach 1234</p>', 'DE', 'ES', 'glossary-id', 'prefer_less');
 
         static::assertInstanceOf(TextResult::class, $result);
-        static::assertSame('<p>Dirección postal:<br>Apartado de correos 1234</p>', $result->text);
+        static::assertSame('<p>Dirección postal:<br />Apartado de correos 1234</p>', $result->text);
     }
 
     #[Test]

@@ -32,6 +32,7 @@ CREATE TABLE tt_content (
 #
 CREATE TABLE tx_testinlinerelations_child_declared (
     title varchar(255) DEFAULT '' NOT NULL,
+    description text,
     parentid int(11) DEFAULT '0' NOT NULL,
     parentid_ambiguous int(11) DEFAULT '0' NOT NULL
 );

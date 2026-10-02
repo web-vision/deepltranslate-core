@@ -198,7 +198,8 @@ Options:
             - functional: functional tests, using the DeepL mock server. Excludes the "deepl-real-api" group.
             - functionalDeepLApi: functional tests of the "deepl-real-api" group against the real DeepL API,
               using SQLite. Billed per character, therefore never run by "functional" or in CI. Requires the
-              environment variable DEEPL_AUTH_KEY, e.g. "DEEPL_AUTH_KEY=<key> $0 -s functionalDeepLApi".
+              environment variable DEEPL_AUTH_KEY. Read it with "read -rs DEEPL_AUTH_KEY && export DEEPL_AUTH_KEY",
+              which keeps the key out of the shell history.
             - lintPhp: PHP linting
             - lintTypoScript: TypoScript linting
             - renderDocumentation: This uses the official rendering container to render the extension documentation.
@@ -662,7 +663,7 @@ case ${TEST_SUITE} in
             SUITE_EXIT_CODE=1
         else
             PHPUNIT_CONFIG_FILE="Build/phpunit/FunctionalTests.xml"
-            COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --group deepl-real-api "$@")
+            COMMAND=(.Build/bin/phpunit -c ${PHPUNIT_CONFIG_FILE} --group deepl-real-api --exclude-group not-core-${CORE_VERSION} "$@")
             mkdir -p "${ROOT_DIR}/.Build/Web/typo3temp/var/tests/functional-sqlite-dbs/"
             # "-e DEEPL_AUTH_KEY" without a value passes the variable from the host environment, which keeps
             # the key out of the process list.

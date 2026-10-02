@@ -41,6 +41,12 @@ final class InlineMarkup
     public const REFERENCE_ATTRIBUTE = 'dlt-r';
 
     /**
+     * The number of the attribute text of the source of an element whose attributes the parser or the serializer
+     * would change, see {@see SourceTags}.
+     */
+    public const SOURCE_ATTRIBUTES_ATTRIBUTE = 'dlt-a';
+
+    /**
      * Sent instead of inline elements that touch each other within a word, listed in `splitting_tags`, see
      * {@see TouchingElementStep}.
      */

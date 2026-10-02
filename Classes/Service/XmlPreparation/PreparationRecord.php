@@ -38,6 +38,11 @@ final class PreparationRecord
 
     private bool $scriptDigits = false;
 
+    /**
+     * @var array<int, string>
+     */
+    private array $sourceAttributes = [];
+
     public function rememberName(int $reference, string $name): void
     {
         $this->names[$reference] = $name;
@@ -110,6 +115,22 @@ final class PreparationRecord
     public function glue(int $reference): array
     {
         return $this->glue[$reference] ?? [];
+    }
+
+    /**
+     * Keeps the attribute text of a start tag of the source, see {@see SourceTags}.
+     */
+    public function rememberSourceAttributes(int $number, string $attributes): void
+    {
+        $this->sourceAttributes[$number] = $attributes;
+    }
+
+    /**
+     * @return array<int, string> the attribute text of the source by the number in `dlt-a`
+     */
+    public function sourceAttributes(): array
+    {
+        return $this->sourceAttributes;
     }
 
     public function useScriptDigits(): void
