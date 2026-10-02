@@ -22,8 +22,15 @@ enum ContentFormat
     case PlainText;
 
     /**
-     * The caller did not tell. The content is handled as HTML and HTML special characters are decoded in
-     * the result, as before this format existed.
+     * Source code other than HTML, for example TypoScript in a code editor. It is not sent to DeepL and returned
+     * unchanged. HTML in a code editor, like the content element "Plain HTML", is rich text.
+     */
+    case Code;
+
+    /**
+     * The caller did not tell. The content is handled as HTML and the entities of the result are decoded, as
+     * before this format existed. Content the HTML parser would change, for example "Ref <title> & co" or
+     * "a<b", is handled as plain text instead, see {@see \WebVision\Deepltranslate\Core\Service\PlainTextDetector}.
      */
     case Unknown;
 }

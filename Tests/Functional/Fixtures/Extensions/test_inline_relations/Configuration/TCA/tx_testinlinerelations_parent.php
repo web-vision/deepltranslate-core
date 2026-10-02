@@ -44,6 +44,15 @@ return [
                 'foreign_table' => 'tx_testinlinerelations_child_declared',
                 'foreign_field' => 'parentid',
                 'foreign_sortby' => 'sorting',
+                'overrideChildTca' => [
+                    'columns' => [
+                        'description' => [
+                            'config' => [
+                                'enableRichtext' => true,
+                            ],
+                        ],
+                    ],
+                ],
                 'appearance' => [
                     'showSynchronizationLink' => true,
                     'showAllLocalizationLink' => true,

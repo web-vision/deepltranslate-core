@@ -138,6 +138,14 @@
 				<source>The DeepL translation of field "%1$s" of record %2$s:%3$d lost the link to "%4$s" on "%5$s". Please add the link to the translation again.</source>
 				<target>Die DeepL-Übersetzung des Feldes „%1$s“ von Datensatz %2$s:%3$d hat den Link auf „%4$s“ für „%5$s“ verloren. Bitte fügen Sie den Link in der Übersetzung wieder ein.</target>
 			</trans-unit>
+			<trans-unit id="translation.failed.title">
+				<source>The translation of a field failed</source>
+				<target>Die Übersetzung eines Feldes ist fehlgeschlagen</target>
+			</trans-unit>
+			<trans-unit id="translation.failed.message">
+				<source>The DeepL translation of field "%1$s" of record %2$s:%3$d failed. The field keeps the text of the source language.</source>
+				<target>Die DeepL-Übersetzung des Feldes „%1$s“ von Datensatz %2$s:%3$d ist fehlgeschlagen. Das Feld behält den Text der Ausgangssprache.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

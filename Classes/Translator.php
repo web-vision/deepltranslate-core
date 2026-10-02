@@ -21,6 +21,15 @@ use WebVision\Deepltranslate\Core\Service\HtmlXmlConverterInterface;
 final class Translator extends AbstractClient implements TranslatorInterface
 {
     /**
+     * Elements holding code. DeepL translates strings in them with the XML tag handling, for example
+     * `var label = "Opening hours"`, `ignore_tags` keeps their content as it is.
+     */
+    private const IGNORE_TAGS = [
+        'script',
+        'style',
+    ];
+
+    /**
      * Elements starting a new sentence. Without them DeepL joins the lines of a `<br>` separated address
      * into one sentence and adds punctuation, and moves text between list items and table cells.
      */
@@ -93,11 +102,11 @@ final class Translator extends AbstractClient implements TranslatorInterface
             }
             return is_array($result) ? $translated : $translated[0];
         } catch (DeepLException|XmlConversionException $exception) {
-            $this->logger->error(sprintf(
-                '%s (%d)',
-                $exception->getMessage(),
-                $exception->getCode()
-            ));
+            // The caller knows the record and logs it, see TranslateHook.
+            $this->logger->error(
+                sprintf('%s (%d)', $exception->getMessage(), $exception->getCode()),
+                ['sourceLanguage' => $sourceLang, 'targetLanguage' => $targetLang, 'contentLength' => mb_strlen($content)]
+            );
         }
 
         return null;
@@ -117,6 +126,7 @@ final class Translator extends AbstractClient implements TranslatorInterface
             TranslateTextOptions::TAG_HANDLING => 'xml',
             TranslateTextOptions::TAG_HANDLING_VERSION => 'v2',
             TranslateTextOptions::SPLITTING_TAGS => [...self::SPLITTING_TAGS, ...$tags['splitting_tags']],
+            TranslateTextOptions::IGNORE_TAGS => self::IGNORE_TAGS,
         ];
         if ($tags['non_splitting_tags'] !== []) {
             $options[TranslateTextOptions::NON_SPLITTING_TAGS] = $tags['non_splitting_tags'];
