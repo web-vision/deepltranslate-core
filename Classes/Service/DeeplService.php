@@ -10,9 +10,11 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use WebVision\Deepltranslate\Core\ContextAwareTranslatorInterface;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslatedTextResult;
 use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
+use WebVision\Deepltranslate\Core\Event\DeepLContextEvent;
 use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 use WebVision\Deepltranslate\Core\TranslatorInterface;
@@ -31,6 +33,7 @@ final class DeeplService
         private readonly ProcessingInstruction $processingInstruction,
         private readonly EventDispatcher $eventDispatcher,
         private readonly LoggerInterface $logger,
+        private readonly DeepLContextResolver $contextResolver,
         private readonly PlainTextDetector $plainTextDetector = new PlainTextDetector(),
     ) {}
 
@@ -77,15 +80,39 @@ final class DeeplService
                 $translateContext->setGlossaryId($glossaryId);
             }
         }
+        // The page of this record only. A record without a page, like the metadata of a file, gets no context.
+        $currentPage = DeeplBackendUtility::findCurrentPage($this->processingInstruction);
+        $context = $translateContext->getContext();
+        if (trim($context) === '' && $currentPage !== null) {
+            $context = $this->contextResolver->resolve($currentPage->uid);
+        }
+        $contextEvent = $this->eventDispatcher->dispatch(new DeepLContextEvent(
+            $context,
+            $translateContext->getSourceLanguageCode(),
+            $translateContext->getTargetLanguageCode(),
+            $currentPage
+        ));
+        $translateContext->setContext(trim($contextEvent->context));
 
         try {
-            $response = $this->client->translate(
-                $this->prepareContent($translateContext->getContent(), $contentFormat),
-                $translateContext->getSourceLanguageCode(),
-                $translateContext->getTargetLanguageCode(),
-                $translateContext->getGlossaryId(),
-                $translateContext->getFormality()
-            );
+            $preparedContent = $this->prepareContent($translateContext->getContent(), $contentFormat);
+            // A translator implementing only TranslatorInterface, written before the context existed, gets none.
+            $response = $this->client instanceof ContextAwareTranslatorInterface
+                ? $this->client->translate(
+                    $preparedContent,
+                    $translateContext->getSourceLanguageCode(),
+                    $translateContext->getTargetLanguageCode(),
+                    $translateContext->getGlossaryId(),
+                    $translateContext->getFormality(),
+                    $translateContext->getContext(),
+                )
+                : $this->client->translate(
+                    $preparedContent,
+                    $translateContext->getSourceLanguageCode(),
+                    $translateContext->getTargetLanguageCode(),
+                    $translateContext->getGlossaryId(),
+                    $translateContext->getFormality()
+                );
         } catch (ApiKeyNotSetException $exception) {
             // @todo Add proper error logging here.
             return $translateContext->getContent();

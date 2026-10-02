@@ -18,6 +18,7 @@ final class TranslateContext
     private string $sourceLanguageCode = '';
     private string $formality = 'default';
     private string $glossaryId = '';
+    private string $context = '';
     private ContentFormat $contentFormat = ContentFormat::Unknown;
 
     /**
@@ -76,6 +77,21 @@ final class TranslateContext
     public function setGlossaryId(string $glossaryId): void
     {
         $this->glossaryId = $glossaryId;
+    }
+
+    /**
+     * The `context` of the DeepL request: text describing the content, which DeepL reads but does not translate.
+     * Left empty, {@see \WebVision\Deepltranslate\Core\Service\DeeplService::translateContent()} uses the
+     * context of the page or the site, see {@see \WebVision\Deepltranslate\Core\Service\DeepLContextResolver}.
+     */
+    public function getContext(): string
+    {
+        return $this->context;
+    }
+
+    public function setContext(string $context): void
+    {
+        $this->context = $context;
     }
 
     public function getContentFormat(): ContentFormat

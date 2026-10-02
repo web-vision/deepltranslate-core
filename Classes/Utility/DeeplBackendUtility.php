@@ -142,7 +142,20 @@ final class DeeplBackendUtility
         return true;
     }
 
+    /**
+     * The page of the processed record, else the page found by an earlier call in the same request.
+     */
     public static function detectCurrentPage(ProcessingInstruction $processingInstruction): ?CurrentPage
+    {
+        self::$currentPage = self::findCurrentPage($processingInstruction) ?? self::$currentPage;
+        return self::$currentPage;
+    }
+
+    /**
+     * The page of the processed record, the page itself for a page, null for a record without a page. Unlike
+     * {@see self::detectCurrentPage()} it never returns the page of a record processed before.
+     */
+    public static function findCurrentPage(ProcessingInstruction $processingInstruction): ?CurrentPage
     {
         $pageId = null;
         if ($processingInstruction->getProcessingTable() === 'pages') {
@@ -157,14 +170,11 @@ final class DeeplBackendUtility
                 (int)$processingInstruction->getProcessingId()
             );
         }
-        if ($pageId !== null && $pageId > 0) {
-            $pageRecord = self::getPageRecord($pageId);
-            if ($pageRecord !== null) {
-                self::$currentPage = new CurrentPage((int)$pageRecord['uid'], (string)$pageRecord['title']);
-            }
+        if ($pageId === null || $pageId <= 0) {
+            return null;
         }
-
-        return self::$currentPage;
+        $pageRecord = self::getPageRecord($pageId);
+        return $pageRecord !== null ? new CurrentPage((int)$pageRecord['uid'], (string)$pageRecord['title']) : null;
     }
 
     /**

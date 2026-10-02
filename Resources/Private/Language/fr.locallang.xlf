@@ -30,6 +30,26 @@
 				<source>Last Translated Date</source>
 				<target>Date de la dernière traduction</target>
 			</trans-unit>
+			<trans-unit id="pages.tx_wvdeepltranslate_context">
+				<source>Translation context</source>
+				<target>Contexte de traduction</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_wvdeepltranslate_context.description">
+				<source>Describes the content of this page for DeepL in a few sentences, for example its subject and audience. DeepL reads it when translating the page and its content, but does not translate it. Replaces the context of the site. At most 3000 characters.</source>
+				<target>Décrit le contenu de cette page pour DeepL en quelques phrases, par exemple son sujet et son public. DeepL en tient compte pour traduire la page et son contenu, sans le traduire. Remplace le contexte du site. 3000 caractères au maximum.</target>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.tab">
+				<source>DeepL</source>
+				<target>DeepL</target>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.field.context.label">
+				<source>Translation context</source>
+				<target>Contexte de traduction</target>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.field.context.description">
+				<source>Describes the site for DeepL in a few sentences, for example its subject and audience. DeepL reads it when translating the pages and records of the site, but does not translate it. A page can replace it in its page properties. At most 3000 characters.</source>
+				<target>Décrit le site pour DeepL en quelques phrases, par exemple son sujet et son public. DeepL en tient compte pour traduire les pages et les enregistrements du site, sans le traduire. Une page peut le remplacer dans ses propriétés. 3000 caractères au maximum.</target>
+			</trans-unit>
 			<trans-unit id="preview.flag">
 				<source>Translated with DeepL</source>
 				<target>Traduit avec DeepL</target>

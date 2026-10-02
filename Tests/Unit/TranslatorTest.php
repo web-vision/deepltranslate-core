@@ -146,6 +146,34 @@ final class TranslatorTest extends UnitTestCase
         $this->assertStringContainsString('<a href="#60" title="Titel 60">60</a>', $result->text);
     }
 
+    /**
+     * Issue #666: the context goes with every request of the field, the one of further attribute texts included.
+     * Without a context the option is not sent, see translateSendsContentAsXmlWithSplittingTagsAndReturnsHtml().
+     */
+    #[Test]
+    public function translateSendsTheContextWithEveryRequest(): void
+    {
+        $links = '';
+        for ($number = 1; $number <= 60; $number++) {
+            $links .= sprintf('<a href="#%1$d" title="Court %1$d">%1$d</a> ', $number);
+        }
+        $contexts = [];
+        $client = $this->createMock(DeepLClientInterface::class);
+        $client->expects($this->exactly(2))->method('translateText')->willReturnCallback(
+            static function (array $texts, ?string $sourceLang, string $targetLang, array $options) use (&$contexts): array {
+                $contexts[] = $options['context'] ?? null;
+                return array_map(static fn(string $text): TextResult => new TextResult($text, 'EN', 1), $texts);
+            }
+        );
+        $clientFactory = $this->createMock(DeepLClientFactoryInterface::class);
+        $clientFactory->method('create')->willReturn($client);
+        $subject = new Translator(new NullLogger(), $clientFactory, new HtmlXmlConverter());
+
+        $subject->translate('<p>' . $links . '</p>', 'EN', 'DE', '', '', 'The website of a tennis club.');
+
+        $this->assertSame(['The website of a tennis club.', 'The website of a tennis club.'], $contexts);
+    }
+
     #[Test]
     public function translateReturnsLostLinksAndLogsThem(): void
     {
