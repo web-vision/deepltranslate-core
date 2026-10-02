@@ -9,12 +9,15 @@ use DeepL\TextResult;
 use DeepL\Translator;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 use WebVision\Deepltranslate\Core\Client;
 use WebVision\Deepltranslate\Core\ConfigurationInterface;
+use WebVision\Deepltranslate\Core\Domain\Dto\TranslatedTextResult;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
 use WebVision\Deepltranslate\Core\Service\HtmlXmlConverter;
+use WebVision\Deepltranslate\Core\Service\LostLink;
 
 class ClientTest extends UnitTestCase
 {
@@ -177,6 +180,12 @@ class ClientTest extends UnitTestCase
                         'figcaption',
                         'address',
                         'pre',
+                        'dlt-s',
+                    ],
+                    'non_splitting_tags' => [
+                        'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'del', 'dfn', 'em', 'i', 'ins', 'kbd', 'mark', 'q',
+                        's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var',
+                        'dlt-p',
                     ],
                     'glossary' => 'glossary-id',
                 ],
@@ -196,6 +205,36 @@ class ClientTest extends UnitTestCase
 
         static::assertInstanceOf(TextResult::class, $result);
         static::assertSame('<p>Dirección postal:<br>Apartado de correos 1234</p>', $result->text);
+    }
+
+    #[Test]
+    public function translateReturnsLostLinksAndLogsThem(): void
+    {
+        $translator = $this->createMock(Translator::class);
+        $translator->method('translateText')->willReturn(
+            new TextResult('<p>This is the <em dlt-r="0">extended</em> warranty for your bicycle.</p>', 'DE', 51)
+        );
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(static::once())->method('warning')->with(
+            static::stringContains('A link of the source content is missing'),
+            ['targetLanguage' => 'EN-GB', 'href' => 't3://page?uid=5', 'text' => 'rad']
+        );
+        $client = new Client($this->createMock(ConfigurationInterface::class), new HtmlXmlConverter());
+        $client->setLogger($logger);
+        Closure::bind(
+            function (Translator $translator): void {
+                $this->translator = $translator;
+            },
+            $client,
+            Client::class
+        )->call($client, $translator);
+
+        $result = $client->translate('<p>Das ist die Garantie<em>verlängerung</em> für Ihr Fahr<a href="t3://page?uid=5">rad</a>.</p>', 'DE', 'EN-GB');
+
+        static::assertInstanceOf(TranslatedTextResult::class, $result);
+        static::assertSame('<p>This is the <em>extended</em> warranty for your bicycle.</p>', $result->text);
+        static::assertSame(51, $result->billedCharacters);
+        static::assertEquals([new LostLink('t3://page?uid=5', 'rad')], $result->lostLinks);
     }
 
     #[Test]
