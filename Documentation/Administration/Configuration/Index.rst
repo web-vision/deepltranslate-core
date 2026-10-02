@@ -98,6 +98,39 @@ The same option is available in the Select field as DeepL API Supported.
         Use more formal language, if possible, otherwise fallback to default
 
 
+..  _translationContext:
+
+Describe the site for DeepL
+---------------------------
+
+DeepL translates every field on its own. Short fields like headings or button
+labels give it little to go by, so an ambiguous word may be translated in the
+wrong meaning. A translation context describes the content in a few sentences,
+for example its subject and audience. DeepL reads it, but does not translate
+it, and its characters are not billed.
+
+..  confval:: deeplContext
+
+    :type: string
+
+    :guilabel:`Translation context` in the :guilabel:`DeepL` tab of the site
+    configuration. Sent with the translations of all pages and records of the
+    site, for example:
+
+    ..  code-block:: yaml
+        :caption: config/sites/<identifier>/config.yaml
+
+        deeplContext: 'The website of a tennis club in Berlin, for its members and guests. Members book tennis courts online.'
+
+A page replaces the context of its site with the field
+:guilabel:`Translation context` in the :guilabel:`DeepL Translate` tab of its
+page properties, for the page and the records on it. Subpages do not inherit
+it. Editors need the permission for this excluded field in their backend group.
+
+Extensions change the context with the event
+:php:`\WebVision\Deepltranslate\Core\Event\DeepLContextEvent`, see
+:ref:`feature-translation-context-of-sites-and-pages-1790976199`.
+
 Configure tables
 ----------------
 

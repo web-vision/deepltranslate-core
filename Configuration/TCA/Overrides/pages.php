@@ -35,12 +35,29 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
         ],
     ];
 
+    // Read for the translation of the page and of the records on it, in the default language only. "exclude" keeps
+    // the value of the default language in the translations of the page.
+    $columns['tx_wvdeepltranslate_context'] = [
+        'exclude' => 1,
+        'l10n_mode' => 'exclude',
+        'displayCond' => 'FIELD:sys_language_uid:=:0',
+        'label' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:pages.tx_wvdeepltranslate_context',
+        'description' => 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:pages.tx_wvdeepltranslate_context.description',
+        'config' => [
+            'type' => 'text',
+            'rows' => 5,
+            'cols' => 60,
+            'max' => 3000,
+        ],
+    ];
+
     ExtensionManagementUtility::addTCAcolumns('pages', $columns);
 
     ExtensionManagementUtility::addFieldsToPalette(
         'pages',
         'deepl_translate',
         implode(',', [
+            'tx_wvdeepltranslate_context',
             'tx_wvdeepltranslate_content_not_checked',
             'tx_wvdeepltranslate_translated_time',
         ])
