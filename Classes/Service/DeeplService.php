@@ -13,6 +13,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use WebVision\Deepltranslate\Core\ClientInterface;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
+use WebVision\Deepltranslate\Core\Domain\Dto\TranslatedTextResult;
 use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
 use WebVision\Deepltranslate\Core\Event\DeepLGlossaryIdEvent;
 use WebVision\Deepltranslate\Core\Exception\ApiKeyNotSetException;
@@ -110,6 +111,13 @@ final class DeeplService implements LoggerAwareInterface
         } else {
             $content = $response->text;
         }
+        $lostLinks = [];
+        foreach (is_array($response) ? $response : [$response] as $result) {
+            if ($result instanceof TranslatedTextResult) {
+                $lostLinks = [...$lostLinks, ...$result->lostLinks];
+            }
+        }
+        $translateContext->setLostLinks($lostLinks);
 
         return $this->restoreContent($content, $translateContext->getContentFormat());
     }

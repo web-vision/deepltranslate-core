@@ -20,6 +20,7 @@ use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 use WebVision\Deepltranslate\Core\Service\HtmlXmlConverter;
+use WebVision\Deepltranslate\Core\Service\LostLink;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
 
 #[CoversClass(DeeplService::class)]
@@ -98,6 +99,41 @@ final class DeeplServiceTest extends UnitTestCase
         $translateContext->setContentFormat($contentFormat);
 
         static::assertSame($expected, $subject->translateContent($translateContext));
+    }
+
+    #[Test]
+    public function translateContentHandsTheLostLinksToTheContext(): void
+    {
+        $translator = $this->createMock(Translator::class);
+        $translator->method('translateText')->willReturn(
+            new TextResult('<p>This is the <em dlt-r="0">extended</em> warranty for your bicycle.</p>', 'DE', 51)
+        );
+        $client = new Client($this->createMock(ConfigurationInterface::class), new HtmlXmlConverter());
+        $client->setLogger(new NullLogger());
+        Closure::bind(
+            function (Translator $translator): void {
+                $this->translator = $translator;
+            },
+            $client,
+            Client::class
+        )->call($client, $translator);
+        $runtimeCache = $this->createMock(FrontendInterface::class);
+        $runtimeCache->method('has')->willReturn(true);
+        $runtimeCache->method('get')->willReturn(['tableName' => null, 'id' => null, 'deeplMode' => true]);
+        $subject = new DeeplService(
+            $this->createMock(FrontendInterface::class),
+            $client,
+            new ProcessingInstruction($runtimeCache),
+            $this->createMock(EventDispatcher::class),
+        );
+        $subject->setLogger(new NullLogger());
+        $translateContext = new TranslateContext('<p>Das ist die Garantie<em>verlängerung</em> für Ihr Fahr<a href="t3://page?uid=5">rad</a>.</p>');
+        $translateContext->setSourceLanguageCode('auto');
+        $translateContext->setTargetLanguageCode('EN-GB');
+        $translateContext->setContentFormat(ContentFormat::RichText);
+
+        static::assertSame('<p>This is the <em>extended</em> warranty for your bicycle.</p>', $subject->translateContent($translateContext));
+        static::assertEquals([new LostLink('t3://page?uid=5', 'rad')], $translateContext->getLostLinks());
     }
 
     #[Test]

@@ -10,6 +10,41 @@ When API key is not set, *deepltranslate_core* disables all functions.
 Go to :ref:`Settings <extensionConfiguration>` and fix it. Clear cache
 after this.
 
+Inline markup in translated rich text
+-------------------------------------
+
+Rich text is sent to DeepL as XML. Before it is sent, it is prepared for the
+way DeepL places inline markup, and the preparation is reverted in the
+translation: inline elements like `<a>`, `<em>` or `<strong>` are sent as
+`non_splitting_tags`, so a sentence is translated as a whole across its markup,
+links touching each other stay separate links, `<sup>` and `<sub>` stay on the
+word they belong to, and characters XML does not allow are removed. Some
+results differ from the source on purpose or because of DeepL:
+
+*   Words glued to an element by mistake, like `Our<strong>new</strong>offer`,
+    come back with spaces, `Unser <strong>neues</strong> Angebot`. The
+    translation is new text, and readable spacing is the better result.
+
+*   A single styled letter of a word, like `i<em>Phone</em>` or
+    `e<strong>Mail</strong>`, has no word of its own. DeepL can move the letter
+    into or out of the element, for example `<em>iPhone</em>`, or drop the
+    element. No text is lost.
+
+*   A link on part of a word can be lost when the translation is one word,
+    `Fahr<a>rad</a>` becomes `bicycle` in English. The translation is kept, a
+    warning is logged, and the editor gets a flash message naming the field
+    and the link, so it can be added again. The message is kept in the session
+    of the editor, so it outlives the AJAX request of the localization wizard
+    and is shown with the next backend page. Callers of
+    :php:`\WebVision\Deepltranslate\Core\Service\DeeplService::translateContent()`
+    find the lost links in
+    :php:`\WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext::getLostLinks()`.
+
+The preparation adds a short reference number to every inline element of the
+request. Tags are not billed, but they count for the request size limit of
+DeepL (128 KiB). For the rich text of the development instances the request
+grows by about 12 %, for a paragraph dense with inline markup by about 45 %.
+
 TYPO3 Core patch may be required (l10n_source)
 ----------------------------------------------
 

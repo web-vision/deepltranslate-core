@@ -9,6 +9,8 @@ use Symfony\Contracts\Service\Attribute\Required;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -123,6 +125,21 @@ final class TranslateHook extends AbstractTranslateHook
                 $this->contentFormatResolver->resolve($tableName, $fieldName, $currentRecord)
             );
             $translatedContent = $this->deeplService->translateContent($translatedContext);
+            foreach ($translatedContext->getLostLinks() as $lostLink) {
+                $this->flashMessages(
+                    sprintf(
+                        $this->translateLabel('translation.lostLink.message'),
+                        $fieldName,
+                        $tableName,
+                        $currentRecordId,
+                        $lostLink->href,
+                        $lostLink->text
+                    ),
+                    $this->translateLabel('translation.lostLink.title'),
+                    ContextualFeedbackSeverity::WARNING,
+                    true
+                );
+            }
             if ($translatedContent === '') {
                 $this->flashMessages(
                     'Translation not successful', // @todo Use locallang label
@@ -143,5 +160,15 @@ final class TranslateHook extends AbstractTranslateHook
         }
 
         $content = $translatedContent !== '' ? $translatedContent : $content;
+    }
+
+    private function translateLabel(string $key): string
+    {
+        $label = 'LLL:EXT:deepltranslate_core/Resources/Private/Language/locallang.xlf:' . $key;
+        $languageService = $GLOBALS['LANG'] ?? null;
+        if (!$languageService instanceof LanguageService) {
+            $languageService = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('default');
+        }
+        return $languageService->sL($label);
     }
 }
