@@ -49,6 +49,14 @@
 				<source>Last translation date</source>
 				<target>Letzte Übersetzung Datum</target>
 			</trans-unit>
+			<trans-unit id="pages.tx_wvdeepltranslate_context">
+				<source>Translation context</source>
+				<target>Übersetzungskontext</target>
+			</trans-unit>
+			<trans-unit id="pages.tx_wvdeepltranslate_context.description">
+				<source>Describes the content of this page for DeepL in a few sentences, for example its subject and audience. DeepL reads it when translating the page and its content, but does not translate it. Replaces the context of the site. At most 3000 characters.</source>
+				<target>Beschreibt den Inhalt dieser Seite für DeepL in wenigen Sätzen, zum Beispiel Thema und Zielgruppe. DeepL berücksichtigt ihn beim Übersetzen der Seite und ihrer Inhalte, übersetzt ihn aber nicht. Ersetzt den Kontext der Site. Höchstens 3000 Zeichen.</target>
+			</trans-unit>
 			<trans-unit id="preview.flag">
 				<source>Translated with DeepL</source>
 				<target>Übersetzt mit DeepL</target>
@@ -62,6 +70,18 @@
 			<trans-unit id="site_configuration.deepl.title">
 				<source>DeepL Settings</source>
 				<target>DeepL Einstellungen</target>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.tab">
+				<source>DeepL</source>
+				<target>DeepL</target>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.field.context.label">
+				<source>Translation context</source>
+				<target>Übersetzungskontext</target>
+			</trans-unit>
+			<trans-unit id="site_configuration.deepl.field.context.description">
+				<source>Describes the site for DeepL in a few sentences, for example its subject and audience. DeepL reads it when translating the pages and records of the site, but does not translate it. A page can replace it in its page properties. At most 3000 characters.</source>
+				<target>Beschreibt die Site für DeepL in wenigen Sätzen, zum Beispiel Thema und Zielgruppe. DeepL berücksichtigt ihn beim Übersetzen der Seiten und Datensätze der Site, übersetzt ihn aber nicht. Eine Seite kann ihn in ihren Seiteneigenschaften ersetzen. Höchstens 3000 Zeichen.</target>
 			</trans-unit>
 			<trans-unit id="site_configuration.deepl.field.targetlanguage.label">
 				<source>Target Language (ISO Code)</source>
