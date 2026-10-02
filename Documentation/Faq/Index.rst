@@ -23,6 +23,14 @@ After deleting the files in this directory and going to Site Configuration, the
 extension will reload the cache and the dropdown should have all the translatable
 language keys.
 
+Fields of a Content Block are not translated
+--------------------------------------------
+
+DeepL translates only fields with ``l10n_mode`` set to ``prefixLangTitle``.
+Content Blocks does not set it, add ``l10n_mode: prefixLangTitle`` to the
+fields in the YAML definition, the fields of a ``Collection`` included. See
+:ref:`tableConfigurationContentBlocks`.
+
 What will be the cost for DeepL API subscription?
 -------------------------------------------------
 

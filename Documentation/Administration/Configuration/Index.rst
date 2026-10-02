@@ -86,7 +86,9 @@ Configure tables
 If not set by default, you need to define the `l10n_mode` for the fields you
 want to have translatable by `deepltranslate_core`.
 
-See the :ref:`tableConfiguration<table configuration>` for details.
+See the :ref:`table configuration <tableConfiguration>` for details, and
+:ref:`Content Blocks <tableConfigurationContentBlocks>` for fields defined
+with Content Blocks.
 
 Detecting target language
 -------------------------
