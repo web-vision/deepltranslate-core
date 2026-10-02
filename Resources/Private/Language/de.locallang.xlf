@@ -130,6 +130,14 @@
 				<source>DeepL translations for current billing period: %s of %s characters</source>
 				<target>DeepL Übersetzungen für aktuellen Abrechnungszeitraum: %s von %s Zeichen</target>
 			</trans-unit>
+			<trans-unit id="translation.lostLink.title">
+				<source>A link was lost in the translation</source>
+				<target>Ein Link ist in der Übersetzung verloren gegangen</target>
+			</trans-unit>
+			<trans-unit id="translation.lostLink.message">
+				<source>The DeepL translation of field "%1$s" of record %2$s:%3$d lost the link to "%4$s" on "%5$s". Please add the link to the translation again.</source>
+				<target>Die DeepL-Übersetzung des Feldes „%1$s“ von Datensatz %2$s:%3$d hat den Link auf „%4$s“ für „%5$s“ verloren. Bitte fügen Sie den Link in der Übersetzung wieder ein.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

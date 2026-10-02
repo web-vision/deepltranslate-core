@@ -8,6 +8,7 @@ use DeepL\TranslateTextOptions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 use WebVision\Deepltranslate\Core\Client\DeepLClientFactoryInterface;
+use WebVision\Deepltranslate\Core\Domain\Dto\TranslatedTextResult;
 use WebVision\Deepltranslate\Core\Exception\XmlConversionException;
 use WebVision\Deepltranslate\Core\Service\HtmlXmlConverter;
 use WebVision\Deepltranslate\Core\Service\HtmlXmlConverterInterface;
@@ -60,9 +61,10 @@ final class Translator extends AbstractClient implements TranslatorInterface
 
     /**
      * Sends the content as XML, because the HTML tag handling of DeepL merges adjacent inline elements
-     * and joins `<br>` separated lines. The result is returned as HTML again.
+     * and joins `<br>` separated lines. The result is returned as HTML again, with the links of the source the
+     * translation lost, which are logged as well.
      *
-     * @return TextResult|TextResult[]|null
+     * @return TranslatedTextResult|TranslatedTextResult[]|null
      */
     public function translate(
         string $content,
@@ -76,12 +78,20 @@ final class Translator extends AbstractClient implements TranslatorInterface
                 $this->htmlXmlConverter->htmlToXml($content),
                 $sourceLang,
                 $targetLang,
-                $this->buildOptions($glossary, $formality)
+                $this->buildOptions($content, $glossary, $formality)
             );
+            $translated = [];
             foreach (is_array($result) ? $result : [$result] as $textResult) {
-                $textResult->text = $this->htmlXmlConverter->xmlToHtml($textResult->text);
+                $converted = $this->htmlXmlConverter->xmlToHtml($textResult->text, $content);
+                foreach ($converted->lostLinks as $lostLink) {
+                    $this->logger->warning(
+                        'A link of the source content is missing in its translation to {targetLanguage}, it has to be added again: {href} on "{text}".',
+                        ['targetLanguage' => $targetLang, 'href' => $lostLink->href, 'text' => $lostLink->text]
+                    );
+                }
+                $translated[] = new TranslatedTextResult($textResult, $converted->html, $converted->lostLinks);
             }
-            return $result;
+            return is_array($result) ? $translated : $translated[0];
         } catch (DeepLException|XmlConversionException $exception) {
             $this->logger->error(sprintf(
                 '%s (%d)',
@@ -96,15 +106,21 @@ final class Translator extends AbstractClient implements TranslatorInterface
     /**
      * @return array<string, mixed>
      */
-    private function buildOptions(string $glossary, string $formality): array
+    private function buildOptions(string $content, string $glossary, string $formality): array
     {
+        // The converter knows the tags its XML needs, for example the inline elements as `non_splitting_tags`,
+        // without them DeepL dropped the main clause around a link in issue #489.
+        $tags = $this->htmlXmlConverter->getTagHandlingOptions($content);
         $options = [
             // @todo Make this configurable, either as global setting or dependency injection (factory?) / event
             TranslateTextOptions::FORMALITY => $formality ?: 'default',
             TranslateTextOptions::TAG_HANDLING => 'xml',
             TranslateTextOptions::TAG_HANDLING_VERSION => 'v2',
-            TranslateTextOptions::SPLITTING_TAGS => self::SPLITTING_TAGS,
+            TranslateTextOptions::SPLITTING_TAGS => [...self::SPLITTING_TAGS, ...$tags['splitting_tags']],
         ];
+        if ($tags['non_splitting_tags'] !== []) {
+            $options[TranslateTextOptions::NON_SPLITTING_TAGS] = $tags['non_splitting_tags'];
+        }
         if (!empty($glossary)) {
             $options[TranslateTextOptions::GLOSSARY] = $glossary;
         }

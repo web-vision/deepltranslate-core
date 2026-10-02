@@ -181,13 +181,22 @@ abstract class AbstractTranslateHook
         };
     }
 
-    protected function flashMessages(string $message, string $title, ContextualFeedbackSeverity $severity): void
-    {
-        if (Environment::isCli() || Environment::getContext()->isTesting()) {
+    /**
+     * A message stored in the session reaches the editor on the next backend page, also when the translation runs
+     * in an AJAX request of the localization wizard or before a redirect. In the testing context the messages are
+     * queued, so tests can check them.
+     */
+    protected function flashMessages(
+        string $message,
+        string $title,
+        ContextualFeedbackSeverity $severity,
+        bool $storeInSession = false,
+    ): void {
+        if (Environment::isCli() && !Environment::getContext()->isTesting()) {
             return;
         }
 
-        $flashMessage = new FlashMessage($message, $title, $severity);
+        $flashMessage = new FlashMessage($message, $title, $severity, $storeInSession);
         GeneralUtility::makeInstance(FlashMessageService::class)
             ->getMessageQueueByIdentifier()
             ->addMessage($flashMessage);

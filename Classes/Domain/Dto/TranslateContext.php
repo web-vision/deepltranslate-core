@@ -6,6 +6,7 @@ namespace WebVision\Deepltranslate\Core\Domain\Dto;
 
 use Symfony\Component\DependencyInjection\Attribute\Exclude;
 use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
+use WebVision\Deepltranslate\Core\Service\LostLink;
 
 /**
  * DTO providing the data shipped to DeepL translation.
@@ -18,6 +19,11 @@ final class TranslateContext
     private string $formality = 'default';
     private string $glossaryId = '';
     private ContentFormat $contentFormat = ContentFormat::Unknown;
+
+    /**
+     * @var list<LostLink>
+     */
+    private array $lostLinks = [];
 
     public function __construct(
         private string $content,
@@ -80,5 +86,25 @@ final class TranslateContext
     public function setContentFormat(ContentFormat $contentFormat): void
     {
         $this->contentFormat = $contentFormat;
+    }
+
+    /**
+     * Links of the content the translation lost, set by
+     * {@see \WebVision\Deepltranslate\Core\Service\DeeplService::translateContent()}, so the caller can tell the
+     * editor which link to add again.
+     *
+     * @return list<LostLink>
+     */
+    public function getLostLinks(): array
+    {
+        return $this->lostLinks;
+    }
+
+    /**
+     * @param list<LostLink> $lostLinks
+     */
+    public function setLostLinks(array $lostLinks): void
+    {
+        $this->lostLinks = $lostLinks;
     }
 }
