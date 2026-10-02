@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Hooks;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -14,6 +15,7 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat;
 use WebVision\Deepltranslate\Core\Exception\InvalidArgumentException;
 use WebVision\Deepltranslate\Core\Exception\LanguageIsoCodeNotFoundException;
 use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
@@ -27,6 +29,7 @@ final class TranslateHook extends AbstractTranslateHook
 {
     public function __construct(
         private readonly ContentFormatResolver $contentFormatResolver,
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -87,6 +90,19 @@ final class TranslateHook extends AbstractTranslateHook
             return;
         }
 
+        [$localizedTable, $localizedRecord] = $this->findLocalizedRecord($dataHandler)
+            ?? $this->guardProcessingRecord($tableName, (int)$currentRecordId, $fieldName, $content, $dataHandler);
+        $contentFormat = $localizedRecord !== null
+            ? $this->contentFormatResolver->resolve($localizedTable, $fieldName, $localizedRecord)
+            : ContentFormat::Unknown;
+        if ($contentFormat === ContentFormat::Code) {
+            return;
+        }
+
+        // Messages name the record the field belongs to, an inline child localized along with its parent included.
+        $reportedTable = $localizedRecord !== null ? $localizedTable : $tableName;
+        $reportedUid = $localizedRecord !== null ? (int)$localizedRecord['uid'] : (int)$currentRecordId;
+
         try {
             $sourceLanguageRecord = $this->languageService->getSourceLanguage($siteInformation, (int)$currentRecordLanguage);
         } catch (\Throwable $e) {
@@ -113,17 +129,15 @@ final class TranslateHook extends AbstractTranslateHook
         }
         try {
             $translatedContext = $this->createTranslateContextForRecords($content, $sourceLanguageRecord, $targetLanguageRecord);
-            $translatedContext->setContentFormat(
-                $this->contentFormatResolver->resolve($tableName, $fieldName, $currentRecord)
-            );
+            $translatedContext->setContentFormat($contentFormat);
             $translatedContent = $this->deeplService->translateContent($translatedContext);
             foreach ($translatedContext->getLostLinks() as $lostLink) {
                 $this->flashMessages(
                     sprintf(
                         $this->translateLabel('translation.lostLink.message'),
                         $fieldName,
-                        $tableName,
-                        $currentRecordId,
+                        $reportedTable,
+                        $reportedUid,
                         $lostLink->href,
                         $lostLink->text
                     ),
@@ -133,10 +147,17 @@ final class TranslateHook extends AbstractTranslateHook
                 );
             }
             if ($translatedContent === '') {
+                $this->logger->warning(
+                    'DeepL translation of field "{field}" of record {table}:{uid} failed, the field keeps the text of the source language.',
+                    ['field' => $fieldName, 'table' => $reportedTable, 'uid' => $reportedUid]
+                );
+                // Stored in the session like the lost link message, so it outlives the AJAX request of the
+                // localization wizard and the redirect after `tce_db`.
                 $this->flashMessages(
-                    'Translation not successful', // @todo Use locallang label
-                    '',
-                    ContextualFeedbackSeverity::INFO
+                    sprintf($this->translateLabel('translation.failed.message'), $fieldName, $reportedTable, $reportedUid),
+                    $this->translateLabel('translation.failed.title'),
+                    ContextualFeedbackSeverity::WARNING,
+                    true
                 );
             }
         } catch (LanguageIsoCodeNotFoundException|LanguageRecordNotFoundException $e) {
@@ -162,5 +183,74 @@ final class TranslateHook extends AbstractTranslateHook
             $languageService = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('default');
         }
         return $languageService->sL($label);
+    }
+
+    /**
+     * Returns table and record of the field DataHandler passes. That is not the record of the processing
+     * instruction for inline children localized along with it: `DataHandler::localize()` calls this hook for the
+     * fields of every record it localizes, and `copyRecord_processRelation()` calls `localize()` for each child
+     * while the parent is localized. The table and the uid are passed to the hook in no other way, so they are
+     * read from the arguments of the calling `localize()`.
+     *
+     * This is safe: only the three innermost frames are read, and they are used only if this hook was called by
+     * `localize()` of the very DataHandler instance passed to the hook. Any other caller gets null, and the record of
+     * the processing instruction is used only if the field belongs to it. DataHandler reads its call stack the same
+     * way to find its outermost instance, see `DataHandler::getOuterMostInstance()`.
+     *
+     * @todo Use the table and the uid passed by the core, once `DataHandler::localize()` passes them to
+     *       `processTranslateTo_copyAction()`, and drop this.
+     * @return array{0: string, 1: array<string, mixed>}|null null if this hook is not called by `localize()` of
+     *         the given DataHandler
+     */
+    private function findLocalizedRecord(DataHandler $dataHandler): ?array
+    {
+        $frames = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3);
+        $localizeFrame = $frames[2] ?? [];
+        if (($frames[1]['function'] ?? '') !== 'processTranslateTo_copyAction'
+            || ($localizeFrame['function'] ?? '') !== 'localize'
+            || ($localizeFrame['object'] ?? null) !== $dataHandler
+            || !is_string($localizeFrame['args'][0] ?? null)
+            || !MathUtility::canBeInterpretedAsInteger($localizeFrame['args'][1] ?? null)
+        ) {
+            return null;
+        }
+        $table = $localizeFrame['args'][0];
+        $record = $this->getRecordOfWorkspace($table, (int)$localizeFrame['args'][1], $dataHandler);
+        return $record !== null ? [$table, $record] : null;
+    }
+
+    /**
+     * Without the record `DataHandler::localize()` works on, the record of the processing instruction is only used
+     * if the field belongs to it, otherwise a field of an inline child would be resolved in the parent's table.
+     *
+     * @return array{0: string, 1: array<string, mixed>|null}
+     */
+    private function guardProcessingRecord(
+        string $processingTable,
+        int $processingUid,
+        string $fieldName,
+        string $content,
+        DataHandler $dataHandler
+    ): array {
+        $processingRecord = $this->getRecordOfWorkspace($processingTable, $processingUid, $dataHandler);
+        $belongsToProcessingRecord = $processingRecord !== null
+            && $fieldName !== ''
+            && array_key_exists($fieldName, $processingRecord)
+            && (string)$processingRecord[$fieldName] === $content;
+        return [$processingTable, $belongsToProcessingRecord ? $processingRecord : null];
+    }
+
+    /**
+     * The record as `DataHandler::localize()` reads it: in a workspace, with the values of its workspace version,
+     * which are the values passed to the hook. A type changed in the workspace, a CType "bullets" changed to
+     * "text" for example, changes the format of the field.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function getRecordOfWorkspace(string $table, int $uid, DataHandler $dataHandler): ?array
+    {
+        $record = BackendUtility::getRecord($table, $uid);
+        BackendUtility::workspaceOL($table, $record, (int)$dataHandler->BE_USER->workspace);
+        return is_array($record) ? $record : null;
     }
 }

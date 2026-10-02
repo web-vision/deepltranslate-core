@@ -56,6 +56,10 @@ final class TranslatorTest extends UnitTestCase
                         'pre',
                         'dlt-s',
                     ],
+                    'ignore_tags' => [
+                        'script',
+                        'style',
+                    ],
                     'non_splitting_tags' => [
                         'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'del', 'dfn', 'em', 'i', 'ins', 'kbd', 'mark', 'q',
                         's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var',
@@ -72,7 +76,7 @@ final class TranslatorTest extends UnitTestCase
         $result = $subject->translate('<p>Postanschrift:<br>Postfach 1234</p>', 'DE', 'ES', 'glossary-id', 'prefer_less');
 
         $this->assertInstanceOf(TextResult::class, $result);
-        $this->assertSame('<p>Dirección postal:<br>Apartado de correos 1234</p>', $result->text);
+        $this->assertSame('<p>Dirección postal:<br />Apartado de correos 1234</p>', $result->text);
     }
 
     #[Test]

@@ -1,0 +1,12 @@
+"sys_file_storage",,,,,,,,,,
+,"uid","pid","name","driver","is_online","is_browsable","is_public","is_writable","is_default","configuration"
+,1,0,"fileadmin","Local",1,1,1,1,1,"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes"" ?><T3FlexForms><data><sheet index=""sDEF""><language index=""lDEF""><field index=""basePath""><value index=""vDEF"">fileadmin/</value></field><field index=""pathType""><value index=""vDEF"">relative</value></field><field index=""caseSensitive""><value index=""vDEF"">1</value></field></language></sheet></data></T3FlexForms>"
+"sys_file",,,,,,,,,,
+,"uid","pid","storage","type","identifier","name","mime_type","extension","size",
+,1,0,1,2,"/image.jpg","image.jpg","image/jpeg","jpg",5,
+"tt_content",,,,,,,,,,
+,"uid","pid","sys_language_uid","colPos","CType","header","bodytext","assets",,
+,10,1,0,0,"textmedia","With image","<p>Text</p>",1,,
+"sys_file_reference",,,,,,,,,,
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","sys_language_uid","title","description","alternative"
+,1,1,1,10,"tt_content","assets",0,"Ref <title> & co","a < b & ""c""","I </3 you & ""me"""

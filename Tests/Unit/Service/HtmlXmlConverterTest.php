@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Tests\Unit\Service;
 
-use Masterminds\HTML5;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -14,6 +13,7 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 use WebVision\Deepltranslate\Core\Exception\XmlConversionException;
 use WebVision\Deepltranslate\Core\Service\HtmlXmlConverter;
 use WebVision\Deepltranslate\Core\Service\LostLink;
+use WebVision\Deepltranslate\Core\Service\RichTextHtml5;
 
 #[CoversClass(HtmlXmlConverter::class)]
 final class HtmlXmlConverterTest extends UnitTestCase
@@ -65,6 +65,10 @@ final class HtmlXmlConverterTest extends UnitTestCase
         yield 'void elements are self-closed' => [
             'html' => '<p>Zeile 1<br>Zeile 2</p><hr><img src="t3://file?uid=5" alt="Bild">',
             'expectedXml' => '<p>Zeile 1<br/>Zeile 2</p><hr/><img src="t3://file?uid=5" alt="Bild"/>',
+        ];
+        yield 'code in script is escaped as XML text' => [
+            'html' => '<script>if (a < 768 && b > 0) {} // guard --></script>',
+            'expectedXml' => '<script>if (a &lt; 768 &amp;&amp; b &gt; 0) {} // guard --&gt;</script>',
         ];
         yield 'named entity nbsp becomes the character' => [
             'html' => '<p>Preis:&nbsp;100&nbsp;€</p>',
@@ -180,13 +184,80 @@ final class HtmlXmlConverterTest extends UnitTestCase
             'expectedHtml' => '<p><a href="t3://page?uid=12#c34" class="link link--intern" title="Mehr &quot;erfahren&quot;" data-foo="bar" target="_blank">Link</a>'
                 . ' <a href="https://example.com/?a=1&amp;b=2">Extern</a></p>',
         ];
-        yield 'attribute values with less-than, greater-than, ampersand and quotes keep their value, masterminds/html5 writes < and > unescaped' => [
+        yield 'attribute values with less-than, greater-than, ampersand and quotes keep their value and stay escaped' => [
             'html' => '<p><a href="t3://page?uid=1&amp;L=2" title="a &lt; b &gt; c &amp; &quot;d&quot; \'e\'">x</a></p>',
-            'expectedHtml' => '<p><a href="t3://page?uid=1&amp;L=2" title="a < b > c &amp; &quot;d&quot; \'e\'">x</a></p>',
+            'expectedHtml' => '<p><a href="t3://page?uid=1&amp;L=2" title="a &lt; b &gt; c &amp; &quot;d&quot; \'e\'">x</a></p>',
         ];
-        yield 'void elements' => [
+        yield 'void elements are written the way TYPO3 stores them' => [
             'html' => '<p>Zeile 1<br>Zeile 2</p><hr><p><img src="t3://file?uid=5" alt="Ein Bild" width="300" height="200"></p>',
-            'expectedHtml' => '<p>Zeile 1<br>Zeile 2</p><hr><p><img src="t3://file?uid=5" alt="Ein Bild" width="300" height="200"></p>',
+            'expectedHtml' => '<p>Zeile 1<br />Zeile 2</p><hr /><p><img src="t3://file?uid=5" alt="Ein Bild" width="300" height="200" /></p>',
+        ];
+        yield 'attribute names XML does not allow, Alpine.js' => [
+            'html' => '<div x-data="{ open: false }" @click="open = !open" x-on:keydown.escape="open = false" :class="{ \'is-open\': open }"><p>Menu</p></div>',
+            'expectedHtml' => '<div x-data="{ open: false }" @click="open = !open" x-on:keydown.escape="open = false" :class="{ \'is-open\': open }"><p>Menu</p></div>',
+        ];
+        yield 'attribute names XML does not allow, Vue and Angular' => [
+            'html' => '<a v-bind:href="url" #ref="link" v-on:click.prevent="go()">Go</a> <button [disabled]="isOff" (click)="run()" @keyup.enter="run">Run</button>',
+            'expectedHtml' => '<a v-bind:href="url" #ref="link" v-on:click.prevent="go()">Go</a> <button [disabled]="isOff" (click)="run()" @keyup.enter="run">Run</button>',
+        ];
+        yield 'inline event handler with less-than and ampersands' => [
+            'html' => '<button onclick="if (a < b && c > 0) { alert(\'Hi\'); }">Click</button>',
+            'expectedHtml' => '<button onclick="if (a < b && c > 0) { alert(\'Hi\'); }">Click</button>',
+        ];
+        yield 'uppercase, mixed-case and duplicate attribute names' => [
+            'html' => '<p DATA-Foo="1" onClick="x()" Title="Hello" class="a" class="b">Text</p>',
+            'expectedHtml' => '<p DATA-Foo="1" onClick="x()" Title="Hello" class="a" class="b">Text</p>',
+        ];
+        yield 'attribute values as written in the source' => [
+            'html' => "<p><a href=\"https://example.com/?a=1&b=2\" title='single' data-x=unquoted>Link</a><img src=\"x.jpg\" alt=\"\"></p>",
+            'expectedHtml' => "<p><a href=\"https://example.com/?a=1&b=2\" title='single' data-x=unquoted>Link</a><img src=\"x.jpg\" alt=\"\" /></p>",
+        ];
+        yield 'last attribute without value' => [
+            'html' => '<p class=>Text</p><button @click="go" class= >Go</button>',
+            'expectedHtml' => '<p class=>Text</p><button @click="go" class=>Go</button>',
+        ];
+        yield 'helper attribute in upper case, the content is sent without preparation' => [
+            'html' => '<p><a href="1">Call</a><a href="2" DLT-A="0">Book</a></p>',
+            'expectedHtml' => '<p><a href="1">Call</a><a href="2" dlt-a="0">Book</a></p>',
+        ];
+        yield 'line breaks between attributes' => [
+            'html' => "<div\n  class=\"teaser\"\n  data-id=\"5\"\n><p>Text</p></div>",
+            'expectedHtml' => "<div\n  class=\"teaser\"\n  data-id=\"5\"><p>Text</p></div>",
+        ];
+        yield 'srcset, sizes and boolean attributes' => [
+            'html' => '<img src="a.jpg" srcset="a.jpg 1x, a@2x.jpg 2x" sizes="(max-width: 600px) 480px, 800px" alt="A picture"><input type="checkbox" checked disabled><details open><summary>More</summary>Text</details>',
+            'expectedHtml' => '<img src="a.jpg" srcset="a.jpg 1x, a@2x.jpg 2x" sizes="(max-width: 600px) 480px, 800px" alt="A picture" /><input type="checkbox" checked disabled /><details open><summary>More</summary>Text</details>',
+        ];
+        yield 'svg with case-sensitive attribute names' => [
+            'html' => '<p><svg viewBox="0 0 10 10"><linearGradient gradientUnits="userSpaceOnUse" id="g"></linearGradient><path d="M0 0"/></svg></p>',
+            // An empty SVG element is written self-closed, as before.
+            'expectedHtml' => '<p><svg viewBox="0 0 10 10"><linearGradient gradientUnits="userSpaceOnUse" id="g" /><path d="M0 0" /></svg></p>',
+        ];
+        yield 'template and noscript' => [
+            'html' => '<template id="row"><p class="row" @click="pick()">Row</p></template><noscript><p>Please enable JavaScript.</p></noscript>',
+            'expectedHtml' => '<template id="row"><p class="row" @click="pick()">Row</p></template><noscript><p>Please enable JavaScript.</p></noscript>',
+        ];
+        yield 'comment inside a script' => [
+            'html' => '<script><!-- if (a < b) { x = "<p>"; } --></script><p>Text</p>',
+            'expectedHtml' => '<script><!-- if (a < b) { x = "<p>"; } --></script><p>Text</p>',
+        ];
+        yield 'script without end tag gets one, its code stays as it is' => [
+            'html' => '<p>Text</p><script>var a = 1 < 2 && "<b>";',
+            'expectedHtml' => '<p>Text</p><script>var a = 1 < 2 && "<b>";</script>',
+        ];
+        yield 'code in script and style stays as it is' => [
+            'html' => '<div class="hours"><p>Opening hours</p></div><style>.hours > p::after { content: "Open"; }</style>'
+                . '<script>if (a < 768 && b > 0) { label = "Opening hours"; } // guard --></script>',
+            'expectedHtml' => '<div class="hours"><p>Opening hours</p></div><style>.hours > p::after { content: "Open"; }</style>'
+                . '<script>if (a < 768 && b > 0) { label = "Opening hours"; } // guard --></script>',
+        ];
+        yield 'void elements stored by TYPO3' => [
+            'html' => "<p>Zeile 1<br />Zeile 2</p>\n<hr />\n<p>Text</p>",
+            'expectedHtml' => "<p>Zeile 1<br />Zeile 2</p>\n<hr />\n<p>Text</p>",
+        ];
+        yield 'less-than and greater-than signs in attribute values stay escaped' => [
+            'html' => '<p><a href="t3://page?uid=1" title="Home &gt; Products &lt; &amp; &quot;more&quot;">Products</a></p>',
+            'expectedHtml' => '<p><a href="t3://page?uid=1" title="Home &gt; Products &lt; &amp; &quot;more&quot;">Products</a></p>',
         ];
         yield 'comments' => [
             'html' => '<!-- Hinweis für Redakteure --><p>Text</p>',
@@ -224,7 +295,7 @@ final class HtmlXmlConverterTest extends UnitTestCase
         ];
         yield 'issue 642 markup' => [
             'html' => self::ISSUE_642_HTML,
-            'expectedHtml' => self::ISSUE_642_HTML,
+            'expectedHtml' => str_replace('<br>', '<br />', self::ISSUE_642_HTML),
         ];
         yield 'issue 665 markup' => [
             'html' => self::ISSUE_665_HTML,
@@ -260,9 +331,9 @@ final class HtmlXmlConverterTest extends UnitTestCase
             'html' => '<p>&lt;dlt-s&gt; and dlt-r="1"</p>',
             'expectedHtml' => '<p>&lt;dlt-s&gt; and dlt-r="1"</p>',
         ];
-        yield 'helper elements and attributes in the content, masterminds/html5 writes < and > in attributes unescaped' => [
+        yield 'helper elements and attributes in the content' => [
             'html' => '<p>a<dlt-p dlt-r="0" markup="&lt;b&gt;x&lt;/b&gt;"></dlt-p>b</p><p><span dlt-r="5">a</span><span dlt-g="x">b</span> c</p><div dlt-r="0"></div><p><em>x</em></p>',
-            'expectedHtml' => '<p>a<dlt-p dlt-r="0" markup="<b>x</b>"></dlt-p>b</p><p><span dlt-r="5">a</span><span dlt-g="x">b</span> c</p><div dlt-r="0"></div><p><em>x</em></p>',
+            'expectedHtml' => '<p>a<dlt-p dlt-r="0" markup="&lt;b&gt;x&lt;/b&gt;"></dlt-p>b</p><p><span dlt-r="5">a</span><span dlt-g="x">b</span> c</p><div dlt-r="0"></div><p><em>x</em></p>',
         ];
         yield 'a line feed before an inline element' => [
             'html' => "<p>See the following\n<a href=\"t3://page?uid=1\">link</a>\nnow and\r\n<strong>bold</strong> words</p>",
@@ -479,7 +550,7 @@ final class HtmlXmlConverterTest extends UnitTestCase
         yield 'attributes with less-than, greater-than, ampersand and quotes' => [
             'html' => '<p><a href="t3://page?uid=1&amp;L=2" title="a &lt; b &amp; &quot;c&quot;">Mehr</a></p>',
             'answer' => '<p><a href="t3://page?uid=1&amp;L=2" title="a &lt; b &amp; &quot;c&quot;" dlt-r="0">More</a></p>',
-            'expectedHtml' => '<p><a href="t3://page?uid=1&amp;L=2" title="a < b &amp; &quot;c&quot;">More</a></p>',
+            'expectedHtml' => '<p><a href="t3://page?uid=1&amp;L=2" title="a &lt; b &amp; &quot;c&quot;">More</a></p>',
         ];
         yield 'control characters and comments' => [
             'html' => "<p>Zeile 1\u{B}Zeile 2<!-- alt -- neu --></p>",
@@ -513,11 +584,53 @@ final class HtmlXmlConverterTest extends UnitTestCase
         $this->assertSame($expectedHtml, $subject->xmlToHtml($answer, $html)->html);
     }
 
+    public static function translatedSourceAttributesDataProvider(): \Generator
+    {
+        yield 'attribute names XML does not allow on a block element' => [
+            'html' => '<div class="menu" @click="open = !open"><p>Open the menu</p></div>',
+            'expectedXml' => '<div class="menu" dlt-a="0"><p>Open the menu</p></div>',
+            'answer' => '<div class="menu" dlt-a="0"><p>Menü öffnen</p></div>',
+            'expectedHtml' => '<div class="menu" @click="open = !open"><p>Menü öffnen</p></div>',
+        ];
+        yield 'touching links with event attributes, renamed for DeepL' => [
+            'html' => '<p><a href="#a" @click="a()">Call</a><a href="#b" @click="b()">Book</a></p>',
+            'expectedXml' => '<p><dlt-s href="#a" dlt-a="1" dlt-r="0">Call</dlt-s><dlt-s href="#b" dlt-a="2" dlt-r="1">Book</dlt-s></p>',
+            'answer' => '<p><dlt-s href="#a" dlt-a="1" dlt-r="0">Anrufen</dlt-s><dlt-s href="#b" dlt-a="2" dlt-r="1">Buchen</dlt-s></p>',
+            'expectedHtml' => '<p><a href="#a" @click="a()">Anrufen</a><a href="#b" @click="b()">Buchen</a></p>',
+        ];
+        yield 'number dropped by DeepL, the attributes XML allows are kept' => [
+            'html' => '<div class="menu" @click="open = !open"><p>Open the menu</p></div>',
+            'expectedXml' => '<div class="menu" dlt-a="0"><p>Open the menu</p></div>',
+            'answer' => '<div class="menu"><p>Menü öffnen</p></div>',
+            'expectedHtml' => '<div class="menu"><p>Menü öffnen</p></div>',
+        ];
+        yield 'title and alt are written as in the source' => [
+            'html' => '<p><a href="#" title="Read more" data-x=1>Link</a><img src="x.jpg" alt="A cat" ALT="B"></p>',
+            'expectedXml' => '<p><a href="#" title="Read more" data-x="1" dlt-a="1" dlt-r="0">Link</a><img src="x.jpg" alt="A cat" dlt-a="2"/></p>',
+            'answer' => '<p><a href="#" title="Mehr lesen" data-x="1" dlt-a="1" dlt-r="0">Verweis</a><img src="x.jpg" alt="Eine Katze" dlt-a="2"/></p>',
+            'expectedHtml' => '<p><a href="#" title="Read more" data-x=1>Verweis</a><img src="x.jpg" alt="A cat" ALT="B" /></p>',
+        ];
+    }
+
+    /**
+     * Only elements whose attributes the serializer would change carry a number, their attributes are written as in
+     * the source, whatever DeepL answers for them.
+     */
+    #[Test]
+    #[DataProvider('translatedSourceAttributesDataProvider')]
+    public function translationKeepsTheAttributesOfTheSource(string $html, string $expectedXml, string $answer, string $expectedHtml): void
+    {
+        $subject = new HtmlXmlConverter();
+
+        $this->assertSame($expectedXml, $subject->htmlToXml($html));
+        $this->assertSame($expectedHtml, $subject->xmlToHtml($answer, $html)->html);
+    }
+
     public static function xmlToHtmlDataProvider(): \Generator
     {
         yield 'translated issue 642 result' => [
             'xml' => "<p>\n    Dirección postal:<br/>\n    Apartado de correos 1234<br/>\n</p>",
-            'expectedHtml' => "<p>\n    Dirección postal:<br>\n    Apartado de correos 1234<br>\n</p>",
+            'expectedHtml' => "<p>\n    Dirección postal:<br />\n    Apartado de correos 1234<br />\n</p>",
         ];
         yield 'self-closed non-void element gets an end tag' => [
             'xml' => '<p/><span class="x"/>',
@@ -734,11 +847,11 @@ final class HtmlXmlConverterTest extends UnitTestCase
     }
 
     /**
-     * The conversion as it was before the preparation steps existed.
+     * The conversion as it was before the preparation steps existed, with the serializer of the converter.
      */
     private function convertWithoutPreparation(string $html): string
     {
-        $html5 = new HTML5(['disable_html_ns' => true]);
+        $html5 = new RichTextHtml5(['disable_html_ns' => true]);
         $document = new \DOMDocument('1.0', 'UTF-8');
         $xml = '';
         foreach ($html5->loadHTMLFragment((string)preg_replace('#<(?![a-zA-Z!/?])#', '&lt;', $html))->childNodes as $node) {

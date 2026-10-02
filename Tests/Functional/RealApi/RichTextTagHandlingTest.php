@@ -23,10 +23,11 @@ use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
  * is the tripwire for that.
  *
  * Every run is billed per character, so the group is excluded from `runTests.sh -s functional` and CI. Run it
- * locally with your own API key:
+ * locally with your own API key, read with `read -rs` to keep it out of the shell history:
  *
  * ```
- * DEEPL_AUTH_KEY=<key> Build/Scripts/runTests.sh -s functionalDeepLApi
+ * read -rs DEEPL_AUTH_KEY && export DEEPL_AUTH_KEY
+ * Build/Scripts/runTests.sh -s functionalDeepLApi
  * ```
  *
  * To review a failure, set `DEEPL_REAL_API_LOG` to a file below the extension directory, for example with
@@ -280,6 +281,39 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
             'expectedFragments' => [],
             'contentFormat' => ContentFormat::PlainText,
         ];
+        $style = '<style>' . "\n" . '.opening-hours h3::after { content: "Open today"; }' . "\n" . '.opening-hours > p { margin: 0 0 1em; }' . "\n" . '</style>';
+        $script = '<script>' . "\n" . 'var label = "Opening hours";' . "\n"
+            . 'if (window.innerWidth < 768 && label.length > 0) { console.log("Closed today"); }' . "\n"
+            . '// legacy guard -->' . "\n" . '</script>';
+        $comment = '<!-- Opening hours widget, keep in sync with the shop -->';
+        yield 'content element "Plain HTML" with a comment, style and script' => [
+            'content' => '<div class="opening-hours" data-label="Opening hours">' . "\n" . $comment . "\n"
+                . '<h3>Opening hours</h3>' . "\n"
+                . '<p>We are open from Monday to Friday. <a href="#map" title="Show the map">Find us</a></p>' . "\n"
+                . '<button type="button" class="js-toggle" aria-label="Show all opening hours">Show more</button>' . "\n"
+                . '</div>' . "\n" . $style . "\n" . $script,
+            'source' => 'EN',
+            'target' => 'DE',
+            'expectedFragments' => [$comment, $style, $script],
+        ];
+        $alpineOpen = '<div x-data="{ open: false }" @click.outside="open = false" :class="{ \'is-open\': open }">';
+        $alpineButton = '<button type="button" title="Show the opening hours" @click="open = !open" x-bind:aria-expanded="open">';
+        $alpine = $alpineOpen . "\n" . $alpineButton . 'Opening hours</button>' . "\n"
+            . '<p x-show="open" onclick="if (a < b && c) { track(); }">We are open from Monday to Friday. <a href="#map" title="Show the map">Find us</a></p>' . "\n"
+            . '</div>';
+        foreach (['DE', 'FR'] as $target) {
+            yield 'content element "Plain HTML" with Alpine.js attributes, to ' . $target => [
+                'content' => $alpine,
+                'source' => 'EN',
+                'target' => $target,
+                'expectedFragments' => [
+                    $alpineOpen,
+                    $alpineButton,
+                    '<p x-show="open" onclick="if (a < b && c) { track(); }">',
+                    'title="Show the map"',
+                ],
+            ];
+        }
     }
 
     /**

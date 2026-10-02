@@ -15,6 +15,7 @@ use WebVision\Deepltranslate\Core\Service\XmlPreparation\PreparationRecord;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\ReferenceStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\ScriptDigitStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\ScriptPlaceholderStep;
+use WebVision\Deepltranslate\Core\Service\XmlPreparation\SourceTags;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\StrictXmlStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\TouchingElementStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\XmlPreparationStepInterface;
@@ -79,9 +80,9 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
         if ($html === '') {
             return '';
         }
-        $content = $this->parseHtml($html);
         $record = new PreparationRecord();
-        foreach ($this->stepsFor($content) as $step) {
+        $content = $this->parseHtml($html, $record);
+        foreach ($this->stepsFor($content, $html) as $step) {
             $step->prepare($content, $record);
         }
         $document = DomTree::document($content);
@@ -98,9 +99,9 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
             return new ConvertedHtml('');
         }
         $translation = $this->parseXml($xml);
-        $source = $this->parseHtml($sourceHtml);
-        $steps = $this->stepsFor($source);
         $record = new PreparationRecord();
+        $source = $this->parseHtml($sourceHtml, $record);
+        $steps = $this->stepsFor($source, $sourceHtml);
         foreach ($steps as $step) {
             $step->prepare($source, $record);
         }
@@ -115,7 +116,7 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
         $html5 = $this->createHtml5();
         $html = '';
         foreach ($translation->childNodes as $node) {
-            $html .= $html5->saveHTML($node);
+            $html .= $html5->saveHTML($node, [RichTextOutputRules::SOURCE_ATTRIBUTES_OPTION => $record->sourceAttributes()]);
         }
         return new ConvertedHtml($html, $lostLinks);
     }
@@ -198,8 +199,12 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
      *
      * @return list<XmlPreparationStepInterface>
      */
-    private function stepsFor(\DOMElement $content): array
+    private function stepsFor(\DOMElement $content, string $html): array
     {
+        // Without a helper name in the source, the only ones in the content are the attribute numbers of `parseHtml()`.
+        if (!InlineMarkup::mayUseHelperNames($html)) {
+            return $this->steps;
+        }
         return $this->usesHelperNames($content) ? [$this->strictXmlStep] : $this->steps;
     }
 
@@ -212,18 +217,54 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
     }
 
     /**
+     * With `$record`, the start tags whose attributes the parser or the serializer would change keep the number of
+     * their attribute text in the source, which is recorded, see {@see SourceTags}. Content using a helper name is
+     * not marked, its own attributes could not be told apart.
+     *
      * @return \DOMElement a wrapper element holding the content as children
      */
-    private function parseHtml(string $html): \DOMElement
+    private function parseHtml(string $html, ?PreparationRecord $record = null): \DOMElement
     {
+        $mark = $record !== null && !InlineMarkup::mayUseHelperNames($html);
+        [$prepared, $sourceAttributes] = SourceTags::prepare($html, $mark);
         $document = new \DOMDocument('1.0', 'UTF-8');
         $content = $document->createElement(self::ROOT_ELEMENT);
         $document->appendChild($content);
-        $fragment = $this->createHtml5()->loadHTMLFragment($this->escapeLiteralLessThanSigns($html));
-        foreach ($fragment->childNodes as $node) {
+        $html5 = $this->createHtml5();
+        foreach ($html5->loadHTMLFragment($prepared)->childNodes as $node) {
             $content->appendChild($document->importNode($node, true));
         }
+        if ($record !== null) {
+            $this->keepChangedSourceAttributes($content, $sourceAttributes, $record, $html5);
+        }
         return $content;
+    }
+
+    /**
+     * Only an element whose attributes the serializer writes differently than the source keeps its number, the
+     * request to DeepL stays as it is for all other elements.
+     *
+     * @param array<int, string> $sourceAttributes
+     */
+    private function keepChangedSourceAttributes(
+        \DOMElement $content,
+        array $sourceAttributes,
+        PreparationRecord $record,
+        HTML5 $html5
+    ): void {
+        foreach (DomTree::elements($content) as $element) {
+            $number = $element->getAttribute(InlineMarkup::SOURCE_ATTRIBUTES_ATTRIBUTE);
+            if (!isset($sourceAttributes[(int)$number]) || preg_match('/^[0-9]+$/', $number) !== 1) {
+                continue;
+            }
+            $element->removeAttribute(InlineMarkup::SOURCE_ATTRIBUTES_ATTRIBUTE);
+            $startTag = (string)strstr($html5->saveHTML($element->cloneNode(false)), '>', true);
+            $written = (string)preg_replace('#\s/$#', '', substr($startTag, strlen((string)$element->nodeName) + 1));
+            if ($written !== $sourceAttributes[(int)$number]) {
+                $element->setAttribute(InlineMarkup::SOURCE_ATTRIBUTES_ATTRIBUTE, $number);
+                $record->rememberSourceAttributes((int)$number, $sourceAttributes[(int)$number]);
+            }
+        }
     }
 
     /**
@@ -254,18 +295,9 @@ final readonly class HtmlXmlConverter implements HtmlXmlConverterInterface
         return $document->documentElement;
     }
 
-    /**
-     * A `<` not followed by a letter, `!`, `/` or `?` is text according to the HTML5 tokenizer, but
-     * masterminds/html5 drops it, which would lose it in plain text fields like "Kinder < 12 Jahre".
-     */
-    private function escapeLiteralLessThanSigns(string $html): string
-    {
-        return (string)preg_replace('#<(?![a-zA-Z!/?])#', '&lt;', $html);
-    }
-
     private function createHtml5(): HTML5
     {
-        return new HTML5([
+        return new RichTextHtml5([
             'disable_html_ns' => true,
         ]);
     }
