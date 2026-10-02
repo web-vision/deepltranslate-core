@@ -128,6 +128,17 @@ key in the environment variable `DEEPL_AUTH_KEY`:
 
     DEEPL_AUTH_KEY=<your-api-key> Build/Scripts/runTests.sh -t 13 -p 8.2 -s functionalDeepLApi
 
+A failing test shows the translation and the raw answer of DeepL. To keep the
+request text, the answer and the billed characters of every call, name a file
+below the extension directory in `DEEPL_REAL_API_LOG`. The API key is never
+written to it:
+
+..  code-block:: bash
+    :caption: functional tests against the real DeepL API, with a log of every call
+
+    DEEPL_AUTH_KEY=<your-api-key> CI_PARAMS="-e DEEPL_REAL_API_LOG=$PWD/.Build/deepl-real-api.jsonl" \
+        Build/Scripts/runTests.sh -t 13 -p 8.2 -s functionalDeepLApi
+
 ..  code-block:: bash
     :caption: unit tests for TYPO3 v13.4 with PHP 8.5
 

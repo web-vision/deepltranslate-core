@@ -7,11 +7,14 @@ namespace WebVision\Deepltranslate\Core\Tests\Unit;
 use DeepL\TextResult;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 use WebVision\Deepltranslate\Core\Client\DeepLClientFactoryInterface;
 use WebVision\Deepltranslate\Core\Client\DeepLClientInterface;
+use WebVision\Deepltranslate\Core\Domain\Dto\TranslatedTextResult;
 use WebVision\Deepltranslate\Core\Service\HtmlXmlConverter;
+use WebVision\Deepltranslate\Core\Service\LostLink;
 use WebVision\Deepltranslate\Core\Translator;
 
 #[CoversClass(Translator::class)]
@@ -51,6 +54,12 @@ final class TranslatorTest extends UnitTestCase
                         'figcaption',
                         'address',
                         'pre',
+                        'dlt-s',
+                    ],
+                    'non_splitting_tags' => [
+                        'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'del', 'dfn', 'em', 'i', 'ins', 'kbd', 'mark', 'q',
+                        's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var',
+                        'dlt-p',
                     ],
                     'glossary' => 'glossary-id',
                 ],
@@ -64,6 +73,30 @@ final class TranslatorTest extends UnitTestCase
 
         $this->assertInstanceOf(TextResult::class, $result);
         $this->assertSame('<p>Dirección postal:<br>Apartado de correos 1234</p>', $result->text);
+    }
+
+    #[Test]
+    public function translateReturnsLostLinksAndLogsThem(): void
+    {
+        $client = $this->createMock(DeepLClientInterface::class);
+        $client->method('translateText')->willReturn(
+            new TextResult('<p>This is the <em dlt-r="0">extended</em> warranty for your bicycle.</p>', 'DE', 51)
+        );
+        $clientFactory = $this->createMock(DeepLClientFactoryInterface::class);
+        $clientFactory->method('create')->willReturn($client);
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())->method('warning')->with(
+            $this->stringContains('A link of the source content is missing'),
+            ['targetLanguage' => 'EN-GB', 'href' => 't3://page?uid=5', 'text' => 'rad']
+        );
+        $subject = new Translator($logger, $clientFactory, new HtmlXmlConverter());
+
+        $result = $subject->translate('<p>Das ist die Garantie<em>verlängerung</em> für Ihr Fahr<a href="t3://page?uid=5">rad</a>.</p>', 'DE', 'EN-GB');
+
+        $this->assertInstanceOf(TranslatedTextResult::class, $result);
+        $this->assertSame('<p>This is the <em>extended</em> warranty for your bicycle.</p>', $result->text);
+        $this->assertSame(51, $result->billedCharacters);
+        $this->assertEquals([new LostLink('t3://page?uid=5', 'rad')], $result->lostLinks);
     }
 
     #[Test]

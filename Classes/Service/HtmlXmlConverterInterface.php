@@ -14,15 +14,25 @@ use WebVision\Deepltranslate\Core\Exception\XmlConversionException;
 interface HtmlXmlConverterInterface
 {
     /**
-     * Returns the content as well-formed XML fragment, for example `<br>` becomes `<br/>` and `&nbsp;`
-     * becomes the non-breaking space character.
+     * Returns the content as well-formed XML fragment prepared for DeepL, for example `<br>` becomes `<br/>`
+     * and `&nbsp;` becomes the non-breaking space character. What XML 1.0 does not allow is removed.
      */
     public function htmlToXml(string $html): string;
 
     /**
-     * Returns the XML fragment, usually the DeepL result, serialized as HTML5 again.
+     * Returns the tags the XML of {@see self::htmlToXml()} needs in the DeepL options for this content, in
+     * addition to the tags the translator sends anyway.
      *
-     * @throws XmlConversionException if the fragment is not well-formed XML
+     * @return array{splitting_tags: list<string>, non_splitting_tags: list<string>}
      */
-    public function xmlToHtml(string $xml): string;
+    public function getTagHandlingOptions(string $html): array;
+
+    /**
+     * Returns the XML fragment, usually the DeepL result, serialized as HTML5 again, with the preparation of
+     * {@see self::htmlToXml()} reverted, and the links of the source the translation lost. `$sourceHtml` must be
+     * the content that was passed to {@see self::htmlToXml()}, the preparation is derived from it again.
+     *
+     * @throws XmlConversionException if the fragment is not well-formed XML or does not belong to `$sourceHtml`
+     */
+    public function xmlToHtml(string $xml, string $sourceHtml): ConvertedHtml;
 }

@@ -38,6 +38,14 @@
 				<source>Translated with DeepL</source>
 				<target>Traduit avec DeepL</target>
 			</trans-unit>
+			<trans-unit id="translation.lostLink.title">
+				<source>A link was lost in the translation</source>
+				<target>Un lien a été perdu dans la traduction</target>
+			</trans-unit>
+			<trans-unit id="translation.lostLink.message">
+				<source>The DeepL translation of field "%1$s" of record %2$s:%3$d lost the link to "%4$s" on "%5$s". Please add the link to the translation again.</source>
+				<target>La traduction DeepL du champ « %1$s » de l'enregistrement %2$s:%3$d a perdu le lien vers « %4$s » sur « %5$s ». Veuillez ajouter à nouveau le lien dans la traduction.</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
