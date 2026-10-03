@@ -18,7 +18,8 @@ use WebVision\Deepltranslate\Core\Service\HtmlXmlConverterInterface;
  * @internal and not part of public API.
  */
 #[AsAlias(id: TranslatorInterface::class, public: true)]
-final class Translator extends AbstractClient implements TranslatorInterface
+#[AsAlias(id: ContextAwareTranslatorInterface::class, public: true)]
+final class Translator extends AbstractClient implements ContextAwareTranslatorInterface
 {
     /**
      * Elements holding code. DeepL translates strings in them with the XML tag handling, for example
@@ -81,6 +82,8 @@ final class Translator extends AbstractClient implements TranslatorInterface
      * The values of attributes readers see as text, like the title of a link, are sent as further texts of the
      * same request, DeepL translates no attribute values (issue #427). Their characters are billed as well. More
      * texts than DeepL takes in one request are sent in further requests.
+     *
+     * The context describes the content for DeepL, it is sent with each request and its characters are not billed.
      */
     public function translate(
         string $content,
@@ -88,11 +91,12 @@ final class Translator extends AbstractClient implements TranslatorInterface
         string $targetLang,
         string $glossary = '',
         string $formality = '',
+        string $context = '',
     ): ?TranslatedTextResult {
         try {
             $xml = $this->htmlXmlConverter->htmlToXml($content);
             $attributeTexts = $this->htmlXmlConverter->getAttributeTexts($content);
-            $options = $this->buildOptions($content, $glossary, $formality);
+            $options = $this->buildOptions($content, $glossary, $formality, $context);
             $results = [];
             // A failing request of further attribute texts fails the field, like a failing request of the content.
             foreach (array_chunk([$xml, ...$attributeTexts], self::MAXIMUM_TEXTS_PER_REQUEST) as $texts) {
@@ -132,7 +136,7 @@ final class Translator extends AbstractClient implements TranslatorInterface
     /**
      * @return array<string, mixed>
      */
-    private function buildOptions(string $content, string $glossary, string $formality): array
+    private function buildOptions(string $content, string $glossary, string $formality, string $context): array
     {
         // The converter knows the tags its XML needs, for example the inline elements as `non_splitting_tags`,
         // without them DeepL dropped the main clause around a link in issue #489.
@@ -150,6 +154,9 @@ final class Translator extends AbstractClient implements TranslatorInterface
         }
         if (!empty($glossary)) {
             $options[TranslateTextOptions::GLOSSARY] = $glossary;
+        }
+        if ($context !== '') {
+            $options[TranslateTextOptions::CONTEXT] = $context;
         }
         return $options;
     }
