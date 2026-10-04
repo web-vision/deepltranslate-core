@@ -28,7 +28,7 @@ for languages supported by [DeepL](https://www.deepl.com/de/docs-api/).
 
 | Branch | State          | Composer Package Name          | TYPO3 Extension Key | Version       | TYPO3     | PHP                                               |
 |--------|----------------|--------------------------------|---------------------|---------------|-----------|---------------------------------------------------|
-| main   | development    | web-vision/deepltranslate-core | deepltranslate_core | 6.0.x-dev     | v13 + v14 | 8.2, 8.3, 8.4, 8.5 (depending on TYPO3)           |
+| main   | development    | web-vision/deepltranslate-core | deepltranslate_core | 6.1.x-dev     | v13 + v14 | 8.2, 8.3, 8.4, 8.5 (depending on TYPO3)           |
 | 5      | active support | web-vision/deepltranslate-core | deepltranslate_core | ^5, 5.1.x-dev | v12 + v13 | 8.1, 8.2, 8.3, 8.4, 8.5 (depending on TYPO3)      |
 | 4      | end of live    | web-vision/wv_deepltranslate   | wv_deepltranslate   | -             | -         | -                                                 |
 | 3      | end of live    | web-vision/wv_deepltranslate   | wv_deepltranslate   | -             | -         | -                                                 |
@@ -72,7 +72,7 @@ Install with your flavour:
 We prefer composer installation:
 
 ```bash
-composer require 'web-vision/deepltranslate-core':'6.0.*@dev'
+composer require 'web-vision/deepltranslate-core':'6.1.*@dev'
 ```
 
 > [!IMPORTANT]
@@ -115,7 +115,7 @@ and installed with:
 ```bash
 composer require -W \
   'web-vision/deepl-base':'2.0.*@dev' \
-  'web-vision/deepltranslate-core':'6.0.*@dev' \
+  'web-vision/deepltranslate-core':'6.1.*@dev' \
 && vendor/bin/typo3 extension:setup \
 && vendor/bin/typo3 language:update \
 && vendor/bin/typo3 cache:flush \

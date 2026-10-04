@@ -10,7 +10,7 @@ Quick start
 
     ..  code-block:: bash
 
-        composer require -W 'web-vision/deepltranslate-core':'~6.0.0@dev'
+        composer require -W 'web-vision/deepltranslate-core':'~6.1.0@dev'
 
     ..  rst-class:: horizbuttons-attention-m
 
