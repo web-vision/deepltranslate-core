@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace WebVision\Deepltranslate\Core\Service;
 
 use DeepL\Language;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use WebVision\Deepltranslate\Core\ContextAwareTranslatorInterface;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext;
 use WebVision\Deepltranslate\Core\Domain\Dto\TranslatedTextResult;
@@ -31,10 +31,10 @@ final class DeeplService
         private readonly FrontendInterface $cache,
         private readonly TranslatorInterface $client,
         private readonly ProcessingInstruction $processingInstruction,
-        private readonly EventDispatcher $eventDispatcher,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly LoggerInterface $logger,
         private readonly DeepLContextResolver $contextResolver,
-        private readonly PlainTextDetector $plainTextDetector = new PlainTextDetector(),
+        private readonly PlainTextDetector $plainTextDetector,
     ) {}
 
     /**
@@ -70,6 +70,7 @@ final class DeeplService
         }
         // If the source language is set to Autodetect, no glossary can be detected.
         if ($translateContext->getSourceLanguageCode() !== null) {
+            /** @var DeepLGlossaryIdEvent $glossaryEvent */
             $glossaryEvent = $this->eventDispatcher->dispatch(new DeepLGlossaryIdEvent(
                 $translateContext->getSourceLanguageCode(),
                 $translateContext->getTargetLanguageCode(),
@@ -86,6 +87,7 @@ final class DeeplService
         if (trim($context) === '' && $currentPage !== null) {
             $context = $this->contextResolver->resolve($currentPage->uid);
         }
+        /** @var DeepLContextEvent $contextEvent */
         $contextEvent = $this->eventDispatcher->dispatch(new DeepLContextEvent(
             $context,
             $translateContext->getSourceLanguageCode(),

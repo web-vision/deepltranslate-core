@@ -8,10 +8,10 @@ use DeepL\TextResult;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 use WebVision\Deepltranslate\Core\Client\DeepLClientFactoryInterface;
@@ -23,6 +23,7 @@ use WebVision\Deepltranslate\Core\Service\DeepLContextResolver;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 use WebVision\Deepltranslate\Core\Service\HtmlXmlConverter;
 use WebVision\Deepltranslate\Core\Service\LostLink;
+use WebVision\Deepltranslate\Core\Service\PlainTextDetector;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
 use WebVision\Deepltranslate\Core\Translator;
 use WebVision\Deepltranslate\Core\TranslatorInterface;
@@ -144,6 +145,7 @@ final class DeeplServiceTest extends UnitTestCase
             $this->createEventDispatcher(),
             new NullLogger(),
             new DeepLContextResolver($this->createMock(SiteFinder::class)),
+            new PlainTextDetector(),
         );
         $translateContext = new TranslateContext($content);
         $translateContext->setSourceLanguageCode('auto');
@@ -173,6 +175,7 @@ final class DeeplServiceTest extends UnitTestCase
             $this->createEventDispatcher(),
             new NullLogger(),
             new DeepLContextResolver($this->createMock(SiteFinder::class)),
+            new PlainTextDetector(),
         );
         $translateContext = new TranslateContext('<p>Das ist die Garantie<em>verlängerung</em> für Ihr Fahr<a href="t3://page?uid=5">rad</a>.</p>');
         $translateContext->setSourceLanguageCode('auto');
@@ -287,6 +290,7 @@ final class DeeplServiceTest extends UnitTestCase
             $this->createEventDispatcher(),
             new NullLogger(),
             new DeepLContextResolver($this->createMock(SiteFinder::class)),
+            new PlainTextDetector(),
         );
         $translateContext = new TranslateContext('<p>The court is closed on Sundays.</p>');
         $translateContext->setSourceLanguageCode('EN');
@@ -317,7 +321,7 @@ final class DeeplServiceTest extends UnitTestCase
         $runtimeCache = $this->createMock(FrontendInterface::class);
         $runtimeCache->method('has')->willReturn(true);
         $runtimeCache->method('get')->willReturn(['tableName' => null, 'id' => null, 'deeplMode' => true]);
-        $eventDispatcher = $this->createMock(EventDispatcher::class);
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $eventDispatcher->method('dispatch')->willReturnCallback($dispatch);
         // Without a page of the record the resolver is not asked, so its site finder is never used.
         $siteFinder = $this->createMock(SiteFinder::class);
@@ -329,12 +333,13 @@ final class DeeplServiceTest extends UnitTestCase
             $eventDispatcher,
             new NullLogger(),
             new DeepLContextResolver($siteFinder),
+            new PlainTextDetector(),
         );
     }
 
-    private function createEventDispatcher(): EventDispatcher
+    private function createEventDispatcher(): EventDispatcherInterface
     {
-        $eventDispatcher = $this->createMock(EventDispatcher::class);
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $eventDispatcher->method('dispatch')->willReturnArgument(0);
         return $eventDispatcher;
     }
