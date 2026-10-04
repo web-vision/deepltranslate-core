@@ -9,7 +9,7 @@ Composer mode
 
 ..  tip::
 
-    :guilabel:`~6.0.0@dev` is the recommended version constraint to use, which
+    :guilabel:`~6.1.0@dev` is the recommended version constraint to use, which
     locks the installable version down on :guilabel:`minor level (6.0)` having
     :guilabel:`6.0.0` as lowest patchlevel version. :guilabel:`@dev` in general
     would allow to install a possible development version and automatically
@@ -27,7 +27,7 @@ Composer mode
     :caption: only the extension itself
 
     composer require -W \
-       'web-vision/deepltranslate-core':'~6.0.0@dev'
+       'web-vision/deepltranslate-core':'~6.1.0@dev'
 
 ..  code-block:: bash
     :caption: requiring depending TYPO3 extensions along the way
@@ -35,7 +35,7 @@ Composer mode
     composer require \
         'web-vision/deeplcom-deepl-php':'~1.18.0@dev' \
         'web-vision/deepl-base':'~2.0.0@dev' \
-        'web-vision/deepltranslate-core':'~6.0.0@dev'
+        'web-vision/deepltranslate-core':'~6.1.0@dev'
 
 ..  note::
 
