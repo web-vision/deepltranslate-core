@@ -50,7 +50,7 @@ final class TranslationDropdownGenerator
             ) {
                 continue;
             }
-            if (!$user->isAdmin() && $user->checkLanguageAccess($siteLanguage->getLanguageId())) {
+            if (!$user->isAdmin() && !$user->checkLanguageAccess($siteLanguage->getLanguageId())) {
                 // User does not have access to edit for this language, skip it.
                 continue;
             }
