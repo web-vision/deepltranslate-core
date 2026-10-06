@@ -22,3 +22,6 @@ vendor
 tailor-version-artefact/
 tailor-version-upload/
 /packages/deepl-base
+
+# Working directory of coding agents, see AGENTS.md
+/.agent/
