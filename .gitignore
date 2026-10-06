@@ -23,3 +23,6 @@ tailor-version-artefact/
 tailor-version-upload/
 /packages/deepl-base
 /packages/autoload-tests/
+
+# Working directory of coding agents, see AGENTS.md
+/.agent/
