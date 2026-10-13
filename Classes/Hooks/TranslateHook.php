@@ -85,13 +85,9 @@ final class TranslateHook extends AbstractTranslateHook implements LoggerAwareIn
             return;
         }
 
-        $currentRecordLanguage = 0;
         $pageId = $this->findCurrentParentPage($tableName, $currentRecord);
         try {
             $siteInformation = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageId);
-            if (!empty($GLOBALS['TCA'][$tableName]['ctrl']['languageField'])) {
-                $currentRecordLanguage = $currentRecord[$GLOBALS['TCA'][$tableName]['ctrl']['languageField']];
-            }
         } catch (SiteNotFoundException $e) {
             $siteInformation = null;
         }
@@ -113,8 +109,17 @@ final class TranslateHook extends AbstractTranslateHook implements LoggerAwareIn
         $reportedTable = $localizedRecord !== null ? $localizedTable : $tableName;
         $reportedUid = $localizedRecord !== null ? (int)$localizedRecord['uid'] : (int)$currentRecordId;
 
+        // The record the field belongs to decides the source language, not the record of the processing instruction:
+        // a `deepltranslate` command issued while the parent is still localized points the processing instruction to
+        // its own record, as web-vision/deepltranslate-auto-renew does with an inline child translation. Without the
+        // record the field belongs to, the record of the processing instruction is used. A record of all languages
+        // (-1) is translated from the default language.
+        $sourceRecord = $localizedRecord ?? $currentRecord;
+        $sourceLanguageField = (string)($GLOBALS['TCA'][$reportedTable]['ctrl']['languageField'] ?? '');
+        $sourceLanguageId = $sourceLanguageField !== '' ? max(0, (int)($sourceRecord[$sourceLanguageField] ?? 0)) : 0;
+
         try {
-            $sourceLanguageRecord = $this->languageService->getSourceLanguage($siteInformation, (int)$currentRecordLanguage);
+            $sourceLanguageRecord = $this->languageService->getSourceLanguage($siteInformation, $sourceLanguageId);
         } catch (\Throwable $e) {
             throw new InvalidArgumentException(
                 sprintf(
