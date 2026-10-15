@@ -190,6 +190,7 @@ class ClientTest extends UnitTestCase
                         'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'del', 'dfn', 'em', 'i', 'ins', 'kbd', 'mark', 'q',
                         's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var',
                         'dlt-p',
+                        'dlt-i',
                     ],
                     'glossary' => 'glossary-id',
                 ],

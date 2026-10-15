@@ -12,6 +12,7 @@ use WebVision\Deepltranslate\Core\Service\XmlPreparation\ElementCopyStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\GluedWordStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\InlineMarkup;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\PreparationRecord;
+use WebVision\Deepltranslate\Core\Service\XmlPreparation\ProcessingInstructionStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\ReferenceStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\ScriptDigitStep;
 use WebVision\Deepltranslate\Core\Service\XmlPreparation\ScriptPlaceholderStep;
@@ -45,10 +46,12 @@ final class HtmlXmlConverter implements HtmlXmlConverterInterface
      * - the reference numbers are set first, on the content as it is stored,
      * - the `<sup>`/`<sub>` steps replace elements the later steps would otherwise mark or rename,
      * - the glue is set while touching elements still have their names,
+     * - processing instructions become placeholders before the strict XML step would remove them,
      * - the characters XML does not allow are removed last, so every step decides on the stored content.
      *
-     * The revert runs in the opposite order: copies are repaired first, so an empty copy cannot hide an element
-     * from the other steps, and the reference numbers are removed last.
+     * The revert runs in the opposite order: the processing instructions come back first, then copies are
+     * repaired, so an empty copy cannot hide an element from the other steps, and the reference numbers are removed
+     * last.
      */
     public function __construct()
     {
@@ -60,6 +63,7 @@ final class HtmlXmlConverter implements HtmlXmlConverterInterface
             new GluedWordStep(),
             new TouchingElementStep(),
             new ElementCopyStep(),
+            new ProcessingInstructionStep(),
             $this->strictXmlStep,
         ];
     }
@@ -72,7 +76,7 @@ final class HtmlXmlConverter implements HtmlXmlConverterInterface
         }
         return [
             'splitting_tags' => [InlineMarkup::SPLITTING_ELEMENT],
-            'non_splitting_tags' => [...InlineMarkup::ELEMENTS, InlineMarkup::PLACEHOLDER_ELEMENT],
+            'non_splitting_tags' => [...InlineMarkup::ELEMENTS, InlineMarkup::PLACEHOLDER_ELEMENT, InlineMarkup::INSTRUCTION_ELEMENT],
         ];
     }
 
@@ -192,6 +196,16 @@ final class HtmlXmlConverter implements HtmlXmlConverterInterface
     private function assertTranslationBelongsToSource(\DOMElement $translation, PreparationRecord $record): void
     {
         foreach (DomTree::elements($translation) as $element) {
+            if ($element->localName === InlineMarkup::INSTRUCTION_ELEMENT) {
+                $number = $element->getAttribute(InlineMarkup::INSTRUCTION_ATTRIBUTE);
+                if (preg_match('/^[0-9]+$/', $number) !== 1 || $record->instruction((int)$number) === null) {
+                    throw new XmlConversionException(
+                        sprintf('The translated content does not belong to the given source content: the source has no processing instruction %s.', $number),
+                        1792078388
+                    );
+                }
+                continue;
+            }
             $reference = InlineMarkup::referenceOf($element);
             if ($reference === null) {
                 continue;

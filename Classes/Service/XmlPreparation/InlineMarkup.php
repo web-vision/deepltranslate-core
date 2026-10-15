@@ -59,6 +59,17 @@ final class InlineMarkup
     public const PLACEHOLDER_ELEMENT = 'dlt-p';
 
     /**
+     * Sent instead of a processing instruction, with its number in {@see self::INSTRUCTION_ATTRIBUTE}, listed in
+     * `non_splitting_tags`, see {@see ProcessingInstructionStep}.
+     */
+    public const INSTRUCTION_ELEMENT = 'dlt-i';
+
+    /**
+     * The number of the processing instruction a {@see self::INSTRUCTION_ELEMENT} stands for.
+     */
+    public const INSTRUCTION_ATTRIBUTE = 'dlt-n';
+
+    /**
      * A character that belongs to a word: letter, digit, combining mark or symbol, like `®` or `€`.
      */
     public const WORD_CHARACTER = '[\p{L}\p{N}\p{M}\p{S}]';
