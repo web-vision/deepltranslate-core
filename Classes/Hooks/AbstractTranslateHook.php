@@ -203,7 +203,7 @@ abstract class AbstractTranslateHook
     }
 
     /**
-     * @param string $id
+     * @param int|string $id
      * @param mixed $value
      * @param int $pasteUpdate
      */
@@ -219,8 +219,21 @@ abstract class AbstractTranslateHook
         if ($command !== 'deepltranslate' || $commandIsProcessed !== false) {
             return;
         }
-        $this->processingInstruction->setProcessingInstruction($table, $id, true);
+        // A command issued while another one is running, by a DataHandler hook of its localization for example,
+        // restores the processing instruction of the running command when it is done. The remaining fields of the
+        // running localization would otherwise be resolved against the record of this command: its site, its page
+        // and the glossary and the translation context of that page.
+        $runningInstruction = $this->processingInstruction->startCommand($table, $id);
+        try {
+            $this->processDeeplTranslateCommand($table, $id, (int)$value, $dataHandler);
+        } finally {
+            $this->processingInstruction->endCommand($runningInstruction);
+        }
+        $commandIsProcessed = true;
+    }
 
+    private function processDeeplTranslateCommand(string $table, int|string $id, int $languageId, DataHandler $dataHandler): void
+    {
         // Inline (IRRE) children in connected mode must not be localized on their own: `DataHandler::localize()`
         // does not write the `foreign_field` pointer to the translated parent, which would create a translation
         // not attached to anything. Hand these over to the DataHandler command dealing with inline children.
@@ -233,15 +246,13 @@ abstract class AbstractTranslateHook
         $inlineParentResolution = $this->inlineRelationResolver->resolveParentReference($table, (int)$id);
         $inlineParentReference = $inlineParentResolution->reference;
         if ($inlineParentReference !== null) {
-            $this->localizeInlineChildRecord($inlineParentReference, (int)$value, $dataHandler);
-            $commandIsProcessed = true;
+            $this->localizeInlineChildRecord($inlineParentReference, $languageId, $dataHandler);
             return;
         }
         if ($inlineParentResolution->state === InlineParentState::Ambiguous
             || $inlineParentResolution->state === InlineParentState::ParentMissing
         ) {
             $this->logBrokenInlineRelation($inlineParentResolution->state, $table, (int)$id, $dataHandler);
-            $commandIsProcessed = true;
             return;
         }
 
@@ -250,10 +261,8 @@ abstract class AbstractTranslateHook
         $dataHandlerPropertyReflection = (new \ReflectionProperty($dataHandler, 'useTransOrigPointerField'));
         $backupUseTransOrigPointerField = $dataHandlerPropertyReflection->getValue($dataHandler);
         $dataHandlerPropertyReflection->setValue($dataHandler, true);
-        $dataHandler->localize($table, (int)$id, $value);
+        $dataHandler->localize($table, (int)$id, $languageId);
         $dataHandlerPropertyReflection->setValue($dataHandler, $backupUseTransOrigPointerField);
-
-        $commandIsProcessed = true;
     }
 
     /**

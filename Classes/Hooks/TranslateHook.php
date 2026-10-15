@@ -99,11 +99,11 @@ final class TranslateHook extends AbstractTranslateHook
         $reportedTable = $localizedRecord !== null ? $localizedTable : $tableName;
         $reportedUid = $localizedRecord !== null ? (int)$localizedRecord['uid'] : (int)$currentRecordId;
 
-        // The record the field belongs to decides the source language, not the record of the processing instruction:
-        // a `deepltranslate` command issued while the parent is still localized points the processing instruction to
-        // its own record, as web-vision/deepltranslate-auto-renew does with an inline child translation. Without the
-        // record the field belongs to, the record of the processing instruction is used. A record of all languages
-        // (-1) is translated from the default language.
+        // The record the field belongs to decides the source language, not the record of the processing instruction: a
+        // `deepltranslate` command issued while the parent is still localized points the processing instruction to its
+        // own record while it runs, as web-vision/deepltranslate-auto-renew did with an inline child translation.
+        // Without the record the field belongs to, the record of the processing instruction is used. A record of all
+        // languages (-1) is translated from the default language.
         $sourceRecord = $localizedRecord ?? $currentRecord;
         $sourceLanguageField = (string)($GLOBALS['TCA'][$reportedTable]['ctrl']['languageField'] ?? '');
         $sourceLanguageId = $sourceLanguageField !== '' ? max(0, (int)($sourceRecord[$sourceLanguageField] ?? 0)) : 0;
