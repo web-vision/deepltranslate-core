@@ -28,8 +28,9 @@ enum ContentFormat
     case Code;
 
     /**
-     * The caller did not tell. Content without a tag, for example "Fish & Chips", and content the HTML parser would
-     * change, for example "Ref <title> & co" or "a<b", is handled as plain text, any other content as rich text, see
+     * The caller did not tell. Content without a tag, for example "Fish & Chips", text with a processing instruction
+     * but no element, and content the HTML parser would change, for example "Ref <title> & co" or "a<b", is handled
+     * as plain text, any other content as rich text, see
      * {@see \WebVision\Deepltranslate\Core\Service\PlainTextDetector}. A caller that knows the field sets its
      * format, a plain text field holding markup the parser keeps would be returned as rich text.
      */

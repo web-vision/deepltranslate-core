@@ -20,6 +20,8 @@ final class PlainTextDetectorTest extends UnitTestCase
         yield 'end tag that is none' => ['I </3 you'];
         yield 'bogus comment' => ['Use <!x for that'];
         yield 'processing instruction' => ['Use <?y for that'];
+        yield 'closed processing instruction' => ['Hello <?php echo 1; ?> world'];
+        yield 'processing instruction alone' => ['<?php echo 1; ?>'];
         yield 'element without end tag' => ['Use <b> for bold'];
         yield 'unknown element without end tag' => ['Press <Enter> to continue'];
         yield 'list items without end tags' => ['<ul><li>a<li>b</ul>'];
@@ -38,6 +40,9 @@ final class PlainTextDetectorTest extends UnitTestCase
 
     public static function htmlDataProvider(): \Generator
     {
+        // DPL-268: the rich text path keeps the processing instruction, plain text would send the markup as text.
+        yield 'markup with a processing instruction' => ['<p>Use <?xml version="1.0"?> in the header</p>'];
+        yield 'inline SVG with its declaration' => ['<?xml version="1.0" encoding="UTF-8"?><svg><title>Logo</title></svg>'];
         yield 'rich text' => ['<p>Hello <strong>world</strong> &amp; <a href="t3://page?uid=1" title="a &gt; b">more</a></p>'];
         yield 'void elements' => ['<p>a<br>b<br />c</p><hr><img src="x.jpg" alt="">'];
         yield 'uppercase tags' => ['<P>Text</P>'];

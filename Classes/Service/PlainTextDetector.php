@@ -14,8 +14,12 @@ use Masterminds\HTML5\Elements;
  * Content counts as plain text when it contains nothing the HTML parser reads as a tag ("Fish & Chips",
  * "Kinder < 12"), or when the HTML parser would change it: it reports a parse error ("a<b", "I </3 you",
  * "Ref <title> & co"), or it creates an element whose end tag is missing in the content ("Use <b> for bold",
- * "Press <Enter>"). Rich text written by the rich text editor closes every element, so it is rich text. Text
- * without a tag keeps entities written as text this way, "Tom &amp; Jerry" stays "Tom &amp; Jerry".
+ * "Press <Enter>"). Text holding a processing instruction but no element counts as well ("Hello <?php echo 1; ?>
+ * world"): masterminds/html5 keeps it, but HTML has none and a browser reads it as a comment. Markup holding one,
+ * like an inline SVG with its declaration, stays rich text, which keeps the instruction (see
+ * {@see \WebVision\Deepltranslate\Core\Service\XmlPreparation\ProcessingInstructionStep}). Rich text written by
+ * the rich text editor closes every element, so it is rich text. Text without a tag keeps entities written as text
+ * this way, "Tom &amp; Jerry" stays "Tom &amp; Jerry".
  *
  * A `&` does not count: masterminds/html5 reports every `&` it cannot decode as an error ("Q&A", "&copy 2026",
  * "?id=1&lang=de" in a link), but keeps it in the text as written, like a browser does with "Q&A".
@@ -40,6 +44,9 @@ final readonly class PlainTextDetector
         }
         $elementCount = [];
         $this->countElements($fragment, $elementCount);
+        if ($elementCount === [] && str_contains($content, '<?') && self::containsProcessingInstruction($fragment)) {
+            return true;
+        }
         foreach ($elementCount as $name => $count) {
             if (Elements::isA($name, Elements::VOID_TAG)) {
                 continue;
@@ -47,6 +54,16 @@ final readonly class PlainTextDetector
             $quotedName = preg_quote($name, '#');
             $closedCount = (int)preg_match_all('#</' . $quotedName . '[\s/>]|<' . $quotedName . '(?:\s[^<>]*)?/>#i', $content);
             if ($closedCount < $count) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function containsProcessingInstruction(\DOMNode $node): bool
+    {
+        foreach ($node->childNodes as $child) {
+            if ($child instanceof \DOMProcessingInstruction || self::containsProcessingInstruction($child)) {
                 return true;
             }
         }

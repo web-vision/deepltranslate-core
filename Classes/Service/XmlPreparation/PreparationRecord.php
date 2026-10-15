@@ -36,6 +36,11 @@ final class PreparationRecord
      */
     private array $glue = [];
 
+    /**
+     * @var array<int, array{target: string, data: string}>
+     */
+    private array $instructions = [];
+
     private bool $scriptDigits = false;
 
     /**
@@ -131,6 +136,22 @@ final class PreparationRecord
     public function sourceAttributes(): array
     {
         return $this->sourceAttributes;
+    }
+
+    /**
+     * Keeps a processing instruction of the source, see {@see ProcessingInstructionStep}.
+     */
+    public function rememberInstruction(int $number, string $target, string $data): void
+    {
+        $this->instructions[$number] = ['target' => $target, 'data' => $data];
+    }
+
+    /**
+     * @return array{target: string, data: string}|null target and data of the processing instruction with this number
+     */
+    public function instruction(int $number): ?array
+    {
+        return $this->instructions[$number] ?? null;
     }
 
     public function useScriptDigits(): void
