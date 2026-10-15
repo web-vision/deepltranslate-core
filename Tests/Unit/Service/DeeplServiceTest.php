@@ -61,17 +61,53 @@ final class DeeplServiceTest extends UnitTestCase
             'expectedSent' => "Tom &amp;amp; Jerry\u{00A0}GmbH &amp;nbsp;",
             'expected' => "Tom &amp; Jerry\u{00A0}GmbH &nbsp;",
         ];
-        yield 'content of unknown format is decoded as before' => [
+        yield 'content of unknown format with markup is rich text' => [
             'contentFormat' => ContentFormat::Unknown,
-            'content' => 'Preise & Leistungen <b>fett</b>',
+            'content' => 'Preise &amp; Leistungen <b>fett</b>',
             'expectedSent' => 'Preise &amp; Leistungen <b dlt-r="0">fett</b>',
-            'expected' => 'Preise & Leistungen <b>fett</b>',
+            'expected' => 'Preise &amp; Leistungen <b>fett</b>',
         ];
-        yield 'content of unknown format with entities and non-breaking space is decoded' => [
+        yield 'content of unknown format with markup keeps entities and non-breaking spaces' => [
             'contentFormat' => ContentFormat::Unknown,
             'content' => '<p>a&nbsp;b &lt;c&gt;</p>',
             'expectedSent' => "<p>a\u{00A0}b &lt;c&gt;</p>",
-            'expected' => "<p>a\u{00A0}b <c></p>",
+            'expected' => '<p>a&nbsp;b &lt;c&gt;</p>',
+        ];
+        // deepltranslate-core#692: the markup of the report, as an add-on without a content format sends it.
+        yield 'content of unknown format with markup keeps quotes in attributes and escaped markup' => [
+            'contentFormat' => ContentFormat::Unknown,
+            'content' => '<p><a href="t3://page?uid=1" title="Unser &quot;Angebot&quot; anfragen">Angebot</a> – a &lt;b&gt; tag</p>',
+            'expectedSent' => [
+                '<p><a href="t3://page?uid=1" title="Unser &quot;Angebot&quot; anfragen" dlt-r="0">Angebot</a> – a &lt;b&gt; tag</p>',
+                'Unser "Angebot" anfragen',
+            ],
+            'expected' => '<p><a href="t3://page?uid=1" title="Unser &quot;Angebot&quot; anfragen">Angebot</a> – a &lt;b&gt; tag</p>',
+        ];
+        // A plain text field holding markup the HTML parser keeps cannot be told from rich text. Callers that know
+        // the field set its content format.
+        yield 'content of unknown format with markup the HTML parser keeps is returned as rich text' => [
+            'contentFormat' => ContentFormat::Unknown,
+            'content' => 'Preise & Leistungen <b>fett</b>',
+            'expectedSent' => 'Preise &amp; Leistungen <b dlt-r="0">fett</b>',
+            'expected' => 'Preise &amp; Leistungen <b>fett</b>',
+        ];
+        yield 'content of unknown format with an ampersand the HTML parser keeps is rich text' => [
+            'contentFormat' => ContentFormat::Unknown,
+            'content' => '<p>Q&A with <b>AT&T</b></p>',
+            'expectedSent' => '<p>Q&amp;A with <b dlt-r="0">AT&amp;T</b></p>',
+            'expected' => '<p>Q&amp;A with <b>AT&amp;T</b></p>',
+        ];
+        yield 'content of unknown format without tags is plain text' => [
+            'contentFormat' => ContentFormat::Unknown,
+            'content' => 'Fish &amp; Chips for kids < 12 & "parents"',
+            'expectedSent' => 'Fish &amp;amp; Chips for kids &lt; 12 &amp; "parents"',
+            'expected' => 'Fish &amp; Chips for kids < 12 & "parents"',
+        ];
+        yield 'content of unknown format without tags keeps entity-like text' => [
+            'contentFormat' => ContentFormat::Unknown,
+            'content' => "Tom &amp; Jerry\u{00A0}GmbH &nbsp;",
+            'expectedSent' => "Tom &amp;amp; Jerry\u{00A0}GmbH &amp;nbsp;",
+            'expected' => "Tom &amp; Jerry\u{00A0}GmbH &nbsp;",
         ];
         yield 'content of unknown format with a lone non-breaking space' => [
             'contentFormat' => ContentFormat::Unknown,
@@ -84,12 +120,6 @@ final class DeeplServiceTest extends UnitTestCase
             'content' => 'Ref <title> & co',
             'expectedSent' => 'Ref &lt;title&gt; &amp; co',
             'expected' => 'Ref <title> & co',
-        ];
-        yield 'content of unknown format with an ampersand the HTML parser keeps is HTML' => [
-            'contentFormat' => ContentFormat::Unknown,
-            'content' => '<p>Q&A with <b>AT&T</b></p>',
-            'expectedSent' => '<p>Q&amp;A with <b dlt-r="0">AT&amp;T</b></p>',
-            'expected' => '<p>Q&A with <b>AT&T</b></p>',
         ];
         yield 'content of unknown format with a broken end tag is plain text' => [
             'contentFormat' => ContentFormat::Unknown,
