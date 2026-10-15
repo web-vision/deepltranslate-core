@@ -25,6 +25,7 @@ use WebVision\Deepltranslate\Core\Exception\LanguageRecordNotFoundException;
 use WebVision\Deepltranslate\Core\Service\DeeplService;
 use WebVision\Deepltranslate\Core\Service\InlineRelationResolver;
 use WebVision\Deepltranslate\Core\Service\LanguageService;
+use WebVision\Deepltranslate\Core\Service\NestedDataHandlerSettingsInterface;
 use WebVision\Deepltranslate\Core\Service\ProcessingInstruction;
 use WebVision\Deepltranslate\Core\Service\RecordLocalizationResolverInterface;
 
@@ -42,6 +43,8 @@ abstract class AbstractTranslateHook
     protected readonly InlineRelationResolver $inlineRelationResolver;
     /** @phpstan-ignore property.uninitializedReadonly */
     protected readonly RecordLocalizationResolverInterface $recordLocalizationResolver;
+    /** @phpstan-ignore property.uninitializedReadonly */
+    protected readonly NestedDataHandlerSettingsInterface $nestedDataHandlerSettings;
 
     #[Required]
     final public function injectInlineRelationResolver(InlineRelationResolver $inlineRelationResolver): void
@@ -55,6 +58,13 @@ abstract class AbstractTranslateHook
     {
         /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
         $this->recordLocalizationResolver = $recordLocalizationResolver;
+    }
+
+    #[Required]
+    final public function injectNestedDataHandlerSettings(NestedDataHandlerSettingsInterface $nestedDataHandlerSettings): void
+    {
+        /** @phpstan-ignore property.readOnlyAssignNotInConstructor */
+        $this->nestedDataHandlerSettings = $nestedDataHandlerSettings;
     }
 
     #[Required]
@@ -340,13 +350,25 @@ abstract class AbstractTranslateHook
         // own and written when the command is done. ReferenceIndexUpdater is @internal in TYPO3, only the argument of
         // DataHandler::start() is public API.
         //
-        // It works with the backend user of the calling DataHandler, as TYPO3 does for the DataHandlers it starts
-        // itself. That user is not always the global one.
+        // It works with the backend user of the calling DataHandler and gets the settings of the calling one that
+        // TYPO3 hands to the DataHandlers it starts itself (DataHandler::getLocalTCE()): an import stays an import
+        // for the DataHandler hooks, disabled logging stays disabled, a bypassed record access check stays bypassed,
+        // and its history records get the correlation id of the operation. The correlation id is set after start(),
+        // which creates a new one. TYPO3 v14 hands it on to the DataHandlers this one starts. The settings that exist
+        // in TYPO3 v13 only, `neverHideAtCopy`, `copyTree` and `bypassWorkspaceRestrictions`, are handed over by
+        // NestedDataHandlerSettingsInterface.
+        //
+        // Not handed over: `dontProcessTransformations` applies to a datamap, this DataHandler processes a command
+        // only, and the DataHandlers it starts to copy records set it themselves.
         //
         // An exception aborts the calling DataHandler as well, and TYPO3 drops its reference index updates then.
         // The updates collected here are dropped the same way, no try/finally.
         $referenceIndexUpdater = GeneralUtility::makeInstance(ReferenceIndexUpdater::class);
         $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $inlineDataHandler->isImporting = $dataHandler->isImporting;
+        $inlineDataHandler->enableLogging = $dataHandler->enableLogging;
+        $inlineDataHandler->bypassAccessCheckForRecords = $dataHandler->bypassAccessCheckForRecords;
+        $this->nestedDataHandlerSettings->handOver($dataHandler, $inlineDataHandler);
         $inlineDataHandler->start([], [
             $reference->parentTable => [
                 $reference->parentUid => [
@@ -358,6 +380,10 @@ abstract class AbstractTranslateHook
                 ],
             ],
         ], $dataHandler->BE_USER, $referenceIndexUpdater);
+        $correlationId = $dataHandler->getCorrelationId();
+        if ($correlationId !== null) {
+            $inlineDataHandler->setCorrelationId($correlationId);
+        }
         $inlineDataHandler->process_cmdmap();
         // Also when the command logged errors, the records it wrote stay written.
         $referenceIndexUpdater->update();
