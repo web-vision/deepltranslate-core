@@ -128,15 +128,19 @@ final class DeeplService implements LoggerAwareInterface
     }
 
     /**
-     * Content of unknown format the HTML parser would change is plain text, for example "Ref <title> & co".
+     * Content of unknown format is plain text without a tag or when the HTML parser would change it, for example
+     * "Fish & Chips" or "Ref <title> & co", and rich text otherwise. Decoding rich text would break it, see
+     * {@see self::restoreContent()}.
      */
     private function resolveContentFormat(TranslateContext $translateContext): ContentFormat
     {
         $contentFormat = $translateContext->getContentFormat();
-        if ($contentFormat === ContentFormat::Unknown && $this->plainTextDetector->isPlainText($translateContext->getContent())) {
-            return ContentFormat::PlainText;
+        if ($contentFormat !== ContentFormat::Unknown) {
+            return $contentFormat;
         }
-        return $contentFormat;
+        return $this->plainTextDetector->isPlainText($translateContext->getContent())
+            ? ContentFormat::PlainText
+            : ContentFormat::RichText;
     }
 
     /**
@@ -154,15 +158,15 @@ final class DeeplService implements LoggerAwareInterface
      * Rich text is returned as the HTML the client serialized, which is the form the rich text editor
      * stores. Decoding it would turn an escaped "&lt;" into markup and break quotes inside attributes.
      *
-     * Content of unknown format is decoded as before this format existed. `html_entity_decode()` instead of
-     * `htmlspecialchars_decode()` decodes `&nbsp;` as well, which the HTML serializer writes for every non-breaking
-     * space, and it decodes in one pass, so a text "&amp;nbsp;" becomes "&nbsp;" and not the character.
+     * Plain text is decoded, it was escaped before. `html_entity_decode()` instead of `htmlspecialchars_decode()`
+     * decodes `&nbsp;` as well, which the HTML serializer writes for every non-breaking space, and it decodes in one
+     * pass, so a text "&amp;nbsp;" becomes "&nbsp;" and not the character.
      */
     private function restoreContent(string $translatedContent, ContentFormat $contentFormat): string
     {
         return match ($contentFormat) {
-            ContentFormat::RichText, ContentFormat::Code => $translatedContent,
-            ContentFormat::PlainText, ContentFormat::Unknown => html_entity_decode($translatedContent, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
+            ContentFormat::PlainText => html_entity_decode($translatedContent, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
+            ContentFormat::RichText, ContentFormat::Code, ContentFormat::Unknown => $translatedContent,
         };
     }
 
