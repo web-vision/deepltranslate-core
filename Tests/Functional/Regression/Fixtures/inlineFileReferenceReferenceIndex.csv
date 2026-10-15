@@ -1,0 +1,16 @@
+pages
+,"uid","pid","title","sys_language_uid","slug"
+,1,0,"Deepl-Functional-Test",0,"/"
+sys_file
+,"uid","pid","name","identifier","storage"
+,1,0,"clear.gif","/clear.gif",1
+sys_file_metadata
+,"uid","pid","file"
+,1,0,1
+tt_content
+,"uid","pid","sorting","sys_language_uid","l18n_parent","l10n_source","CType","colPos","header","image"
+,10,1,256,0,0,0,"image",0,"proton beam",1
+,11,1,256,1,10,10,"image",0,"Protonenstrahl",0
+sys_file_reference
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign","sys_language_uid","l10n_parent","title"
+,1,1,1,10,"tt_content","image",1,0,0,"proton beam"

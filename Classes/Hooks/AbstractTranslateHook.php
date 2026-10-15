@@ -8,6 +8,7 @@ use Symfony\Contracts\Service\Attribute\Required;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\DataHandling\ReferenceIndexUpdater;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Site\Entity\Site;
@@ -333,6 +334,18 @@ abstract class AbstractTranslateHook
             return;
         }
 
+        // TYPO3 updates the reference index at the end of the outermost DataHandler only, with the updater it hands
+        // to the DataHandlers it starts itself. The DataHandler started here runs within the command of the calling
+        // one, it is never the outermost and would never write its updates. They are collected in an updater of its
+        // own and written when the command is done. ReferenceIndexUpdater is @internal in TYPO3, only the argument of
+        // DataHandler::start() is public API.
+        //
+        // It works with the backend user of the calling DataHandler, as TYPO3 does for the DataHandlers it starts
+        // itself. That user is not always the global one.
+        //
+        // An exception aborts the calling DataHandler as well, and TYPO3 drops its reference index updates then.
+        // The updates collected here are dropped the same way, no try/finally.
+        $referenceIndexUpdater = GeneralUtility::makeInstance(ReferenceIndexUpdater::class);
         $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $inlineDataHandler->start([], [
             $reference->parentTable => [
@@ -344,8 +357,10 @@ abstract class AbstractTranslateHook
                     ],
                 ],
             ],
-        ]);
+        ], $dataHandler->BE_USER, $referenceIndexUpdater);
         $inlineDataHandler->process_cmdmap();
+        // Also when the command logged errors, the records it wrote stay written.
+        $referenceIndexUpdater->update();
         $dataHandler->errorLog = array_merge($dataHandler->errorLog, $inlineDataHandler->errorLog);
     }
 
