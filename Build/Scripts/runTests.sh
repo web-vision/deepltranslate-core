@@ -605,7 +605,16 @@ case ${TEST_SUITE} in
         # core's "typo3/class-alias-loader" over the newly installed one. ".Build/.cache"
         # is kept so the reinstall is served from the local Composer cache.
         rm -rf .Build/vendor .Build/bin composer.lock
-        ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-update-${CORE_VERSION}-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} composer require --dev "typo3/minimal":"^${CORE_VERSION}"
+        # TYPO3 v12 is out of public support. Composer refuses its public releases and
+        # "enshrined/svg-sanitize" 0.22 they require, all of them affected by security
+        # advisories, so no v12 installation resolves. For v12 only, the blocking of
+        # advisories is lifted, the audit still reports them. The blocking of malware
+        # and abandoned packages stays, and v13 keeps all of it.
+        COMPOSER_POLICY_PARAMS=""
+        if [ "${CORE_VERSION}" = "12" ]; then
+            COMPOSER_POLICY_PARAMS="-e COMPOSER_POLICY_ADVISORIES_BLOCK=0"
+        fi
+        ${CONTAINER_BIN} run ${CONTAINER_SIMPLE_PARAMS} --name composer-update-${CORE_VERSION}-${SUFFIX} -e COMPOSER_CACHE_DIR=.Build/.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${COMPOSER_POLICY_PARAMS} ${IMAGE_PHP} composer require --dev "typo3/minimal":"^${CORE_VERSION}"
         SUITE_EXIT_CODE=$?
         # restore composer json
         cp -Rf composer.json.orig composer.json
