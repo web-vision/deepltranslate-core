@@ -9,13 +9,13 @@ use Masterminds\HTML5\Elements;
 
 /**
  * Tells whether content of {@see \WebVision\Deepltranslate\Core\Domain\Enum\ContentFormat::Unknown} format is plain
- * text, so it is escaped before it is sent to DeepL instead of being parsed as HTML.
+ * text, so it is escaped before it is sent to DeepL and decoded after, instead of being handled as rich text.
  *
- * Content counts as plain text when the HTML parser would change it: it reports a parse error ("a<b",
- * "I </3 you", "Ref <title> & co"), or it creates an element whose end tag is missing in the content
- * ("Use <b> for bold", "Press <Enter>"). Rich text written by the rich text editor closes every element, so it is
- * still handled as HTML. Content without anything the parser reads as a tag is handled as HTML as before, the
- * result is the same for both formats apart from entities written as text.
+ * Content counts as plain text when it contains nothing the HTML parser reads as a tag ("Fish & Chips",
+ * "Kinder < 12"), or when the HTML parser would change it: it reports a parse error ("a<b", "I </3 you",
+ * "Ref <title> & co"), or it creates an element whose end tag is missing in the content ("Use <b> for bold",
+ * "Press <Enter>"). Rich text written by the rich text editor closes every element, so it is rich text. Text
+ * without a tag keeps entities written as text this way, "Tom &amp; Jerry" stays "Tom &amp; Jerry".
  *
  * A `&` does not count: masterminds/html5 reports every `&` it cannot decode as an error ("Q&A", "&copy 2026",
  * "?id=1&lang=de" in a link), but keeps it in the text as written, like a browser does with "Q&A".
@@ -27,7 +27,7 @@ final readonly class PlainTextDetector
     public function isPlainText(string $content): bool
     {
         if (preg_match('#<[a-zA-Z!/?]#', $content) !== 1) {
-            return false;
+            return true;
         }
         $html5 = new HTML5(['disable_html_ns' => true]);
         // The same escaping as in HtmlXmlConverter, a "<" not starting a tag is text. Every "&" is escaped, so only

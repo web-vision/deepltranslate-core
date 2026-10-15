@@ -24,20 +24,20 @@ final class PlainTextDetectorTest extends UnitTestCase
         yield 'unknown element without end tag' => ['Press <Enter> to continue'];
         yield 'list items without end tags' => ['<ul><li>a<li>b</ul>'];
         yield 'markup error next to an ampersand' => ['Q&A <title> & co'];
+        yield 'empty content' => [''];
+        yield 'text without tags' => ['Fish & Chips for Tom &amp; Jerry'];
+        yield 'less-than signs not starting a tag' => ['Kinder < 12 & "Teens" <3 <= 4'];
     }
 
     #[Test]
     #[DataProvider('plainTextDataProvider')]
-    public function isPlainTextReturnsTrueForContentTheHtmlParserWouldChange(string $content): void
+    public function isPlainTextReturnsTrueForContentThatIsNoMarkup(string $content): void
     {
         $this->assertTrue((new PlainTextDetector())->isPlainText($content));
     }
 
     public static function htmlDataProvider(): \Generator
     {
-        yield 'empty content' => [''];
-        yield 'text without tags' => ['Fish & Chips for Tom &amp; Jerry'];
-        yield 'less-than signs not starting a tag' => ['Kinder < 12 & "Teens" <3 <= 4'];
         yield 'rich text' => ['<p>Hello <strong>world</strong> &amp; <a href="t3://page?uid=1" title="a &gt; b">more</a></p>'];
         yield 'void elements' => ['<p>a<br>b<br />c</p><hr><img src="x.jpg" alt="">'];
         yield 'uppercase tags' => ['<P>Text</P>'];

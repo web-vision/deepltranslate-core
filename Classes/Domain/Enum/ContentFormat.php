@@ -28,9 +28,10 @@ enum ContentFormat
     case Code;
 
     /**
-     * The caller did not tell. The content is handled as HTML and the entities of the result are decoded, as
-     * before this format existed. Content the HTML parser would change, for example "Ref <title> & co" or
-     * "a<b", is handled as plain text instead, see {@see \WebVision\Deepltranslate\Core\Service\PlainTextDetector}.
+     * The caller did not tell. Content without a tag, for example "Fish & Chips", and content the HTML parser would
+     * change, for example "Ref <title> & co" or "a<b", is handled as plain text, any other content as rich text, see
+     * {@see \WebVision\Deepltranslate\Core\Service\PlainTextDetector}. A caller that knows the field sets its
+     * format, a plain text field holding markup the parser keeps would be returned as rich text.
      */
     case Unknown;
 }
