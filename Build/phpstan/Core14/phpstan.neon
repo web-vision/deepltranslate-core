@@ -15,6 +15,8 @@ parameters:
 
   excludePaths:
     - ../../../.Build/*
+    # Tests of TYPO3 v13 only APIs, they run with "not-core-14" excluded on TYPO3 v14 as well.
+    - ../../../Tests/Functional/Core13/*
 
   bootstrapFiles:
     - classAliasses.php
