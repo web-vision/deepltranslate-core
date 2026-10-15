@@ -1,0 +1,20 @@
+{
+	"name": "web-vision/test-hide-at-copy",
+	"type": "typo3-cms-extension",
+	"description": "Testing extension creating copies and translations of the inline child records of test_inline_relations hidden (TCA hideAtCopy)",
+	"license": [
+		"GPL-2.0-or-later"
+	],
+	"require": {
+		"typo3/cms-core": "*"
+	},
+	"extra":{
+		"typo3/cms": {
+			"extension-key": "test_hide_at_copy",
+			"Package": {
+				"providesPackages": []
+			}
+		}
+	},
+	"version": "1.0.0-dev"
+}

@@ -344,6 +344,13 @@ abstract class AbstractTranslateHook
      * given updater and works with the backend user of the calling DataHandler, as TYPO3 does for the DataHandlers it
      * starts itself. That user is not always the global one.
      *
+     * It also gets the settings of the calling DataHandler that TYPO3 hands to the DataHandlers it starts itself
+     * (DataHandler::getLocalTCE()): an import stays an import for the DataHandler hooks, disabled logging stays
+     * disabled, bypassed record access and workspace checks stay bypassed, a localized record of a table with
+     * `hideAtCopy` stays visible with `neverHideAtCopy` set, and its history records get the correlation id of the
+     * operation. `dontProcessTransformations` is not handed over, it applies to a datamap, this DataHandler processes
+     * a command only, and the DataHandlers it starts to copy records set it themselves.
+     *
      * @param array<string, mixed> $commandMap
      */
     private function startInlineDataHandler(
@@ -354,14 +361,31 @@ abstract class AbstractTranslateHook
         if ((new Typo3Version())->getMajorVersion() <= 12) {
             // TYPO3 v12 takes the updater as argument of the constructor, start() has no argument for it.
             $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class, $referenceIndexUpdater);
+            $this->handOverSettings($dataHandler, $inlineDataHandler);
             $inlineDataHandler->start([], $commandMap, $dataHandler->BE_USER);
-            return $inlineDataHandler;
+        } else {
+            // TYPO3 v13 builds DataHandler with dependency injection and takes the updater as argument of start(). The
+            // PHPStan error of this call against TYPO3 v12 is ignored in Build/phpstan/Core12/phpstan.neon.
+            $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $this->handOverSettings($dataHandler, $inlineDataHandler);
+            $inlineDataHandler->start([], $commandMap, $dataHandler->BE_USER, $referenceIndexUpdater);
         }
-        // TYPO3 v13 builds DataHandler with dependency injection and takes the updater as argument of start(). The
-        // PHPStan error of this call against TYPO3 v12 is ignored in Build/phpstan/Core12/phpstan.neon.
-        $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $inlineDataHandler->start([], $commandMap, $dataHandler->BE_USER, $referenceIndexUpdater);
+        // Set after start(), which creates a new correlation id.
+        $correlationId = $dataHandler->getCorrelationId();
+        if ($correlationId !== null) {
+            $inlineDataHandler->setCorrelationId($correlationId);
+        }
         return $inlineDataHandler;
+    }
+
+    private function handOverSettings(DataHandler $dataHandler, DataHandler $inlineDataHandler): void
+    {
+        $inlineDataHandler->isImporting = $dataHandler->isImporting;
+        $inlineDataHandler->enableLogging = $dataHandler->enableLogging;
+        $inlineDataHandler->bypassAccessCheckForRecords = $dataHandler->bypassAccessCheckForRecords;
+        $inlineDataHandler->bypassWorkspaceRestrictions = $dataHandler->bypassWorkspaceRestrictions;
+        $inlineDataHandler->neverHideAtCopy = $dataHandler->neverHideAtCopy;
+        $inlineDataHandler->copyTree = $dataHandler->copyTree;
     }
 
     /**
