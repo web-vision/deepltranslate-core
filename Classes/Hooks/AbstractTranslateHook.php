@@ -8,6 +8,8 @@ use Symfony\Contracts\Service\Attribute\Required;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\DataHandling\ReferenceIndexUpdater;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -307,20 +309,59 @@ abstract class AbstractTranslateHook
             return;
         }
 
-        $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $inlineDataHandler->start([], [
-            $reference->parentTable => [
-                $reference->parentUid => [
-                    'inlineLocalizeSynchronize' => [
-                        'field' => $reference->parentField,
-                        'language' => $languageId,
-                        'ids' => [$reference->childUid],
+        // TYPO3 updates the reference index at the end of the outermost DataHandler only, with the updater it hands
+        // to the DataHandlers it starts itself. The DataHandler started here runs within the command of the calling
+        // one, it is never the outermost and would never write its updates. They are collected in an updater of its
+        // own and written when the command is done. ReferenceIndexUpdater is @internal in TYPO3, only the argument
+        // of DataHandler is public API, see startInlineDataHandler().
+        //
+        // An exception aborts the calling DataHandler as well, and TYPO3 drops its reference index updates then.
+        // The updates collected here are dropped the same way, no try/finally.
+        $referenceIndexUpdater = GeneralUtility::makeInstance(ReferenceIndexUpdater::class);
+        $inlineDataHandler = $this->startInlineDataHandler(
+            [
+                $reference->parentTable => [
+                    $reference->parentUid => [
+                        'inlineLocalizeSynchronize' => [
+                            'field' => $reference->parentField,
+                            'language' => $languageId,
+                            'ids' => [$reference->childUid],
+                        ],
                     ],
                 ],
             ],
-        ]);
+            $dataHandler,
+            $referenceIndexUpdater
+        );
         $inlineDataHandler->process_cmdmap();
+        // Also when the command logged errors, the records it wrote stay written.
+        $referenceIndexUpdater->update();
         $dataHandler->errorLog = array_merge($dataHandler->errorLog, $inlineDataHandler->errorLog);
+    }
+
+    /**
+     * Creates and starts the DataHandler localizing an inline child. It collects its reference index updates in the
+     * given updater and works with the backend user of the calling DataHandler, as TYPO3 does for the DataHandlers it
+     * starts itself. That user is not always the global one.
+     *
+     * @param array<string, mixed> $commandMap
+     */
+    private function startInlineDataHandler(
+        array $commandMap,
+        DataHandler $dataHandler,
+        ReferenceIndexUpdater $referenceIndexUpdater
+    ): DataHandler {
+        if ((new Typo3Version())->getMajorVersion() <= 12) {
+            // TYPO3 v12 takes the updater as argument of the constructor, start() has no argument for it.
+            $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class, $referenceIndexUpdater);
+            $inlineDataHandler->start([], $commandMap, $dataHandler->BE_USER);
+            return $inlineDataHandler;
+        }
+        // TYPO3 v13 builds DataHandler with dependency injection and takes the updater as argument of start(). The
+        // PHPStan error of this call against TYPO3 v12 is ignored in Build/phpstan/Core12/phpstan.neon.
+        $inlineDataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $inlineDataHandler->start([], $commandMap, $dataHandler->BE_USER, $referenceIndexUpdater);
+        return $inlineDataHandler;
     }
 
     /**

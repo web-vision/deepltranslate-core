@@ -7,6 +7,14 @@ parameters:
 	tmpDir: ../../../.cache/phpstan
 	level: 8
 
+	ignoreErrors:
+		# TYPO3 v12: DataHandler::start() has no fourth argument. AbstractTranslateHook passes the
+		# ReferenceIndexUpdater there on TYPO3 v13 only, see startInlineDataHandler().
+		-
+			identifier: arguments.count
+			path: ../../../Classes/Hooks/AbstractTranslateHook.php
+			count: 1
+
 	paths:
 		- ../../../Classes/
 		- ../../../Tests/
