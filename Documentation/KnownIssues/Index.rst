@@ -117,16 +117,21 @@ Callers without a content format
 
 Add-ons which call :php:`\WebVision\Deepltranslate\Core\Service\DeeplService::translateContent()`
 without setting a content format get the content format `Unknown`. Their
-content is handled as HTML and the entities of the result are decoded, as
-before, a non-breaking space included. Content the HTML parser would change is
-handled as plain text, for example `a<b`, `I </3 you`, `Ref <title> & co` or
-`Use <b> for bold`, where the element is never closed. Rich text written by the
-rich text editor closes every element and is handled as HTML. An `&` that
-starts no entity, like in `<p>Q&A</p>`, is kept by the HTML parser and does not
-make the content plain text.
+content is handled as plain text when it contains no tag, for example
+`Fish & Chips` or `Kinder < 12`, or when the HTML parser would change it, for
+example `a<b`, `I </3 you`, `Ref <title> & co` or `Use <b> for bold`, where
+the element is never closed. Any other content is handled as rich text: its
+result is not decoded and is returned as the HTML serializer writes it. Rich
+text written by the rich text editor closes every element. An `&` that starts
+no entity, like in `<p>Q&A</p>`, is kept by the HTML parser and does not make
+the content plain text, it is returned as `<p>Q&amp;A</p>`.
 
-Add-ons should set the content format with
-:php:`\WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext::setContentFormat()`.
+A plain text field holding markup the HTML parser keeps, for example a heading
+`Use <b>bold</b> & more`, is returned as rich text, with `&amp;`. Add-ons know
+their fields and set the content format with
+:php:`\WebVision\Deepltranslate\Core\Domain\Dto\TranslateContext::setContentFormat()`,
+:php:`\WebVision\Deepltranslate\Core\Service\ContentFormatResolver` resolves
+it from the TCA of the field and the record.
 
 Stored rich text
 ~~~~~~~~~~~~~~~~
