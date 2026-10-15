@@ -13,7 +13,8 @@ namespace WebVision\Deepltranslate\Core\Service\XmlPreparation;
  *   attribute values and comments. U+000B, the manual line break of word processors, and U+000C become a space,
  *   so the words around them stay apart. Other control characters, U+FFFE and U+FFFF are removed.
  * - Processing instructions, the HTML parser keeps `<?xml …?>` as one, which XML allows only at the start of a
- *   document. Rich text has nothing to translate in them.
+ *   document. {@see ProcessingInstructionStep} replaces them with placeholders before, only content using a
+ *   helper name, which is sent without that step, still has them here and loses them.
  * - `--` inside a comment and a comment ending in `-`, which XML forbids
  *   (https://www.w3.org/TR/xml/#sec-comments). A space is inserted, the comment stays.
  *

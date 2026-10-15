@@ -121,6 +121,25 @@ final class DeeplServiceTest extends UnitTestCase
             'expectedSent' => 'Ref &lt;title&gt; &amp; co',
             'expected' => 'Ref <title> & co',
         ];
+        // DPL-268: the HTML parser keeps a processing instruction, a browser reads it as a comment.
+        yield 'content of unknown format with a processing instruction is plain text' => [
+            'contentFormat' => ContentFormat::Unknown,
+            'content' => 'Hello <?php echo 1; ?> & "you"',
+            'expectedSent' => 'Hello &lt;?php echo 1; ?&gt; &amp; "you"',
+            'expected' => 'Hello <?php echo 1; ?> & "you"',
+        ];
+        yield 'content of unknown format with markup and a processing instruction is rich text' => [
+            'contentFormat' => ContentFormat::Unknown,
+            'content' => '<?xml version="1.0"?><svg><title>Logo</title></svg>',
+            'expectedSent' => '<dlt-i dlt-n="0"/><svg><title>Logo</title></svg>',
+            'expected' => '<?xml version="1.0"?><svg><title>Logo</title></svg>',
+        ];
+        yield 'rich text keeps a processing instruction' => [
+            'contentFormat' => ContentFormat::RichText,
+            'content' => '<p>Hello <?php echo 1; ?> world</p>',
+            'expectedSent' => '<p>Hello <dlt-i dlt-n="0"/> world</p>',
+            'expected' => '<p>Hello <?php echo 1; ?> world</p>',
+        ];
         yield 'content of unknown format with a broken end tag is plain text' => [
             'contentFormat' => ContentFormat::Unknown,
             'content' => 'I </3 you & "me"',

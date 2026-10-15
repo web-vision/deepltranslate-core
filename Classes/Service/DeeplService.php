@@ -146,8 +146,9 @@ final class DeeplService
     }
 
     /**
-     * Content of unknown format is plain text without a tag or when the HTML parser would change it, for example
-     * "Fish & Chips" or "Ref <title> & co", and rich text otherwise. Decoding rich text would break it, see
+     * Content of unknown format is plain text without a tag, with a processing instruction but no element, or when
+     * the HTML parser would change it, for example "Fish & Chips", "Hello <?php echo 1; ?>" or "Ref <title> & co",
+     * and rich text otherwise. Decoding rich text would break it, see
      * {@see self::restoreContent()}.
      */
     private function resolveContentFormat(TranslateContext $translateContext): ContentFormat

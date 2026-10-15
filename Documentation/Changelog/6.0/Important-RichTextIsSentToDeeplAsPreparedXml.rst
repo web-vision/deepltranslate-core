@@ -40,9 +40,22 @@ markup, and the preparation is reverted in the translation:
     as `Produkt<strong>neuheiten</strong>` are not fused.
 
 *   Characters XML does not allow, such as the manual line break of word
-    processors (U+000B), processing instructions and invalid comments, are
-    removed or replaced, so DeepL does not reject the field (issue `#507
+    processors (U+000B), and invalid comments are removed or replaced, so
+    DeepL does not reject the field (issue `#507
     <https://github.com/web-vision/deepltranslate-core/issues/507>`__).
+
+*   Processing instructions in rich text, for example the declaration
+    `<?xml version="1.0"?>` of an inline SVG or `<?php echo 1; ?>`, are sent
+    as placeholders and come back in their place, nothing of them is
+    translated. They are written with one space between target and data,
+    `<?php   echo 1;?>` comes back as `<?php echo 1;?>`. If DeepL drops a
+    placeholder, its instruction is lost. Content of unknown format holding a
+    processing instruction but no element is plain text.
+
+*   `<?= $name ?>` and `<?php?>` are no processing instructions to the HTML
+    parser of the extension (masterminds/html5). It reads them as comments
+    and repeats the character after `<?`, the translation holds
+    `<!--<?== $name ?>-->` and `<!--<?pphp?>-->`.
 
 The preparation adds a short reference number to every inline element of the
 request. Tags are not billed, but they count for the request size limit of
