@@ -16,6 +16,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 final class ProcessingInstruction
 {
     protected const PROCESSING_CACHE_IDENTIFIER = 'deepl-processing-cache';
+    private const COMMAND_DEPTH_CACHE_IDENTIFIER = 'deepl-processing-command-depth';
     private FrontendInterface $runtimeCache;
 
     public function __construct(
@@ -46,6 +47,48 @@ final class ProcessingInstruction
             $processingInformation['deeplMode'] = $this->isDeeplMode();
         }
         $this->runtimeCache->set(self::PROCESSING_CACHE_IDENTIFIER, $processingInformation);
+    }
+
+    /**
+     * Sets the instruction for the `deepltranslate` command of a record. A command issued while another one is
+     * still running, by a DataHandler hook of the running localization for example, gets the instruction of the
+     * running command returned, to restore it with {@see self::endCommand()}.
+     *
+     * @return array{
+     *     tableName: ?string,
+     *     id: int|string|null,
+     *     deeplMode: bool|string
+     * }|null the instruction of the running command, null for a command not issued within another one
+     */
+    public function startCommand(string $table, int|string $id): ?array
+    {
+        $depth = $this->getCommandDepth();
+        // A runtime cache flushed meanwhile holds no instruction to restore.
+        $runningInstruction = $depth > 0 && $this->runtimeCache->has(self::PROCESSING_CACHE_IDENTIFIER)
+            ? $this->getProcessingInstruction()
+            : null;
+        $this->runtimeCache->set(self::COMMAND_DEPTH_CACHE_IDENTIFIER, $depth + 1);
+        $this->setProcessingInstruction($table, $id, true);
+        return $runningInstruction;
+    }
+
+    /**
+     * Ends a command started with {@see self::startCommand()} and restores the instruction of the command it was
+     * issued in. The instruction of a command not issued within another one is kept for the rest of the request, as
+     * before.
+     *
+     * @param array{
+     *     tableName: ?string,
+     *     id: int|string|null,
+     *     deeplMode: bool|string
+     * }|null $runningInstruction the return value of {@see self::startCommand()}
+     */
+    public function endCommand(?array $runningInstruction): void
+    {
+        $this->runtimeCache->set(self::COMMAND_DEPTH_CACHE_IDENTIFIER, max(0, $this->getCommandDepth() - 1));
+        if ($runningInstruction !== null) {
+            $this->runtimeCache->set(self::PROCESSING_CACHE_IDENTIFIER, $runningInstruction);
+        }
     }
 
     /**
@@ -89,5 +132,11 @@ final class ProcessingInstruction
         $processingInstructions = $this->getProcessingInstruction();
 
         return $processingInstructions['id'];
+    }
+
+    private function getCommandDepth(): int
+    {
+        $depth = $this->runtimeCache->get(self::COMMAND_DEPTH_CACHE_IDENTIFIER);
+        return is_int($depth) ? $depth : 0;
     }
 }
