@@ -291,6 +291,13 @@ final class RichTextTagHandlingTest extends FunctionalTestCase
             'content' => "<p>Die erste Zeile\u{B}und die zweite Zeile\u{C}gehören zu einem Absatz mit Steuerzeichen\u{1}.<!-- Hinweis -- intern --><?xml version=\"1.0\"?></p>",
             'source' => 'DE',
             'target' => 'EN-GB',
+            'expectedFragments' => ['<?xml version="1.0"?>'],
+        ];
+        yield 'DPL-268, processing instructions in a sentence and before an inline SVG' => [
+            'content' => '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg"><title>Unser Firmenlogo</title></svg><p>Hallo <?php echo $name; ?>, willkommen in unserem Shop.</p>',
+            'source' => 'DE',
+            'target' => 'EN-GB',
+            'expectedFragments' => ['<?xml version="1.0" encoding="UTF-8"?><svg', '<?php echo $name; ?>'],
         ];
         yield 'translate="no" and class="notranslate"' => [
             'content' => '<p>Wir lieben <span class="notranslate">Schwarzwälder Kirschtorte</span> und <span translate="no">Apfelstrudel</span>.</p>',

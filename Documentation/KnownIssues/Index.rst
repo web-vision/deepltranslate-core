@@ -18,8 +18,18 @@ way DeepL places inline markup, and the preparation is reverted in the
 translation: inline elements like `<a>`, `<em>` or `<strong>` are sent as
 `non_splitting_tags`, so a sentence is translated as a whole across its markup,
 links touching each other stay separate links, `<sup>` and `<sub>` stay on the
-word they belong to, and characters XML does not allow are removed. Some
-results differ from the source on purpose or because of DeepL:
+word they belong to, and characters XML does not allow are removed.
+Processing instructions in rich text, for example the declaration
+`<?xml version="1.0"?>` of an inline SVG or `<?php echo 1; ?>`, are sent as
+placeholders and come back in their place, written with one space between
+target and data. If DeepL drops a placeholder, its instruction is lost. Content
+of unknown format holding a processing instruction but no element is plain
+text. Some results differ from the source on purpose or because of DeepL:
+
+*   `<?= $name ?>` and `<?php?>` are no processing instructions to the HTML
+    parser of the extension (masterminds/html5). It reads them as comments and
+    repeats the character after `<?`, the translation holds
+    `<!--<?== $name ?>-->` and `<!--<?pphp?>-->`.
 
 *   Words glued to an element by mistake, like `Our<strong>new</strong>offer`,
     come back with spaces, `Unser <strong>neues</strong> Angebot`. The

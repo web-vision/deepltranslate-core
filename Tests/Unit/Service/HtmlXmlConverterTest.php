@@ -120,7 +120,15 @@ final class HtmlXmlConverterTest extends UnitTestCase
         ];
         yield 'characters XML does not allow, processing instructions and invalid comments' => [
             'html' => "<p title=\"a\u{1}b\">Zeile 1\u{B}Zeile 2\u{C}Seite 2\u{1}&#xFFFE;<?xml version=\"1.0\"?><!-- a -- b ---></p>",
-            'expectedXml' => '<p title="ab">Zeile 1 Zeile 2 Seite 2<!-- a - - b - --></p>',
+            'expectedXml' => '<p title="ab">Zeile 1 Zeile 2 Seite 2<dlt-i dlt-n="0"/><!-- a - - b - --></p>',
+        ];
+        yield 'processing instructions become numbered placeholders' => [
+            'html' => '<?xml version="1.0" encoding="UTF-8"?><svg><title>Logo</title></svg><p>a <?php echo "x>y"; ?> b</p>',
+            'expectedXml' => '<dlt-i dlt-n="0"/><svg><title>Logo</title></svg><p>a <dlt-i dlt-n="1"/> b</p>',
+        ];
+        yield 'processing instructions in content using a helper name are removed' => [
+            'html' => '<p>a<?php echo 1; ?>b <dlt-i dlt-n="0"></dlt-i></p>',
+            'expectedXml' => '<p>ab <dlt-i dlt-n="0"/></p>',
         ];
         yield 'plain text with control characters' => [
             'html' => "Zeile 1\u{B}Zeile 2\u{1F}",
@@ -265,9 +273,28 @@ final class HtmlXmlConverterTest extends UnitTestCase
             'html' => '<p>Text<!-- alt -- neu --><!---x---></p>',
             'expectedHtml' => '<p>Text<!-- alt - - neu --><!---x- --></p>',
         ];
-        yield 'characters XML does not allow are replaced or removed, processing instructions removed' => [
+        yield 'characters XML does not allow are replaced or removed, processing instructions kept' => [
             'html' => "<p title=\"a\u{B}b\">Zeile 1\u{B}Zeile 2\u{C}Seite 2\u{1}\u{FFFF}<?php echo 1; ?></p>",
-            'expectedHtml' => '<p title="a b">Zeile 1 Zeile 2 Seite 2</p>',
+            'expectedHtml' => '<p title="a b">Zeile 1 Zeile 2 Seite 2<?php echo 1; ?></p>',
+        ];
+        // DPL-268: the declaration of an inline SVG in the HTML of a code editor, and code in rich text.
+        yield 'processing instructions are kept in place' => [
+            'html' => '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg"><title>Logo</title></svg><p>Hello <?php echo "x>y"; ?> world</p>',
+            'expectedHtml' => '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg"><title>Logo</title></svg><p>Hello <?php echo "x>y"; ?> world</p>',
+        ];
+        yield 'a processing instruction alone' => [
+            'html' => '<?php echo 1; ?>',
+            'expectedHtml' => '<?php echo 1; ?>',
+        ];
+        yield 'processing instructions are written with one space after the target' => [
+            'html' => "<p>a<?php   echo 1;?>b<?php\n  echo 2; ?>c</p>",
+            'expectedHtml' => '<p>a<?php echo 1;?>b<?php echo 2; ?>c</p>',
+        ];
+        // masterminds/html5 reads these as comments and repeats the character after `<?`, the translation keeps
+        // that comment.
+        yield 'what the HTML parser reads as a comment instead of a processing instruction' => [
+            'html' => '<p>Template: <?= $name ?> and <?php?></p>',
+            'expectedHtml' => '<p>Template: <!--<?== $name ?>--> and <!--<?pphp?>--></p>',
         ];
         yield 'nested inline markup' => [
             'html' => '<p>Wir bieten <strong>schnelle <em>und <a href="t3://page?uid=3">kostenlose</a></em></strong> Lieferung.</p>',
@@ -500,6 +527,16 @@ final class HtmlXmlConverterTest extends UnitTestCase
      */
     public static function simulatedDeepLAnswerDataProvider(): \Generator
     {
+        yield 'processing instruction moved and copied by DeepL' => [
+            'html' => '<p>Hallo <?php echo $name; ?>, willkommen</p>',
+            'answer' => '<p>Welcome, <dlt-i dlt-n="0"/> hello <dlt-i dlt-n="0"/></p>',
+            'expectedHtml' => '<p>Welcome, <?php echo $name; ?> hello </p>',
+        ];
+        yield 'processing instruction placeholder with text of DeepL in it' => [
+            'html' => '<p>Hallo <?php echo $name; ?></p>',
+            'answer' => '<p>Hello <dlt-i dlt-n="0">x</dlt-i></p>',
+            'expectedHtml' => '<p>Hello <?php echo $name; ?>x</p>',
+        ];
         yield 'sup with letters, glued to a digit' => [
             'html' => '<p>The 1<sup>st</sup> floor</p>',
             'answer' => '<p>Le 1 <sup dlt-r="0">er</sup> étage</p>',
@@ -977,6 +1014,15 @@ final class HtmlXmlConverterTest extends UnitTestCase
     }
 
     #[Test]
+    public function xmlToHtmlThrowsExceptionIfAProcessingInstructionIsNotInTheSource(): void
+    {
+        $this->expectException(XmlConversionException::class);
+        $this->expectExceptionCode(1792078388);
+
+        (new HtmlXmlConverter())->xmlToHtml('<p>Hi <dlt-i dlt-n="0"/></p>', '<p>Other text</p>');
+    }
+
+    #[Test]
     public function xmlToHtmlReportsALinkMissingInTheTranslation(): void
     {
         $html = '<p>Das ist die Garantie<em>verlängerung</em> für Ihr Fahr<a href="t3://page?uid=5">rad</a> und <a href="#x">mehr</a>.</p>';
@@ -1033,6 +1079,7 @@ final class HtmlXmlConverterTest extends UnitTestCase
         static::assertSame(['dlt-s'], $options['splitting_tags']);
         static::assertContains('a', $options['non_splitting_tags']);
         static::assertContains('dlt-p', $options['non_splitting_tags']);
+        static::assertContains('dlt-i', $options['non_splitting_tags']);
         static::assertNotContains('dlt-k', $options['non_splitting_tags']);
     }
 
