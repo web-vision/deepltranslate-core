@@ -113,6 +113,23 @@ final class InlineContentElementForeignFieldRegressionTest extends AbstractDeepL
         self::assertCSVDataSet(__DIR__ . '/Fixtures/Results/inlineContentElementPageCeLocalized.csv');
     }
 
+    /**
+     * A content element held by a relation pinned to the default language through
+     * `foreign_match_fields` is localized on its own. Handed over to the parent, the translation
+     * would get the pinned language `0` and the uid of the translated parent - a record in no
+     * language, attached to nothing that renders it.
+     */
+    #[Test]
+    public function translatingContentElementOfRelationPinnedToDefaultLanguageLocalizesItNormally(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/inlineContentElementPinnedLanguage.csv');
+
+        $this->dispatchDeeplTranslateCommand('tt_content', 30, 1);
+
+        $this->assertSame(4, $this->countRecords('tt_content'));
+        self::assertCSVDataSet(__DIR__ . '/Fixtures/Results/inlineContentElementPinnedLanguageLocalized.csv');
+    }
+
     private function dispatchDeeplTranslateCommand(string $table, int $uid, int $targetLanguageId): void
     {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);

@@ -65,10 +65,27 @@ return [
                 ],
             ],
         ],
+        // Holds default language children only, the way an inline field mirroring a pointer
+        // column managed by another extension does (for example the children of a b13/container
+        // grid). Translations of these children are not part of the relation.
+        'content_elements_default_language' => [
+            'exclude' => true,
+            'label' => 'Content elements in the default language',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tt_content',
+                'foreign_field' => 'tx_testinlinerelations_pinned',
+                'foreign_match_fields' => [
+                    'sys_language_uid' => 0,
+                ],
+                'foreign_sortby' => 'sorting',
+                'maxitems' => 99,
+            ],
+        ],
     ],
     'types' => [
         '0' => [
-            'showitem' => 'title, content_elements, --div--;meta, hidden, sys_language_uid, l10n_parent',
+            'showitem' => 'title, content_elements, content_elements_default_language, --div--;meta, hidden, sys_language_uid, l10n_parent',
         ],
     ],
 ];
