@@ -117,6 +117,22 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
         $this->assertNull($resolution->reference);
     }
 
+    /**
+     * A relation pinning its children to one language through `foreign_match_fields` can never hold
+     * a translation of them. Handing such a child over to its parent would make
+     * `DataHandler::inlineLocalizeSynchronize()` write the pinned language onto the translation, so
+     * it has to be localized on its own.
+     */
+    #[Test]
+    public function childOfARelationPinnedToOneLanguageIsNotInlineChild(): void
+    {
+        $resolution = $this->get(InlineRelationResolver::class)
+            ->resolveParentReference('tt_content', 30);
+
+        $this->assertSame(InlineParentState::NotInlineChild, $resolution->state);
+        $this->assertNull($resolution->reference);
+    }
+
     #[Test]
     public function recordWhichIsNoInlineChildIsNotInlineChild(): void
     {

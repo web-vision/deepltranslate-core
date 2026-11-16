@@ -6,6 +6,7 @@ namespace WebVision\Deepltranslate\Core\Service;
 
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentReference;
 use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentResolution;
@@ -151,6 +152,27 @@ final class InlineRelationResolver
     }
 
     /**
+     * Whether the relation restricts its children to one language through `foreign_match_fields`
+     * on the language field of the child table.
+     *
+     * @param array<string, mixed> $configuration
+     */
+    private function relationPinsLanguageOfChildren(string $childTable, array $configuration): bool
+    {
+        $matchFields = $configuration['foreign_match_fields'] ?? [];
+        if (!is_array($matchFields) || $matchFields === []) {
+            return false;
+        }
+        $childSchema = $this->tcaSchemaFactory->get($childTable);
+        if (!$childSchema->isLanguageAware()) {
+            return false;
+        }
+        $languageField = $childSchema->getCapability(TcaSchemaCapability::Language)->getLanguageField()->getName();
+
+        return array_key_exists($languageField, $matchFields);
+    }
+
+    /**
      * All TCA fields owning records of the given table through a `foreign_field` pointer column.
      *
      * @return iterable<array{parentTable: non-empty-string, parentField: non-empty-string, configuration: array<string, mixed>}>
@@ -180,6 +202,13 @@ final class InlineRelationResolver
                 continue;
             }
             if ((string)($configuration['foreign_field'] ?? '') === '') {
+                continue;
+            }
+            if ($this->relationPinsLanguageOfChildren($childTable, $configuration)) {
+                // Such a relation only ever contains children of one language, so a localized
+                // child can never belong to it. `DataHandler::inlineLocalizeSynchronize()` writes
+                // the `foreign_match_fields` onto every child it attaches, which would turn the new
+                // translation back into a record of the pinned language.
                 continue;
             }
             yield [
