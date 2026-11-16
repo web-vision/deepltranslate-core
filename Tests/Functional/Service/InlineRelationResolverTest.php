@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WebVision\Deepltranslate\Core\Tests\Functional\Service;
 
+use PHPUnit\Framework\Attributes\Test;
 use WebVision\Deepltranslate\Core\Domain\Dto\InlineParentReference;
 use WebVision\Deepltranslate\Core\Domain\Enum\InlineParentState;
 use WebVision\Deepltranslate\Core\Service\InlineRelationResolver;
@@ -125,6 +126,22 @@ final class InlineRelationResolverTest extends AbstractDeepLTestCase
     {
         $resolution = $this->get(InlineRelationResolver::class)
             ->resolveParentReference('tt_content', 20);
+
+        static::assertSame(InlineParentState::NotInlineChild, $resolution->state);
+        static::assertNull($resolution->reference);
+    }
+
+    /**
+     * A relation pinning its children to one language through `foreign_match_fields` can never hold
+     * a translation of them. Handing such a child over to its parent would make
+     * `DataHandler::inlineLocalizeSynchronize()` write the pinned language onto the translation, so
+     * it has to be localized on its own.
+     */
+    #[Test]
+    public function childOfARelationPinnedToOneLanguageIsNotInlineChild(): void
+    {
+        $resolution = $this->get(InlineRelationResolver::class)
+            ->resolveParentReference('tt_content', 30);
 
         static::assertSame(InlineParentState::NotInlineChild, $resolution->state);
         static::assertNull($resolution->reference);

@@ -17,4 +17,12 @@ ExtensionManagementUtility::addTCAcolumns('tt_content', [
             'type' => 'passthrough',
         ],
     ],
+    // Pointer column back to `tx_testinlinerelations_contentparent.content_elements_default_language`,
+    // a relation pinned to the default language through `foreign_match_fields`.
+    'tx_testinlinerelations_pinned' => [
+        'label' => 'tx_testinlinerelations_pinned',
+        'config' => [
+            'type' => 'passthrough',
+        ],
+    ],
 ]);

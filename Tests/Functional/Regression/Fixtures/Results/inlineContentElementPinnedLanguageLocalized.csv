@@ -1,0 +1,6 @@
+tt_content
+,"uid","pid","sys_language_uid","l18n_parent","l10n_source","tx_testinlinerelations_related","tx_testinlinerelations_pinned","header"
+,10,1,0,0,0,1,0,"proton beam"
+,20,1,0,0,0,0,0,"proton beam"
+,30,1,0,0,0,0,1,"proton beam"
+,31,1,1,30,30,0,1,"Protonenstrahl"

@@ -14,15 +14,18 @@ CREATE TABLE tx_testinlinerelations_parent (
 #
 CREATE TABLE tx_testinlinerelations_contentparent (
     title varchar(255) DEFAULT '' NOT NULL,
-    content_elements int(11) DEFAULT '0' NOT NULL
+    content_elements int(11) DEFAULT '0' NOT NULL,
+    content_elements_default_language int(11) DEFAULT '0' NOT NULL
 );
 
 #
-# Pointer column back to `tx_testinlinerelations_contentparent`, declared as `passthrough` in the
-# `tt_content` TCA override (mirrors EXT:news `tx_news_related_news`).
+# Pointer columns back to `tx_testinlinerelations_contentparent`, declared as `passthrough` in the
+# `tt_content` TCA override (`tx_testinlinerelations_related` mirrors EXT:news `tx_news_related_news`,
+# `tx_testinlinerelations_pinned` belongs to the relation pinned to the default language).
 #
 CREATE TABLE tt_content (
-    tx_testinlinerelations_related int(11) DEFAULT '0' NOT NULL
+    tx_testinlinerelations_related int(11) DEFAULT '0' NOT NULL,
+    tx_testinlinerelations_pinned int(11) DEFAULT '0' NOT NULL
 );
 
 #
